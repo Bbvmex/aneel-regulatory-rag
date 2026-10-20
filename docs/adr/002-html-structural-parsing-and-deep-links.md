@@ -38,10 +38,14 @@ Each unit therefore gets `source_url = <norm URL>#:~:text=<prefix>` (URL text fr
 Implementation: `src/aneel_rag/ingest/source_url.py`; tests in `tests/unit/test_source_url.py`.
 
 ## Consequences
-- Text fragments work in Chromium-based browsers (Chrome, Edge) with the page loaded; other
-  browsers ignore the fragment and open the page at the top, which is the fallback.
-- Cold links (opening a fragment URL directly, before the Cloudflare challenge completes):
-  **not verified** — the challenge may drop the fragment, in which case the page opens at the top.
+- Text fragments work in Chromium-based browsers (Chrome, Edge) **only when the page is already
+  loaded** past the Cloudflare challenge. Other browsers ignore the fragment.
+- **Cold links do not work** (verified manually, 2026-10-20): opening a `source_url` directly
+  goes through the Cloudflare challenge, which drops the fragment; the page opens at the top.
+  Fallback in every failing case = page at the top, so the link is never wrong, only less precise.
+- Consequence for the UI: each citation must also show the device ID and the quoted text, so the
+  user can locate it with Ctrl+F when the highlight is lost. The link is a convenience, not the
+  citation itself.
 - A new snapshot can change the uniqueness of prefixes; URLs are regenerated at ingestion time.
 
 ## Chunking
