@@ -4,7 +4,7 @@
 |---|---|
 | Norm | Resolução Normativa ANEEL nº 1.000, de 7 de dezembro de 2021 (compiled text) |
 | Publisher | leis.org — official ANEEL legislation platform (gov.br links redirect here) |
-| URL | TBD — confirm the exact page URL of the snapshot |
+| URL | <https://leis.org/institucionais/br/aneel/lei/resolucao-normativa/2021/1000/resolucao-normativa-n-1000-2021-estabelece-as-regras-de-prestacao-do-servico-publico-de-distribuicao-de-energia-eletrica-revoga-as-resolucoes-normativas-aneel-n-414-de-9-de-setembro-de-2010-n-470-de-13-de-dezembro-de-2011-n-901-de-8-de-dezembro-de-2020-e-da-outras-providencias> |
 | Snapshot date | 2026-10-20 (manual browser save) |
 | Last amending act annotated | Resolução Normativa nº 1.162/2026, de 02/06/2026 |
 
