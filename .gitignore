@@ -218,3 +218,11 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ===== Project data =====
+# Raw snapshot stays out of git; only the law-content extract and its manifest are versioned.
+data/raw/*
+!data/raw/SOURCE.md
+!data/raw/ren1000_law_content.html
+data/processed/
+data/cache/
