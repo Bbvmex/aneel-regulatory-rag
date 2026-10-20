@@ -18,6 +18,8 @@ class _Strict(BaseModel):
 
 class CorpusConfig(_Strict):
     path: Path
+    url: str
+    fragment_min_words: int = 6
 
 
 class ModelsConfig(_Strict):

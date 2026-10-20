@@ -9,6 +9,10 @@ norm does not answer the question.
 
 **Status:** work in progress — phase 0 (scaffold). Results: TBD.
 
+Citations are designed to be clickable: in the demo, each cited device links to the official ANEEL
+page (leis.org) with the cited passage highlighted, using a URL text fragment (Chromium-based
+browsers; others open the page at the top). See [ADR-002](docs/adr/002-html-structural-parsing-and-deep-links.md).
+
 ## Quick start
 
 Requires [uv](https://docs.astral.sh/uv/), GNU make and Docker.
