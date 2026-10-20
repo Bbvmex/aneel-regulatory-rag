@@ -11,7 +11,7 @@ _Atualizado em 2026-10-20._
 | Fase | Estado | Referência |
 |---|---|---|
 | 0 — Scaffold | **concluída** (merge em 2026-10-20) | PR #1, commit `4c3bd1b` |
-| 1 — Ingestão + parser | **em revisão** (branch `phase-1`) | — |
+| 1 — Ingestão + parser | **em revisão** | PR #3 (branch `phase-1`) |
 | 2–5 | pendentes | — |
 | 6 (opcional), 7, 8 (bônus) | pendentes | — |
 
@@ -35,7 +35,7 @@ _Atualizado em 2026-10-20._
 | 14 | **Defeitos do texto oficial tratados e reportados:**<br>• rótulo dobrado (Art. 250);<br>• `<br>` perdido antes do § 2º (Art. 666);<br>• §§ ausentes (Art. 485);<br>• alínea repetida e alínea ausente (Art. 668, III). | `ingest_report.md` |
 | 15 | **Anexos:**<br>• o I vai por cláusula, os II e III com um unit cada, e o IV com um unit por linha da tabela;<br>• os anexos não entram no dataset do MVP;<br>• o `amended_by` registra só a versão vigente. | ADR-002 |
 | 16 | **O texto é salvo em NFC.** NFKC e casefold só valem na comparação de citações (Fase 3). | ADR-002 |
-| 17 | **Módulos além da lista do plano:**<br>• `ingest/labels.py` (rótulos, compartilhado com `source_url.py`) e `ingest/pipeline.py`;<br>• `scripts/cut_fixtures.py`, que recorta as fixtures reais do recorte;<br>• os alvos `make extract` e `make fixtures`. | PR da Fase 1 |
+| 17 | **Módulos além da lista do plano:**<br>• `ingest/labels.py` (rótulos, compartilhado com `source_url.py`) e `ingest/pipeline.py`;<br>• `scripts/cut_fixtures.py`, que recorta as fixtures reais do recorte;<br>• os alvos `make extract` e `make fixtures`. | PR #3 |
 
 ---
 
