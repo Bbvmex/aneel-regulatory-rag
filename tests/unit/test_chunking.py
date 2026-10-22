@@ -72,6 +72,20 @@ def test_structural_unit_ids_cover_every_unit_exactly_once():
     assert set(ids) == {u.id for u in units()}
 
 
+def test_context_units_are_listed_apart_from_the_body():
+    text = {u.id: u.text for u in units()}
+    for c in structural():
+        assert not set(c.context_unit_ids) & set(c.unit_ids), c.chunk_id
+        assert all(text[i] in c.text for i in c.context_unit_ids), c.chunk_id
+    assert all(c.context_unit_ids == [] for c in fixed())
+
+
+def test_split_article_pieces_carry_caput_as_context():
+    first, *rest = [c for c in structural() if c.article_id == "art-2" and c.status == "active"]
+    assert "art-2" in first.unit_ids and first.context_unit_ids == []
+    assert rest and all(c.context_unit_ids[0] == "art-2" for c in rest)
+
+
 def test_long_articles_are_split_within_budget():
     art2 = [c for c in structural() if c.article_id == "art-2"]
     assert len(art2) > 1
@@ -100,6 +114,7 @@ def test_split_repeats_head_as_context_and_packs_siblings():
         ["art-1-p3", "art-1-p4"],
     ]
     assert all(c.text.startswith("TÍTULO I — GERAL\nArt. 1º Caput.") for c in chunks)
+    assert [c.context_unit_ids for c in chunks] == [[], ["art-1"]]
 
 
 def test_revoked_units_get_their_own_chunk_with_live_caput():
@@ -109,6 +124,7 @@ def test_revoked_units_get_their_own_chunk_with_live_caput():
     assert (live.unit_ids, live.status) == (["art-1"], "active")
     assert (rev.unit_ids, rev.status) == (["art-1-p1"], "revoked")
     assert "Art. 1º Caput." in rev.text
+    assert rev.context_unit_ids == ["art-1"]
 
 
 # --- fixed -------------------------------------------------------------------------------

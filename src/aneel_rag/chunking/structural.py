@@ -94,6 +94,7 @@ def _chunk(chunk_id: str, path: str, ctx: list[Unit], body: list[Unit], status) 
         chunk_id=chunk_id,
         text=_render(path, ctx + body),
         unit_ids=[u.id for u in body],
+        context_unit_ids=[u.id for u in ctx],
         article_id=body[0].article_id,
         article_ids=[body[0].article_id],
         doc_type="norm",
