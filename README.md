@@ -7,12 +7,13 @@ norm does not answer the question.
 > **Personal project.** Built for learning and as a portfolio piece. It has no relation to any
 > employer or client and uses only the public text of the norm.
 
-**Status:** work in progress — phase 0 (scaffold). Results: TBD.
+**Status:** work in progress — phase 1 (ingestion and parser). Results: TBD.
 
 Each citation shows the device ID and the quoted text, plus a link to the official ANEEL page
 (leis.org) using a URL text fragment. The passage is highlighted only in Chromium-based browsers
-with the page already open; a link opened cold goes through the site's bot challenge and lands at
-the top of the page. See [ADR-002](docs/adr/002-html-structural-parsing-and-deep-links.md).
+when opened inside a browser that already has the page loaded; a link opened cold goes through the
+site's bot challenge and lands at the top of the page. In that case, press Enter in the address
+bar to apply the fragment again (the citation UI of phase 7 repeats this note). See [ADR-002](docs/adr/002-html-structural-parsing-and-deep-links.md).
 
 ## Quick start
 
@@ -26,6 +27,22 @@ make qdrant-up
 ```
 
 Run `make help` for every task.
+
+## Ingestion
+
+```bash
+make ingest     # data/raw/ren1000_law_content.html -> data/processed/
+```
+
+The parser reads only the versioned extract of the norm and writes `units.jsonl` (one citable
+device per line: caput, §, inciso, alínea or annex piece, with status `active | amended | added |
+revoked`, amending acts and validity notes), `manifest.json` (corpus SHA-256, preamble, footer) and
+`ingest_report.md`, which reconciles every output count with the raw HTML and lists the defects of
+the official text it had to handle. Superseded (struck-through) wording is dropped; revoked
+devices are kept but excluded from retrieval by default.
+
+`make extract` regenerates the extract from a manual snapshot of the leis.org page
+(`data/raw/ren1000.html`, not versioned), and `make fixtures` re-cuts the test fixtures from it.
 
 ## Layout
 

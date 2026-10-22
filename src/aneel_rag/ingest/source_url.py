@@ -2,6 +2,7 @@
 
 import re
 import unicodedata
+from functools import lru_cache
 from urllib.parse import quote
 
 DEFAULT_MIN_WORDS = 6
@@ -12,7 +13,8 @@ _LABEL = re.compile(
         art\.?\s*\d+(?:\.\d+)*\s*[º°o]?(?:\s*-\s*[a-z])?\s*[.:]?
       | §\s*\d+\s*[º°o]?\s*[.:]?
       | parágrafo\s+único\s*[.:-]?
-      | [ivxlc]+\s*[-\u2013\u2014]  # hyphen, en dash, em dash
+      # "IV -", "I-A -", "I - C -" with hyphen, en dash or em dash
+      | [ivxlc]+(?:\s*[-\u2013\u2014]\s*[a-z]\s*[-\u2013\u2014:]|\s*[-\u2013\u2014])
       | [a-z]\)
     )\s*""",
     re.IGNORECASE | re.VERBOSE,
@@ -22,6 +24,12 @@ _LABEL = re.compile(
 def normalize(text: str) -> str:
     # Browsers match text fragments case-insensitively and across whitespace runs.
     return " ".join(unicodedata.normalize("NFKC", text).casefold().split())
+
+
+@lru_cache(maxsize=2)
+def _normalized_page(page_text: str) -> str:
+    # Ingestion links thousands of units against the same page; normalize it once.
+    return normalize(page_text)
 
 
 def strip_label(text: str) -> str:
@@ -46,7 +54,7 @@ def unique_prefix(unit_text: str, page_text: str, min_words: int = DEFAULT_MIN_W
     words = strip_label(unit_text).split()
     if not words:
         return None
-    haystack = normalize(page_text)
+    haystack = _normalized_page(page_text)
     for n in range(min(min_words, len(words)), len(words) + 1):
         prefix = " ".join(words[:n])
         occurrences = _count(normalize(prefix), haystack)

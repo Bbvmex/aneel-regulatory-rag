@@ -6,12 +6,12 @@
 
 ## Status
 
-_Atualizado em 2026-10-20._
+_Atualizado em 2026-10-22._
 
 | Fase | Estado | Referência |
 |---|---|---|
 | 0 — Scaffold | **concluída** (merge em 2026-10-20) | PR #1, commit `4c3bd1b` |
-| 1 — Ingestão + parser | próxima, aguardando autorização | — |
+| 1 — Ingestão + parser | **em revisão** | PR #3 (branch `phase-1`) |
 | 2–5 | pendentes | — |
 | 6 (opcional), 7, 8 (bônus) | pendentes | — |
 
@@ -27,7 +27,15 @@ _Atualizado em 2026-10-20._
 | 6 | Os smoke tests de modelos rodam com `make smoke` (marker `smoke`, excluído por `addopts`) e precisam do `.env` preenchido. | `pyproject.toml`, PR #1 |
 | 7 | **O runner do CI está fixado em `ubuntu-24.04`** por reprodutibilidade. As actions usam a última versão major em Node 24: `actions/checkout@v7`, `astral-sh/setup-uv@v10.3.0` e `gitleaks/gitleaks-action@v3`. O ADR-005 foi criado antes da Fase 5 para registrar isso; a parte de avaliação fica para a Fase 5. | ADR-005 |
 | 8 | O único artifact do CI é o `gitleaks-results.sarif`, com os segredos ocultados (`--redact`). Ele não contém o `.env` nem nada de `data/raw/`. | ADR-005, PR #1 |
-| 9 | A seção "Status" deste documento e o `CLAUDE.md` na raiz registram as regras permanentes do projeto. | este PR |
+| 9 | A seção "Status" deste documento e o `CLAUDE.md` na raiz registram as regras permanentes do projeto. | PR #2 |
+| 10 | **Correções da inspeção da Fase 1** aos números da seção "O que a inspeção do HTML mostrou":<br>• os IDs têm ponto (`article23.`);<br>• há 156 "Redação dada" + 204 "Redação acrescida" (o "339" contava `<b>` com anotação);<br>• há 16 `<img>` no texto (e não 28);<br>• não existe Subseção;<br>• o Art. 35 vigente não tem `span.artigo`. | ADR-002 |
+| 11 | **O `<br>` simples também separa dispositivos.**<br>• Um unit começa numa linha com rótulo aceito pela sequência do pai (os rótulos riscados contam).<br>• Linhas sem rótulo são continuação.<br>• Rótulos fora de sequência viram continuação e vão para o relatório (o único caso é "C - é o consumo", no Art. 73-A). | ADR-002 |
+| 12 | **Vigência:**<br>• todo texto riscado é descartado, exceto quando há "(Revogado…)" logo depois, caso em que o bloco riscado contíguo fica `revoked`;<br>• o status vem da anotação ("dada" → `amended`, "acrescida" → `added`);<br>• uma linha em negrito sem anotação herda a próxima anotação do bloco;<br>• a regra "`<b>` sem anotação = added" do plano não tem casos reais. | ADR-002 |
+| 13 | **Citações de outras normas** (Arts. 672–676) ficam em modo citação até "(NR)" e geram `quotes_other_norm: true`, sem perder a indexação. O fallback `^Art. N` só vale fora de citação e para o sucessor do artigo anterior. | ADR-002 |
+| 14 | **Defeitos do texto oficial tratados e reportados:**<br>• rótulo dobrado (Art. 250);<br>• `<br>` perdido antes do § 2º (Art. 666);<br>• • alínea repetida e alínea ausente (Art. 668, III).<br>O Art. 485 **não** é defeito: os §§ 5º e 6º estão na mesma linha do § 4º, sem `<br>`. Numa lacuna de sequência, o parser procura o rótulo faltante dentro do unit anterior (seguido de palavra maiúscula) e divide ali; cada divisão vai para a seção "Inline label repairs" do relatório. No corpus inteiro, só o Art. 485 é reparado assim. | `ingest_report.md`, ADR-002 |
+| 15 | **Anexos:**<br>• o I vai por cláusula, os II e III com um unit cada, e o IV com um unit por linha da tabela;<br>• os anexos não entram no dataset do MVP;<br>• o `amended_by` registra só a versão vigente. | ADR-002 |
+| 16 | **O texto é salvo em NFC.** NFKC e casefold só valem na comparação de citações (Fase 3). | ADR-002 |
+| 17 | **Módulos além da lista do plano:**<br>• `ingest/labels.py` (rótulos, compartilhado com `source_url.py`) e `ingest/pipeline.py`;<br>• `scripts/cut_fixtures.py`, que recorta as fixtures reais do recorte;<br>• os alvos `make extract` e `make fixtures`. | PR #3 |
 
 ---
 

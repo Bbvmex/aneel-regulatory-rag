@@ -3,7 +3,7 @@
 .DEFAULT_GOAL := help
 UV ?= uv
 
-.PHONY: help setup setup-ml lint format test smoke qdrant-up qdrant-down ingest index serve eval eval-gate
+.PHONY: help setup setup-ml lint format test smoke qdrant-up qdrant-down extract fixtures ingest index serve eval eval-gate
 
 help: ## List available targets
 	@$(UV) run --no-sync python scripts/make_help.py $(MAKEFILE_LIST)
@@ -35,7 +35,13 @@ qdrant-up: ## Start Qdrant in Docker
 qdrant-down: ## Stop Qdrant
 	docker compose down
 
-ingest: ## Parse the corpus into data/processed (phase 1)
+extract: ## Regenerate the versioned law-content extract from data/raw/ren1000.html
+	$(UV) run python -m aneel_rag.ingest.extract_law_content
+
+fixtures: ## Re-cut the real HTML test fixtures from the extract
+	$(UV) run python scripts/cut_fixtures.py
+
+ingest: ## Parse the corpus into data/processed (units, manifest, report)
 	$(UV) run python -m aneel_rag.ingest
 
 index: ## Chunk, embed and index into Qdrant (phase 2)

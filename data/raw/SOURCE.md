@@ -19,6 +19,6 @@ The full page and the PDF stay out of git; their hashes pin the exact snapshot.
 |---|---|---|
 | `ren1000.html` | no | `2f1984653f269ad2d7e2de1250fbd5f1cb01ebd9b8ce9b493d80b05cb6bf905a` |
 | `Resolucao-normativa-1000-2021-Aneel-BR-consolidada-[02-06-2026].pdf` | no | `aa413cf320302b9417786ec4aeae5e59b4b82006e01c650a20fc577b2d5abd35` |
-| `ren1000_law_content.html` | yes | TBD (generated in phase 1) |
+| `ren1000_law_content.html` | yes | `ae8fc1bc472cbbefc678f3e225605ce284ac2e64296ad03d77051c26bdea737f` |
 
 The corpus SHA-256 used in evaluation reports is the hash of `ren1000_law_content.html`.
