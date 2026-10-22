@@ -71,6 +71,19 @@ def test_every_article_1_to_679_is_present():
     assert numbers == set(range(1, 680))
 
 
+def test_relaxed_sequence_rule_only_accepts_known_source_defects():
+    # Each entry was checked by hand against leis.org (PR #3); a new one needs a manual review.
+    gaps = [(g["kind"], g["article"], g["after"], g["label"]) for g in corpus().gaps]
+    assert gaps == [
+        ("doubled label", "art-250", "§ 1º", "§ 2º"),
+        ("missing line break", "art-666", "§ 1º", "§ 2º"),
+        ("repeated label", "art-668", "d)", "d)"),
+        ("gap", "art-668", "e)", "g)"),
+    ]
+    repairs = [(r["from"], r["unit"]) for r in corpus().inline_repairs]
+    assert repairs == [("art-485-p4", "art-485-p5"), ("art-485-p5", "art-485-p6")]
+
+
 def test_report_has_no_blocking_problems():
     assert report.blocking_problems(corpus()) == []
 

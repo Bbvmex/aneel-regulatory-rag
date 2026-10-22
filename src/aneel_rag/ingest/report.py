@@ -224,14 +224,23 @@ def render(result: ParseResult, root: Tag, manifest: Manifest) -> str:
     out += ["", "## 4. Defects of the official text, handled", ""]
     out += [_row("Kind", "Article", "After", "Label"), _row("---", "---", "---", "---")]
     out += [_row(g["kind"], g["article"], g["after"], g["label"]) for g in result.gaps]
+    out += ["", "## 5. Inline label repairs (a gap whose labels sit inside the previous unit)", ""]
+    if result.inline_repairs:
+        out += [_row("Article", "Split from", "New unit", "Text"), _row("---", "---", "---", "---")]
+        out += [
+            _row(r["article"], f"`{r['from']}`", f"`{r['unit']}`", r["text"])
+            for r in result.inline_repairs
+        ]
+    else:
+        out.append("None.")
     top = result.continuation.most_common(10)
-    out += ["", "## 5. Continuation lines per article (top 10)", ""]
+    out += ["", "## 6. Continuation lines per article (top 10)", ""]
     out += [_row("Article", "Lines"), _row("---", "---:")] + [_row(a, n) for a, n in top]
     out += [
         "",
         f"Total continuation lines: {sum(result.continuation.values())}.",
         "",
-        "## 6. Quotations of other norms",
+        "## 7. Quotations of other norms",
         "",
         "Units flagged `quotes_other_norm` (still indexed): "
         + ", ".join(sorted({u.article_id for u in units if u.quotes_other_norm})),
@@ -239,7 +248,7 @@ def render(result: ParseResult, root: Tag, manifest: Manifest) -> str:
         "Quotations closed by the end of the article instead of “(NR)”: "
         + (", ".join(result.quotes_without_nr) or "none"),
         "",
-        "## 7. Orphan struck blocks (no new version and no “Revogado”)",
+        "## 8. Orphan struck blocks (no new version and no “Revogado”)",
         "",
     ]
     if result.orphans:
@@ -247,11 +256,11 @@ def render(result: ParseResult, root: Tag, manifest: Manifest) -> str:
         out += [_row(o["lines"], o["article"], o["text"]) for o in result.orphans]
     else:
         out.append("None.")
-    out += ["", "## 8. Superseded headings", ""]
+    out += ["", "## 9. Superseded headings", ""]
     out += [f"- {h}" for h in result.superseded_headings] or ["None."]
-    out += ["", "## 9. Revoked units", ""]
+    out += ["", "## 10. Revoked units", ""]
     out += [f"- `{u.id}` — {u.text[:100]}" for u in units if u.status == "revoked"]
-    out += ["", "## 10. Validity notes", ""]
+    out += ["", "## 11. Validity notes", ""]
     out += [f"- `{u.id}`: {n}" for u in units for n in u.notes]
     out += [f"- preamble: {n}" for n in result.preamble.get("notes", [])]
     owner = {i: uid for uid, idx in result.unit_lines.items() for i in idx}
@@ -267,7 +276,7 @@ def render(result: ParseResult, root: Tag, manifest: Manifest) -> str:
         for i, note in dropped_notes:
             nxt = next((owner[k] for k in range(i + 1, len(result.items)) if k in owner), None)
             out.append(f"- line {i}, before `{nxt}`: {note}")
-    out += ["", "## 11. Dropped text", ""]
+    out += ["", "## 12. Dropped text", ""]
     out += [f"- {d}" for d in result.dropped] or ["None."]
 
     # ---- sample -------------------------------------------------------------------------
@@ -277,7 +286,7 @@ def render(result: ParseResult, root: Tag, manifest: Manifest) -> str:
     sample = random.Random(SAMPLE_SEED).sample(live, SAMPLE_SIZE)
     out += [
         "",
-        f"## 12. Sample of {SAMPLE_SIZE} units (seed {SAMPLE_SEED}) to check in the browser",
+        f"## 13. Sample of {SAMPLE_SIZE} units (seed {SAMPLE_SEED}) to check in the browser",
         "",
         _row("Unit", "Anchor", "Status", "Text", "Link"),
         _row("---", "---", "---", "---", "---"),
@@ -287,7 +296,7 @@ def render(result: ParseResult, root: Tag, manifest: Manifest) -> str:
         out.append(_row(f"`{u.id}`", f"`{u.source_anchor}`", u.status, u.text[:80], link))
 
     problems = blocking_problems(result)
-    out += ["", "## 13. Checks", ""]
+    out += ["", "## 14. Checks", ""]
     out += [f"- FAIL: {p}" for p in problems] or ["- All blocking checks passed."]
     out.append(f"- Units without `source_url`: {sum(u.source_url is None for u in units)}")
     return "\n".join(out) + "\n"

@@ -10,7 +10,14 @@ from collections import Counter
 from dataclasses import dataclass, field, replace
 
 from aneel_rag.ingest import annotations as ann
-from aneel_rag.ingest.labels import Label, is_successor, parse_article_id, parse_label
+from aneel_rag.ingest.labels import (
+    DASHES,
+    Label,
+    int_to_roman,
+    is_successor,
+    parse_article_id,
+    parse_label,
+)
 from aneel_rag.ingest.models import Amendment, Unit
 from aneel_rag.ingest.segment import Line
 from aneel_rag.ingest.vigencia import Classified, classify, orphan_struck_blocks
@@ -52,6 +59,7 @@ class ParseResult:
     superseded_headings: list[str] = field(default_factory=list)
     duplicate_ids: list[str] = field(default_factory=list)
     gaps: list[dict] = field(default_factory=list)
+    inline_repairs: list[dict] = field(default_factory=list)
     section_at: list[str] = field(default_factory=list)  # preamble | norm | footer | annex
     unit_lines: dict[str, list[int]] = field(default_factory=dict)
 
@@ -73,6 +81,7 @@ class _Parser:
             "dropped": [],
             "superseded_headings": [],
             "gaps": [],
+            "inline_repairs": [],
         }
         # article context
         self.article: _Draft | None = None
@@ -248,9 +257,14 @@ class _Parser:
             and not label.suffix
             and ((level == "par" and jump > 0) or (same_kind and 0 < jump <= 2))
         ):
-            # Missing §§ (or one missing inciso/alínea) are gaps in the source, not false labels.
-            self.result_extra["gaps"].append(self._gap("gap", prev, label))
-            ok = True
+            # Missing §§ (or one missing inciso/alínea) are gaps in the source, not false labels,
+            # unless the missing labels sit inline in the previous unit (Art. 485, §§ 5º-6º).
+            if same_kind and self._inline_repair(level, same_kind, label):
+                prev = same_kind = self.seen[level]
+                ok = is_successor(same_kind, label)
+            if not ok:
+                self.result_extra["gaps"].append(self._gap("gap", prev, label))
+                ok = True
         if not ok:
             self.reject(c, label, f"out of sequence after {prev.display if prev else 'nothing'}")
             self.append(c)
@@ -371,6 +385,34 @@ class _Parser:
                 ]
         return None
 
+    def _inline_repair(self, level: str, prev: Label, label: Label) -> bool:
+        """Recover the labels missing between prev and label from the end of the previous unit."""
+        repaired = False
+        for number in range(prev.number + 1, label.number):
+            target = self.current
+            if target is None or target.article_id != self.article.id:
+                break
+            if target.items[0].state != "keep":
+                break
+            split = _split_inline(target, _inline_label(label.kind, number))
+            if split is None:
+                break
+            head, rest = split
+            found = parse_label(head.text)
+            self.seen[level], self.seen_struck[level] = found, False
+            if level == "par":
+                self.seen["inc"] = self.seen["al"] = None
+            elif level == "inc":
+                self.seen["al"] = None
+            self.start_device(head, found)
+            self.current.items.extend(rest)
+            self.result_extra["inline_repairs"].append(
+                {"article": self.article.id, "from": target.id, "unit": self.current.id,
+                 "label": found.display, "text": ann.strip(head.text)[:90]}
+            )  # fmt: skip
+            repaired = True
+        return repaired
+
     def _gap(self, kind: str, prev: Label | None, label: Label) -> dict:
         return {
             "kind": kind,
@@ -431,6 +473,31 @@ class _Parser:
             doc_type="annex",
         )
         self._new(draft, c)
+
+
+def _inline_label(kind: str, number: int) -> re.Pattern:
+    """A label glued after other text that opens a capitalized sentence ("... no § 6º § 5º A")."""
+    if kind == "par":
+        core = rf"§\s*{number}\s*º?"
+    elif kind == "inc":
+        core = rf"{int_to_roman(number)}\s*[{DASHES}]"
+    else:
+        core = rf"{chr(96 + number)}\)"
+    return re.compile(rf"(?<=\S)\s+({core})\s+(?=[A-ZÀ-Ý])")
+
+
+def _split_inline(draft: _Draft, pattern: re.Pattern) -> tuple[Classified, list] | None:
+    """Cut the draft at the first match; return the new head and the lines that follow it."""
+    for j, c in enumerate(draft.items):
+        if c.state != "keep" or not (m := pattern.search(c.text)):
+            continue
+        before, after = c.text[: m.start(1)].rstrip(), c.text[m.start(1) :]
+        links = c.line.links(False)
+        draft.items[j] = replace(c, text=before, found=ann.find(before, links))
+        rest = draft.items[j + 1 :]
+        del draft.items[j + 1 :]
+        return replace(c, text=after, found=ann.find(after, links)), rest
+    return None
 
 
 def _build(draft: _Draft, quotes: bool) -> Unit:

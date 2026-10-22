@@ -331,10 +331,32 @@ def test_defect_doubled_label():
     assert [g["kind"] for g in parse("defect_doubled_label").gaps] == ["doubled label"]
 
 
-def test_defect_paragraph_gap_keeps_later_paragraphs():
+def test_inline_paragraphs_are_split_out_of_the_previous_one():
+    # §§ 5º and 6º of Art. 485 sit on the § 4º line; the cross-references must not split.
     got = units("defect_paragraph_gap")
-    assert "art-485-p7" in got and "art-485-p12" in got
-    assert parse("defect_paragraph_gap").gaps[0]["label"] == "§ 7º"
+    assert got["art-485-p4"].text.endswith(
+        "para que esta custeie e execute tais obras, ressalvado o disposto no § 6º"
+    )
+    assert got["art-485-p5"].text == (
+        "§ 5º A notificação do § 4º deve ser realizada na apresentação da documentação disposta "
+        "no caput , ou por ocasião do encaminhamento do Termo de Compromisso do § 7º"
+    )
+    assert got["art-485-p6"].text == (
+        "§ 6º Não são de responsabilidade da distribuidora itens que não são objeto do seu "
+        "contrato de concessão ou de permissão, a exemplo das instalações internas da unidade "
+        "consumidora e das instalações relacionadas ao serviço público de iluminação pública ou "
+        "de iluminação de vias internas."
+    )
+    assert [got[f"art-485-p{n}"].source_anchor for n in (4, 5, 6, 7)] == [
+        f"article485.#{n}" for n in (17, 18, 19, 20)
+    ]
+    assert "art-485-p12" in got
+    result = parse("defect_paragraph_gap")
+    assert result.gaps == []
+    assert [(r["from"], r["unit"]) for r in result.inline_repairs] == [
+        ("art-485-p4", "art-485-p5"),
+        ("art-485-p5", "art-485-p6"),
+    ]
 
 
 def test_defect_missing_line_break_is_split():
