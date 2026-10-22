@@ -144,7 +144,10 @@ Implementation: `src/aneel_rag/chunking/`; tests in `tests/unit/test_chunking.py
   A single device is never split, so a chunk can exceed the limit only when its body is one
   device (one annex clause today).
 - **`unit_ids`** lists only the body units of a chunk, never the repeated context. Each unit is in
-  exactly one chunk, which a test checks over the whole corpus.
+  exactly one chunk, which a test checks over the whole corpus, so recall metrics count every
+  unit once. **`context_unit_ids`** lists the repeated units (caput, parent § or inciso). The
+  phase 3 citation check accepts a unit from either list of the retrieved chunks, because the
+  generator sees both texts.
 - **Revoked devices** get separate chunks (`…:revN`, `status: revoked`), split the same way, with
   the live caput as context. Live chunks never mix in revoked text, so the default filter does not
   hide live text. The fine-grained status (`amended`, `added`) stays on the units; a chunk is only

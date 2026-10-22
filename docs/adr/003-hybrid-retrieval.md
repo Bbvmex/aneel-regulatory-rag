@@ -32,9 +32,19 @@ Everything must run on CPU, and CI runs without models.
 - **Embedding cache.** Document embeddings are cached in SQLite (`data/cache/embeddings.sqlite`,
   not versioned), keyed by SHA-256 of model ID, `max_length` and chunk text. Re-indexing after a
   chunking change only embeds the chunks whose text changed. Queries are not cached.
+- **Index provenance.** `make index` stamps the collection metadata with `corpus_sha256` (of the
+  extract), `parser_version` and `index_config_hash`. Before that, it checks that
+  `data/processed` was produced from the current extract and parser. `Retriever(...,
+  expected=...)` and the query CLI raise `IndexMismatchError` before loading any model when a
+  field differs, or when the collection is missing or has no stamp. `index_config_hash` covers
+  only what changes the stored points: collection, chunking, embedding model and
+  `embedding.max_length`. Retrieval mode and k values are query-time choices, so the phase 5
+  retrieval ablations share one index instead of failing the check.
 - **Testing without models.** `HashEmbedder` (hashed bag of words) and `OverlapReranker` (word
   overlap) implement the same protocols. CI runs every mode against Qdrant `:memory:` with them.
-  Real models are loaded lazily, so CI never imports FlagEmbedding or torch.
+  Real models are loaded lazily, so CI never imports FlagEmbedding or torch. The fakes are not
+  selectable through config: the indexing and query entry points always build the bge models,
+  and only tests instantiate the fakes.
 
 ## Alternatives considered
 - **Client-side fusion.** It works, but Qdrant's native RRF is one round trip and has no code to
