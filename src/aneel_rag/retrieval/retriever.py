@@ -5,6 +5,7 @@ from aneel_rag.chunking import Chunk
 from aneel_rag.config.settings import RetrievalConfig
 from aneel_rag.retrieval.embedder import Embedder
 from aneel_rag.retrieval.modes import Mode, default_filter, search
+from aneel_rag.retrieval.provenance import IndexProvenance, check_index
 from aneel_rag.retrieval.reranker import Reranker
 
 
@@ -22,7 +23,11 @@ class Retriever:
         embedder: Embedder,
         cfg: RetrievalConfig,
         reranker: Reranker | None = None,
+        expected: IndexProvenance | None = None,
     ):
+        """With `expected`, refuse an index built from another corpus, parser or index config."""
+        if expected is not None:
+            check_index(client, collection, expected)
         self.client = client
         self.collection = collection
         self.embedder = embedder

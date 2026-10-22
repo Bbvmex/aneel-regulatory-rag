@@ -9,10 +9,17 @@ from aneel_rag.ingest.models import Unit
 from aneel_rag.retrieval.embedder import HashEmbedder
 from aneel_rag.retrieval.index import index_chunks
 from aneel_rag.retrieval.modes import MODES
+from aneel_rag.retrieval.provenance import (
+    IndexMismatchError,
+    IndexProvenance,
+    expected_provenance,
+    index_config_hash,
+)
 from aneel_rag.retrieval.reranker import OverlapReranker
 from aneel_rag.retrieval.retriever import Retriever
 
 COLLECTION = "test"
+STAMP = IndexProvenance(corpus_sha256="a" * 64, parser_version="1.0.0", index_config_hash="cfg")
 
 # Local Qdrant ignores payload indexes and warns; the filters themselves still apply.
 pytestmark = pytest.mark.filterwarnings("ignore:Payload indexes:UserWarning")
@@ -58,7 +65,8 @@ UNITS = [
 def retriever():
     client = QdrantClient(":memory:")
     embedder = HashEmbedder()
-    index_chunks(client, COLLECTION, chunk_structural(UNITS, max_chars=3000), embedder)
+    chunks = chunk_structural(UNITS, max_chars=3000)
+    index_chunks(client, COLLECTION, chunks, embedder, STAMP)
     return Retriever(client, COLLECTION, embedder, load_config().retrieval, OverlapReranker())
 
 
@@ -97,3 +105,31 @@ def test_rerank_mode_needs_a_reranker(retriever):
     bare = Retriever(retriever.client, COLLECTION, retriever.embedder, retriever.cfg)
     with pytest.raises(ValueError):
         bare.search("tarifa", mode="hybrid+rerank")
+
+
+def test_matching_provenance_is_accepted(retriever):
+    Retriever(retriever.client, COLLECTION, retriever.embedder, retriever.cfg, expected=STAMP)
+
+
+@pytest.mark.parametrize("field", ["corpus_sha256", "parser_version", "index_config_hash"])
+def test_stale_index_fails_fast(retriever, field):
+    stale = STAMP.model_copy(update={field: "other"})
+    with pytest.raises(IndexMismatchError, match=field):
+        Retriever(retriever.client, COLLECTION, retriever.embedder, retriever.cfg, expected=stale)
+
+
+def test_index_without_provenance_or_missing_fails_fast(retriever):
+    index_chunks(retriever.client, "bare", [], retriever.embedder)
+    for name in ("bare", "missing"):
+        with pytest.raises(IndexMismatchError):
+            Retriever(retriever.client, name, retriever.embedder, retriever.cfg, expected=STAMP)
+
+
+def test_index_config_hash_ignores_query_time_settings():
+    cfg = load_config()
+    base = index_config_hash(cfg)
+    retrieval = cfg.retrieval.model_copy(update={"mode": "dense", "k_final": 9})
+    assert index_config_hash(cfg.model_copy(update={"retrieval": retrieval})) == base
+    chunking = cfg.chunking.model_copy(update={"max_chars": 1234})
+    assert index_config_hash(cfg.model_copy(update={"chunking": chunking})) != base
+    assert expected_provenance(cfg).index_config_hash == base

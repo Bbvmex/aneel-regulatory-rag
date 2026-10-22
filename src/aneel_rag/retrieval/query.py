@@ -6,6 +6,7 @@ import sys
 from aneel_rag.config.settings import load_config
 from aneel_rag.retrieval.index import collection_name, make_client, make_embedder
 from aneel_rag.retrieval.modes import MODES
+from aneel_rag.retrieval.provenance import IndexMismatchError, check_index, expected_provenance
 from aneel_rag.retrieval.reranker import BGEReranker
 from aneel_rag.retrieval.retriever import Retriever
 
@@ -20,14 +21,19 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--include-annexes", action="store_true")
     args = parser.parse_args(argv)
 
+    # Fail on a stale index before loading any model.
+    client, collection = make_client(), collection_name(cfg)
+    try:
+        check_index(client, collection, expected_provenance(cfg))
+    except IndexMismatchError as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 2
     reranker = None
     if args.mode == "hybrid+rerank":
         reranker = BGEReranker(
             cfg.models.reranker, cfg.embedding.rerank_max_length, cfg.embedding.batch_size
         )
-    retriever = Retriever(
-        make_client(), collection_name(cfg), make_embedder(cfg), cfg.retrieval, reranker
-    )
+    retriever = Retriever(client, collection, make_embedder(cfg), cfg.retrieval, reranker)
     hits = retriever.search(
         args.query,
         mode=args.mode,

@@ -9,7 +9,9 @@ from qdrant_client import QdrantClient, models
 
 from aneel_rag.chunking import Chunk, build_chunks, load_units
 from aneel_rag.config.settings import PROJECT_ROOT, AppConfig, get_secrets, load_config
+from aneel_rag.ingest.models import Manifest
 from aneel_rag.retrieval.embedder import BGEM3Embedder, CachedEmbedder, Embedder
+from aneel_rag.retrieval.provenance import IndexProvenance, expected_provenance
 
 PROCESSED = PROJECT_ROOT / "data" / "processed"
 CACHE = PROJECT_ROOT / "data" / "cache" / "embeddings.sqlite"
@@ -34,22 +36,30 @@ def make_embedder(cfg: AppConfig) -> CachedEmbedder:
     return CachedEmbedder(inner, CACHE, salt=f"max_length={cfg.embedding.max_length}")
 
 
-def create_collection(client: QdrantClient, name: str, dim: int) -> None:
+def create_collection(
+    client: QdrantClient, name: str, dim: int, provenance: IndexProvenance | None = None
+) -> None:
     if client.collection_exists(name):
         client.delete_collection(name)
     client.create_collection(
         name,
         vectors_config={"dense": models.VectorParams(size=dim, distance=models.Distance.COSINE)},
         sparse_vectors_config={"sparse": models.SparseVectorParams()},
+        metadata=provenance.model_dump() if provenance else None,
     )
     for field in ("status", "doc_type"):
         client.create_payload_index(name, field, models.PayloadSchemaType.KEYWORD)
 
 
 def index_chunks(
-    client: QdrantClient, name: str, chunks: list[Chunk], embedder: Embedder, batch: int = 64
+    client: QdrantClient,
+    name: str,
+    chunks: list[Chunk],
+    embedder: Embedder,
+    provenance: IndexProvenance | None = None,
+    batch: int = 64,
 ) -> None:
-    create_collection(client, name, embedder.dim)
+    create_collection(client, name, embedder.dim, provenance)
     for start in range(0, len(chunks), batch):
         part = chunks[start : start + batch]
         embs = embedder.embed_documents([c.text for c in part])
@@ -82,11 +92,20 @@ def main() -> int:
     if not units_path.exists():
         print(f"ERROR: {units_path} not found; run `make ingest` first", file=sys.stderr)
         return 1
+    provenance = expected_provenance(cfg)
+    manifest = Manifest.model_validate_json((PROCESSED / "manifest.json").read_text("utf-8"))
+    # The units must come from the current extract and parser, or the stamp would lie.
+    if (manifest.corpus_sha256, manifest.parser_version) != (
+        provenance.corpus_sha256,
+        provenance.parser_version,
+    ):
+        print("ERROR: data/processed is stale; run `make ingest` first", file=sys.stderr)
+        return 1
     chunks = build_chunks(load_units(units_path), cfg.chunking)
     write_chunks(chunks, PROCESSED / f"chunks_{cfg.chunking.strategy}.jsonl")
     name = collection_name(cfg)
     print(f"{len(chunks)} {cfg.chunking.strategy} chunks -> Qdrant collection '{name}'")
-    index_chunks(make_client(), name, chunks, make_embedder(cfg))
+    index_chunks(make_client(), name, chunks, make_embedder(cfg), provenance)
     return 0
 
 
