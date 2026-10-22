@@ -36,5 +36,5 @@ def test_config_hash_is_stable_and_sensitive():
     raw = _raw()
     base = config_hash(AppConfig.model_validate(raw))
     assert base == config_hash(AppConfig.model_validate(_raw()))
-    raw["retrieval"]["k_rerank"] += 1
+    raw["retrieval"]["k_final"] += 1
     assert config_hash(AppConfig.model_validate(raw)) != base
