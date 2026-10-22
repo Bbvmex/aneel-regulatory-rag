@@ -1,7 +1,6 @@
 # ADR-002: Structural parsing of the official HTML, and deep links via text fragments
 
-- **Status:** accepted (source format, deep links, parsing rules); chunking section to be
-  completed in phase 2
+- **Status:** accepted (source format, deep links, parsing rules; chunking added in phase 2)
 - **Date:** 2026-10-20
 
 ## Context
@@ -131,6 +130,29 @@ numbers in the original plan were corrected here.
 Every count above is checked against the raw HTML in `data/processed/ingest_report.md`
 (reconciliation tables) and by `tests/unit/test_ingest_corpus.py`.
 
-## Chunking
-To be recorded in phase 2 (one chunk per article, long articles split by paragraph with caput and
-hierarchy prefix; fixed-size chunking only for ablation).
+## Chunking (phase 2)
+Implementation: `src/aneel_rag/chunking/`; tests in `tests/unit/test_chunking.py`.
+
+- **Structural (default).** One chunk per article. Every chunk starts with the heading path of
+  the article (`TÍTULO … > CAPÍTULO … > Seção …`) on its own line, followed by device texts in
+  document order, one per line.
+- **Long articles** (over `chunking.max_chars`, 3000 characters) are split along the device tree,
+  not only by paragraph: Art. 2 has 66 incisos and no paragraph at all. When a subtree does not
+  fit, its head (caput, §, inciso) becomes **context** for its children, which are split in turn.
+  Consecutive pieces are then packed greedily while they fit and the chunk already shows their
+  context. So every piece of an article repeats the caput, and the § or inciso it belongs to.
+  A single device is never split, so a chunk can exceed the limit only when its body is one
+  device (one annex clause today).
+- **`unit_ids`** lists only the body units of a chunk, never the repeated context. Each unit is in
+  exactly one chunk, which a test checks over the whole corpus.
+- **Revoked devices** get separate chunks (`…:revN`, `status: revoked`), split the same way, with
+  the live caput as context. Live chunks never mix in revoked text, so the default filter does not
+  hide live text. The fine-grained status (`amended`, `added`) stays on the units; a chunk is only
+  `active` or `revoked`.
+- **Annexes:** one chunk per annex unit, prefixed with its heading path, `doc_type: annex`.
+- **Fixed (ablation only).** Character windows of `fixed_size` (1000) with `fixed_overlap` (200)
+  over the concatenated text, with no path prefix. There are separate streams for live norm,
+  revoked norm, and annex text, so `status` and `doc_type` stay uniform inside a window and the
+  filters apply the same way. A window lists every unit and article it touches (`article_ids`).
+- Sizes are counted in characters, not tokens, so chunking stays deterministic and needs no
+  tokenizer in CI.

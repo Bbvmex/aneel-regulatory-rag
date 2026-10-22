@@ -11,8 +11,9 @@ _Atualizado em 2026-10-22._
 | Fase | Estado | Referência |
 |---|---|---|
 | 0 — Scaffold | **concluída** (merge em 2026-10-20) | PR #1, commit `4c3bd1b` |
-| 1 — Ingestão + parser | **em revisão** | PR #3 (branch `phase-1`) |
-| 2–5 | pendentes | — |
+| 1 — Ingestão + parser | **concluída** (merge em 2026-10-22) | PR #3, commit `46ea071` |
+| 2 — Chunking + indexação + retrieval | **em revisão** | PR #4 (branch `phase-2`) |
+| 3–5 | pendentes | — |
 | 6 (opcional), 7, 8 (bônus) | pendentes | — |
 
 ### Decisões tomadas fora do plano
@@ -36,6 +37,11 @@ _Atualizado em 2026-10-22._
 | 15 | **Anexos:**<br>• o I vai por cláusula, os II e III com um unit cada, e o IV com um unit por linha da tabela;<br>• os anexos não entram no dataset do MVP;<br>• o `amended_by` registra só a versão vigente. | ADR-002 |
 | 16 | **O texto é salvo em NFC.** NFKC e casefold só valem na comparação de citações (Fase 3). | ADR-002 |
 | 17 | **Módulos além da lista do plano:**<br>• `ingest/labels.py` (rótulos, compartilhado com `source_url.py`) e `ingest/pipeline.py`;<br>• `scripts/cut_fixtures.py`, que recorta as fixtures reais do recorte;<br>• os alvos `make extract` e `make fixtures`. | PR #3 |
+| 18 | **Chunking estrutural pela árvore de dispositivos**, e não só por §: o Art. 2 tem 66 incisos e nenhum §. Quando um ramo não cabe em `chunking.max_chars` (3000 caracteres), a cabeça (caput, §, inciso) vira contexto dos filhos, e os pedaços consecutivos são agrupados enquanto couberem. Todo chunk repete o caminho e o caput. Um dispositivo nunca é dividido; só um chunk de um único dispositivo pode passar do limite (hoje, uma cláusula do Anexo I). Tamanhos em caracteres, não em tokens. | ADR-002 |
+| 19 | **`unit_ids` lista só o corpo do chunk**, sem o contexto repetido; cada unit está em exatamente um chunk. Dispositivos revogados ficam em chunks próprios (`…:revN`, `status: revoked`), com o caput vigente como contexto. O `status` do chunk é só `active` ou `revoked`; `amended`/`added` ficam nos units. O chunk ganhou `article_ids` (todos os artigos cobertos), porque a janela fixa pode cruzar artigos. | ADR-002 |
+| 20 | **Config do retrieval:** `k_rerank` virou `k_candidates` (20, entrada do reranker) e `k_final` (5, devolvido por todos os modos, para comparar modos com o mesmo k). Nova seção `embedding` (`batch_size`, `max_length` e `rerank_max_length` = 2048 tokens; o padrão de 512 do reranker truncaria chunks). Novos `chunking.max_chars`, `fixed_size` (1000) e `fixed_overlap` (200). | `config/default.yaml`, ADR-003 |
+| 21 | **Uma coleção por estratégia de chunking:** `<qdrant.collection>_<strategy>` (ex.: `ren1000_v1_structural`), para a ablação não sobrescrever o índice padrão. IDs de ponto são UUIDv5 do `chunk_id`. O cache de embeddings é um SQLite em `data/cache/`. | ADR-003 |
+| 22 | **Sem IDF no vetor esparso:** os pesos léxicos do bge-m3 já são aprendidos. Embedder e reranker falsos (`HashEmbedder`, `OverlapReranker`) ficam no pacote, para o CI rodar os 4 modos sem modelos. | ADR-003 |
 
 ---
 
