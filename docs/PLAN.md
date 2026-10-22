@@ -6,7 +6,7 @@
 
 ## Status
 
-_Atualizado em 2026-10-20._
+_Atualizado em 2026-10-22._
 
 | Fase | Estado | Referência |
 |---|---|---|
@@ -32,7 +32,7 @@ _Atualizado em 2026-10-20._
 | 11 | **O `<br>` simples também separa dispositivos.**<br>• Um unit começa numa linha com rótulo aceito pela sequência do pai (os rótulos riscados contam).<br>• Linhas sem rótulo são continuação.<br>• Rótulos fora de sequência viram continuação e vão para o relatório (o único caso é "C - é o consumo", no Art. 73-A). | ADR-002 |
 | 12 | **Vigência:**<br>• todo texto riscado é descartado, exceto quando há "(Revogado…)" logo depois, caso em que o bloco riscado contíguo fica `revoked`;<br>• o status vem da anotação ("dada" → `amended`, "acrescida" → `added`);<br>• uma linha em negrito sem anotação herda a próxima anotação do bloco;<br>• a regra "`<b>` sem anotação = added" do plano não tem casos reais. | ADR-002 |
 | 13 | **Citações de outras normas** (Arts. 672–676) ficam em modo citação até "(NR)" e geram `quotes_other_norm: true`, sem perder a indexação. O fallback `^Art. N` só vale fora de citação e para o sucessor do artigo anterior. | ADR-002 |
-| 14 | **Defeitos do texto oficial tratados e reportados:**<br>• rótulo dobrado (Art. 250);<br>• `<br>` perdido antes do § 2º (Art. 666);<br>• §§ ausentes (Art. 485);<br>• alínea repetida e alínea ausente (Art. 668, III). | `ingest_report.md` |
+| 14 | **Defeitos do texto oficial tratados e reportados:**<br>• rótulo dobrado (Art. 250);<br>• `<br>` perdido antes do § 2º (Art. 666);<br>• • alínea repetida e alínea ausente (Art. 668, III).<br>O Art. 485 **não** é defeito: os §§ 5º e 6º estão na mesma linha do § 4º, sem `<br>`. Numa lacuna de sequência, o parser procura o rótulo faltante dentro do unit anterior (seguido de palavra maiúscula) e divide ali; cada divisão vai para a seção "Inline label repairs" do relatório. No corpus inteiro, só o Art. 485 é reparado assim. | `ingest_report.md`, ADR-002 |
 | 15 | **Anexos:**<br>• o I vai por cláusula, os II e III com um unit cada, e o IV com um unit por linha da tabela;<br>• os anexos não entram no dataset do MVP;<br>• o `amended_by` registra só a versão vigente. | ADR-002 |
 | 16 | **O texto é salvo em NFC.** NFKC e casefold só valem na comparação de citações (Fase 3). | ADR-002 |
 | 17 | **Módulos além da lista do plano:**<br>• `ingest/labels.py` (rótulos, compartilhado com `source_url.py`) e `ingest/pipeline.py`;<br>• `scripts/cut_fixtures.py`, que recorta as fixtures reais do recorte;<br>• os alvos `make extract` e `make fixtures`. | PR #3 |

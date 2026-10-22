@@ -44,6 +44,9 @@ Implementation: `src/aneel_rag/ingest/source_url.py`; tests in `tests/unit/test_
 - **Cold links do not work** (verified manually, 2026-10-20): opening a `source_url` directly
   goes through the Cloudflare challenge, which drops the fragment; the page opens at the top.
   Fallback in every failing case = page at the top, so the link is never wrong, only less precise.
+- Workaround (verified manually, PR #3): when a link opens at the top, pressing Enter in the
+  address bar reloads the URL past the challenge and the passage is highlighted. The phase 7 UI
+  shows this tip next to each link.
 - Consequence for the UI: each citation must also show the device ID and the quoted text, so the
   user can locate it with Ctrl+F when the highlight is lost. The link is a convenience, not the
   citation itself.
@@ -76,7 +79,8 @@ numbers in the original plan were corrected here.
 - **Noise.** `<em>ca<fig></fig>put</em>`, `<i> caput </i>`, a zero-width space, and 16 `<img>`
   formulas.
 - **Defects of the official text:** "§ 2º § 2º" (Art. 250), a lost `<br>` before "§ 2º"
-  (Art. 666), §§ 5º–6º missing (Art. 485), and a repeated "d)" with a missing "f)" (Art. 668, III).
+  (Art. 666), and a repeated "d)" with a missing "f)" (Art. 668, III). Art. 485 looked like a gap
+  (§ 4º followed by § 7º), but §§ 5º and 6º are inline on the § 4º line, with no `<br>`.
 
 ## Parsing rules (phase 1)
 - **Lines.** Every `<br>` ends a line. Headings and table rows are lines of their own, and inline
@@ -101,8 +105,13 @@ numbers in the original plan were corrected here.
     struck version.
   - A label that breaks the sequence becomes continuation text and is reported (for example
     "C - é o consumo", a formula variable).
-  - Missing §§, or one missing inciso or alínea, are accepted as gaps of the source. A repeated
-    label becomes `…-2`. Both are reported.
+  - On a gap (missing §§, or one missing inciso or alínea), the parser first looks for each
+    missing label inline in the previous unit: the expected label, preceded by text and followed
+    by a capitalized word ("… no § 6º § 5º A notificação"). It splits there and repeats for the
+    next missing label. Cross-references ("no § 6º", "do § 4º deve", the "§ 7º" in
+    "§ 7º § 6º") never split. Each split is reported as an inline label repair.
+  - A gap that no inline label explains is accepted as a gap of the source. A repeated label
+    becomes `…-2`. Both are reported.
 - **Quotations.** A line opening with `"` inside an article starts quote mode until "(NR)", or
   until the article ends (reported). Units of those articles get `quotes_other_norm: true` and
   stay indexed.
