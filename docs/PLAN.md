@@ -13,7 +13,7 @@ _Atualizado em 2026-10-23._
 | 0 — Scaffold | **concluída** (merge em 2026-10-20) | PR #1, commit `4c3bd1b` |
 | 1 — Ingestão + parser | **concluída** (merge em 2026-10-22) | PR #3, commit `46ea071` |
 | 2 — Chunking + indexação + retrieval | **concluída** (merge em 2026-10-23), incluindo a rodada 5 de revisão | PR #4, commit `6caf7f8`; rodada 5 no PR #6, commit `b4e01de` |
-| 3 — Grafo + validação + abstenção | **em andamento** | branch `phase-3` |
+| 3 — Grafo + validação + abstenção | **em revisão** | PR #7 (branch `phase-3`) |
 | 4–5 | pendentes | — |
 | 6 (opcional), 7, 8 (bônus) | pendentes | — |
 
@@ -54,7 +54,7 @@ _Atualizado em 2026-10-23._
 | 31 | **Para a Fase 3** (rodada 5, item 6): os scores do reranker saturam perto do máximo em algumas consultas. **Nunca usar o score do reranker como limiar de abstenção**; quem decide é o `grade_context`. | Fase 3 |
 | 32 | **Para a Fase 5** (rodada 5, item 7): a avaliação carrega os modelos uma vez por execução, e não uma vez por pergunta. | Fase 5 |
 | 33 | **Candidatas para a Fase 4** (rodada 5, item 8), que entram como `draft`, como todas: "O que é unidade consumidora?" (não há definição explícita, então é um quase-acerto sem resposta) e "prazo do orçamento" (Arts. 56 e 64, `multi_article`). | Fase 4 |
-| 34 | **O `Retriever` ganhou `candidates()` e `rerank()`**, e o `search()` virou a composição dos dois, com o mesmo comportamento. Assim, os nós `retrieve` (pool de `k_candidates`) e `rerank` (corte em `k_final`) do grafo reaproveitam o código da Fase 2. `check_processed()` saiu do `index.main` para o grafo também conferir o `units.jsonl`. | ADR-004, PR da Fase 3 |
+| 34 | **O `Retriever` ganhou `candidates()` e `rerank()`**, e o `search()` virou a composição dos dois, com o mesmo comportamento. Assim, os nós `retrieve` (pool de `k_candidates`) e `rerank` (corte em `k_final`) do grafo reaproveitam o código da Fase 2. `check_processed()` saiu do `index.main` para o grafo também conferir o `units.jsonl`. | ADR-004, PR #7 |
 | 35 | **Novas seções de config:**<br>• `llm` (`provider: gemini \| local`, `structured_output`, `max_parse_retries`, `max_retries`, `timeout_s`);<br>• `abstention` (`message`, `n_snippets: 3`);<br>• `prompts` (caminhos dos templates).<br>O `config_hash` passou a incluir o hash do conteúdo de cada prompt e o SHA-256 do corpus, como o plano previa. | `config/default.yaml`, ADR-004, ADR-006 |
 | 36 | **Detalhes da política D6:**<br>• a regra "resposta não abstida sem citação é inválida" fica no validador, e não no schema Pydantic, para passar pelo retry de citação com erro explícito (e não pelo retry de parse);<br>• uma única citação `invalid` reprova a resposta inteira; `imprecise` passa;<br>• `imprecise` vale para qualquer ancestral (artigo citado com quote de §, ou § com quote de alínea);<br>• aspas simples e duplas tipográficas viram `"`; reticências só são removidas nas pontas da quote;<br>• o erro de citação indica o unit do contexto que contém a quote, para o retry corrigir o ID. | ADR-004 |
 | 37 | **Abstenção:** quatro motivos (`no_results`, `insufficient_context`, `model_abstained`, `citations`). Retrieval vazio abstém sem chamar o LLM. Abstenção do próprio modelo não gera retry. **Erro de API (503, 429, timeout) não vira abstenção**: o CLI reporta o erro, porque abster significa que a norma não responde. | ADR-004, ADR-006 |
