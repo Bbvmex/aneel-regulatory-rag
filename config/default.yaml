@@ -8,7 +8,9 @@ models:
   generator: gemini-3.8-flash          # also used by grade_context in the MVP
   judge: gemini-3.1-pro-preview        # preview model: risk accepted, see ADR-006
   embedding: BAAI/bge-m3
+  embedding_revision: 5617a9f61b028005a4858fdac845db406aefb181   # Hub commit; part of the index stamp
   reranker: BAAI/bge-reranker-v2-m3
+  reranker_revision: 953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e
 
 embedding:
   batch_size: 8

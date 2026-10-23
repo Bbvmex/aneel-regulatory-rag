@@ -9,11 +9,17 @@ class Reranker(Protocol):
 
 
 class BGEReranker:
-    def __init__(self, model_id: str, max_length: int, batch_size: int):
+    def __init__(self, model_id: str, revision: str, max_length: int, batch_size: int):
         from FlagEmbedding import FlagReranker  # heavy, local-only dependency (ml group)
 
+        from aneel_rag.retrieval.hub import local_model_path
+
         self._model = FlagReranker(
-            model_id, use_fp16=False, devices="cpu", max_length=max_length, batch_size=batch_size
+            local_model_path(model_id, revision),
+            use_fp16=False,
+            devices="cpu",
+            max_length=max_length,
+            batch_size=batch_size,
         )
 
     def score(self, query: str, texts: list[str]) -> list[float]:

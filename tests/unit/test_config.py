@@ -25,6 +25,15 @@ def test_latest_alias_rejected(role):
         AppConfig.model_validate(raw)
 
 
+@pytest.mark.parametrize("field", ["embedding_revision", "reranker_revision"])
+@pytest.mark.parametrize("value", ["main", "5617a9f6", "v1.0"])
+def test_hub_revision_must_be_a_commit_hash(field, value):
+    raw = _raw()
+    raw["models"][field] = value
+    with pytest.raises(ValidationError, match="commit hash"):
+        AppConfig.model_validate(raw)
+
+
 def test_unknown_key_rejected():
     raw = _raw()
     raw["retrieval"]["k_typo"] = 3

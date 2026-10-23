@@ -29,6 +29,14 @@ Everything must run on CPU, and CI runs without models.
 - **Token limits.** `embedding.max_length` and `embedding.rerank_max_length` are 2048 tokens.
   The longest structural chunk is about 4k characters, so nothing is truncated. The reranker's
   library default (512) would cut most long chunks.
+- **Pinned, offline models.** `models.embedding_revision` and `models.reranker_revision` are
+  Hub commit hashes; config validation rejects branches, tags and short hashes. Models are
+  loaded only from the local cache at those revisions (`retrieval/hub.py`, `local_files_only`),
+  and a missing model is a clear error that points to `make models`, the one networked step.
+  `make index`, `make query` and `make eval` also export `HF_HUB_OFFLINE=1`. The embedding
+  revision is part of `index_config_hash` and of the embedding cache key, because a Hub update
+  would otherwise change the vectors silently. The reranker revision is not part of the index
+  stamp, since it only acts at query time; it is part of the full `config_hash`.
 - **Embedding cache.** Document embeddings are cached in SQLite (`data/cache/embeddings.sqlite`,
   not versioned), keyed by SHA-256 of model ID, `max_length` and chunk text. Re-indexing after a
   chunking change only embeds the chunks whose text changed. Queries are not cached.
@@ -37,7 +45,7 @@ Everything must run on CPU, and CI runs without models.
   `data/processed` was produced from the current extract and parser. `Retriever(...,
   expected=...)` and the query CLI raise `IndexMismatchError` before loading any model when a
   field differs, or when the collection is missing or has no stamp. `index_config_hash` covers
-  only what changes the stored points: collection, chunking, embedding model and
+  only what changes the stored points: collection, chunking, embedding model and revision, and
   `embedding.max_length`. Retrieval mode and k values are query-time choices, so the phase 5
   retrieval ablations share one index instead of failing the check.
 - **Testing without models.** `HashEmbedder` (hashed bag of words) and `OverlapReranker` (word
