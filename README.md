@@ -48,9 +48,10 @@ devices are kept but excluded from retrieval by default.
 
 ```bash
 make setup-ml   # CPU torch + FlagEmbedding (local only, not used in CI)
+make models     # one-time download of the pinned model revisions (the only networked step)
 make qdrant-up
 make index      # chunks data/processed/units.jsonl, embeds with bge-m3 and loads Qdrant
-uv run python -m aneel_rag.retrieval.query "prazo para religação" --mode hybrid+rerank
+make query Q="prazo para religação" MODE=hybrid+rerank
 ```
 
 Chunks are structural: one per article, with long articles split along the device tree and every
@@ -58,8 +59,10 @@ piece repeating the heading path and the caput ([ADR-002](docs/adr/002-html-stru
 Retrieval has four modes: `dense`, `sparse`, `hybrid` (Qdrant RRF over the bge-m3 dense and
 lexical vectors) and `hybrid+rerank` (bge-reranker-v2-m3 over the top 20). Revoked devices and
 annexes are excluded by default; `--include-revoked` and `--include-annexes` lift the filters
-([ADR-003](docs/adr/003-hybrid-retrieval.md)). The first run downloads the models (about 4.5 GB),
-and document embeddings are cached in `data/cache/`.
+([ADR-003](docs/adr/003-hybrid-retrieval.md)). Models are pinned to Hub commits
+in `config/default.yaml` and loaded offline from the local cache after `make models`. Document
+embeddings are cached in `data/cache/`, and every index is stamped with the corpus, parser and
+index config it was built from, so a stale index is refused.
 
 ## Layout
 
