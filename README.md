@@ -7,7 +7,7 @@ norm does not answer the question.
 > **Personal project.** Built for learning and as a portfolio piece. It has no relation to any
 > employer or client and uses only the public text of the norm.
 
-**Status:** work in progress — phase 2 (chunking, indexing and retrieval). Results: TBD.
+**Status:** work in progress — phase 3 (answer graph, citation validation and abstention). Results: TBD.
 
 Each citation shows the device ID and the quoted text, plus a link to the official ANEEL page
 (leis.org) using a URL text fragment. The passage is highlighted only in Chromium-based browsers
@@ -64,12 +64,31 @@ in `config/default.yaml` and loaded offline from the local cache after `make mod
 embeddings are cached in `data/cache/`, and every index is stamped with the corpus, parser and
 index config it was built from, so a stale index is refused.
 
+## Answering
+
+```bash
+make ask Q="Qual o prazo de religação após a suspensão por falta de pagamento?"
+```
+
+A LangGraph pipeline retrieves and reranks, asks the generator (`gemini-3.8-flash`) whether the
+excerpts answer the question, and only then generates an answer with citations
+`{unit_id, quote}`. Every citation is checked deterministically: the unit must be among those
+retrieved, and the quote (20 to 300 characters) must be a verbatim passage of that unit's text
+after normalizing case, spacing, quotes and dashes. Citing an article for a passage of one of its
+paragraphs is accepted but flagged `imprecise`. A failed check gets one retry with the errors;
+after that, or when the excerpts are not enough, the system abstains and shows the three closest
+excerpts ([ADR-004](docs/adr/004-citation-validation-and-abstention.md)). The model endpoint is a
+config switch between Gemini and a local llama.cpp server
+([ADR-006](docs/adr/006-llm-provider.md)). `make ask` needs `LLM_API_KEY` in `.env`, the index
+from the previous section, and the cached models.
+
 ## Layout
 
 | Path | Purpose |
 |---|---|
 | `src/aneel_rag/` | Package: ingest, chunking, retrieval, graph, llm, observability, api |
 | `config/` | All result-affecting parameters (`.env` holds only secrets/endpoints) |
+| `prompts/` | Versioned prompt templates (part of the config hash) |
 | `data/raw/SOURCE.md` | Corpus provenance and SHA-256 hashes |
 | `eval/` | Dataset, metrics and dated reports |
 | `docs/adr/` | Architecture decision records |

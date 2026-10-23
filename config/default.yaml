@@ -35,6 +35,13 @@ chunking:
   fixed_size: 1000                     # fixed (ablation only): window size in characters
   fixed_overlap: 200
 
+llm:
+  provider: gemini                     # gemini | local: .env endpoint used by the generator (ADR-006)
+  structured_output: json_schema       # json_schema | json_mode; json_schema falls back to json_mode
+  max_parse_retries: 1                 # malformed JSON only; citation retries are separate
+  max_retries: 3                       # HTTP retries with backoff (rate limits, 5xx)
+  timeout_s: 120
+
 generation:
   temperature: 0
   max_citation_retries: 1
@@ -42,3 +49,11 @@ generation:
 citations:
   min_quote_chars: 20
   max_quote_chars: 300
+
+abstention:
+  message: "Não encontrei na REN ANEEL nº 1.000/2021 base suficiente para responder com segurança. Seguem os trechos mais próximos do que foi perguntado."
+  n_snippets: 3
+
+prompts:                               # versioned templates; their contents enter config_hash
+  grade_context: prompts/grade_context.md
+  generate: prompts/generate.md

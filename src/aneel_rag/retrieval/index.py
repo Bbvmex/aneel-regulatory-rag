@@ -18,6 +18,23 @@ PROCESSED = PROJECT_ROOT / "data" / "processed"
 CACHE = PROJECT_ROOT / "data" / "cache" / "embeddings.sqlite"
 
 
+class StaleProcessedError(RuntimeError):
+    pass
+
+
+def check_processed(cfg: AppConfig) -> None:
+    """data/processed must come from the current extract and parser, or the index stamp lies."""
+    if not (PROCESSED / "units.jsonl").exists():
+        raise StaleProcessedError("data/processed/units.jsonl not found; run `make ingest` first")
+    provenance = expected_provenance(cfg)
+    manifest = Manifest.model_validate_json((PROCESSED / "manifest.json").read_text("utf-8"))
+    if (manifest.corpus_sha256, manifest.parser_version) != (
+        provenance.corpus_sha256,
+        provenance.parser_version,
+    ):
+        raise StaleProcessedError("data/processed is stale; run `make ingest` first")
+
+
 def collection_name(cfg: AppConfig) -> str:
     # One collection per chunking strategy, so the ablation does not overwrite the default.
     return f"{cfg.qdrant.collection}_{cfg.chunking.strategy}"
@@ -95,20 +112,12 @@ def write_chunks(chunks: list[Chunk], path: Path) -> None:
 
 def main() -> int:
     cfg = load_config()
-    units_path = PROCESSED / "units.jsonl"
-    if not units_path.exists():
-        print(f"ERROR: {units_path} not found; run `make ingest` first", file=sys.stderr)
+    try:
+        check_processed(cfg)
+    except StaleProcessedError as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
         return 1
-    provenance = expected_provenance(cfg)
-    manifest = Manifest.model_validate_json((PROCESSED / "manifest.json").read_text("utf-8"))
-    # The units must come from the current extract and parser, or the stamp would lie.
-    if (manifest.corpus_sha256, manifest.parser_version) != (
-        provenance.corpus_sha256,
-        provenance.parser_version,
-    ):
-        print("ERROR: data/processed is stale; run `make ingest` first", file=sys.stderr)
-        return 1
-    chunks = build_chunks(load_units(units_path), cfg.chunking)
+    chunks = build_chunks(load_units(PROCESSED / "units.jsonl"), cfg.chunking)
     write_chunks(chunks, PROCESSED / f"chunks_{cfg.chunking.strategy}.jsonl")
     name = collection_name(cfg)
     print(f"{len(chunks)} {cfg.chunking.strategy} chunks -> Qdrant collection '{name}'")
@@ -117,7 +126,7 @@ def main() -> int:
     except ModelNotCachedError as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2
-    index_chunks(make_client(), name, chunks, embedder, provenance)
+    index_chunks(make_client(), name, chunks, embedder, expected_provenance(cfg))
     return 0
 
 

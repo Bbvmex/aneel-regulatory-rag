@@ -75,6 +75,14 @@ class ChunkingConfig(_Strict):
     fixed_overlap: int
 
 
+class LLMConfig(_Strict):
+    provider: Literal["gemini", "local"]
+    structured_output: Literal["json_schema", "json_mode"]
+    max_parse_retries: int
+    max_retries: int
+    timeout_s: float
+
+
 class GenerationConfig(_Strict):
     temperature: float
     max_citation_retries: int
@@ -85,6 +93,16 @@ class CitationsConfig(_Strict):
     max_quote_chars: int
 
 
+class AbstentionConfig(_Strict):
+    message: str
+    n_snippets: int
+
+
+class PromptsConfig(_Strict):
+    grade_context: Path
+    generate: Path
+
+
 class AppConfig(_Strict):
     corpus: CorpusConfig
     models: ModelsConfig
@@ -92,8 +110,11 @@ class AppConfig(_Strict):
     qdrant: QdrantConfig
     retrieval: RetrievalConfig
     chunking: ChunkingConfig
+    llm: LLMConfig
     generation: GenerationConfig
     citations: CitationsConfig
+    abstention: AbstentionConfig
+    prompts: PromptsConfig
 
 
 class Secrets(BaseSettings):
@@ -127,8 +148,25 @@ def get_secrets() -> Secrets:
     return Secrets()
 
 
+def _resolve(path: Path) -> Path:
+    return path if path.is_absolute() else PROJECT_ROOT / path
+
+
+def load_prompt(cfg: AppConfig, name: str) -> str:
+    return _resolve(getattr(cfg.prompts, name)).read_text(encoding="utf-8")
+
+
 def config_hash(cfg: AppConfig, length: int = 12) -> str:
-    canonical = json.dumps(cfg.model_dump(mode="json"), sort_keys=True, ensure_ascii=False)
+    """Resolved config plus prompt contents and corpus: editing a prompt changes the hash."""
+    payload = {
+        "config": cfg.model_dump(mode="json"),
+        "prompts": {
+            name: hashlib.sha256(load_prompt(cfg, name).encode("utf-8")).hexdigest()
+            for name in PromptsConfig.model_fields
+        },
+        "corpus_sha256": corpus_sha256(cfg),
+    }
+    canonical = json.dumps(payload, sort_keys=True, ensure_ascii=False)
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()[:length]
 
 
@@ -141,5 +179,4 @@ def file_sha256(path: Path | str) -> str:
 
 
 def corpus_sha256(cfg: AppConfig) -> str:
-    path = cfg.corpus.path
-    return file_sha256(path if path.is_absolute() else PROJECT_ROOT / path)
+    return file_sha256(_resolve(cfg.corpus.path))
