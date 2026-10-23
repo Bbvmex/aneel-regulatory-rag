@@ -12,8 +12,9 @@ _Atualizado em 2026-10-23._
 |---|---|---|
 | 0 — Scaffold | **concluída** (merge em 2026-10-20) | PR #1, commit `4c3bd1b` |
 | 1 — Ingestão + parser | **concluída** (merge em 2026-10-22) | PR #3, commit `46ea071` |
-| 2 — Chunking + indexação + retrieval | **concluída** (merge em 2026-10-23); itens bloqueantes da rodada 5 em revisão | PR #4, commit `6caf7f8`; rodada 5 no PR #6 (branch `fix/phase-2-review-round-5`) |
-| 3–5 | pendentes | — |
+| 2 — Chunking + indexação + retrieval | **concluída** (merge em 2026-10-23), incluindo a rodada 5 de revisão | PR #4, commit `6caf7f8`; rodada 5 no PR #6, commit `b4e01de` |
+| 3 — Grafo + validação + abstenção | **em andamento** | branch `phase-3` |
+| 4–5 | pendentes | — |
 | 6 (opcional), 7, 8 (bônus) | pendentes | — |
 
 ### Decisões tomadas fora do plano
