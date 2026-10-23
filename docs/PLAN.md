@@ -11,8 +11,9 @@ _Atualizado em 2026-10-22._
 | Fase | Estado | Referência |
 |---|---|---|
 | 0 — Scaffold | **concluída** (merge em 2026-10-20) | PR #1, commit `4c3bd1b` |
-| 1 — Ingestão + parser | **em revisão** | PR #3 (branch `phase-1`) |
-| 2–5 | pendentes | — |
+| 1 — Ingestão + parser | **concluída** (merge em 2026-10-22) | PR #3, commit `46ea071` |
+| 2 — Chunking + indexação + retrieval | **em revisão** | PR #4 (branch `phase-2`) |
+| 3–5 | pendentes | — |
 | 6 (opcional), 7, 8 (bônus) | pendentes | — |
 
 ### Decisões tomadas fora do plano
@@ -36,6 +37,16 @@ _Atualizado em 2026-10-22._
 | 15 | **Anexos:**<br>• o I vai por cláusula, os II e III com um unit cada, e o IV com um unit por linha da tabela;<br>• os anexos não entram no dataset do MVP;<br>• o `amended_by` registra só a versão vigente. | ADR-002 |
 | 16 | **O texto é salvo em NFC.** NFKC e casefold só valem na comparação de citações (Fase 3). | ADR-002 |
 | 17 | **Módulos além da lista do plano:**<br>• `ingest/labels.py` (rótulos, compartilhado com `source_url.py`) e `ingest/pipeline.py`;<br>• `scripts/cut_fixtures.py`, que recorta as fixtures reais do recorte;<br>• os alvos `make extract` e `make fixtures`. | PR #3 |
+| 18 | **Chunking estrutural pela árvore de dispositivos**, e não só por §: o Art. 2 tem 66 incisos e nenhum §. Quando um ramo não cabe em `chunking.max_chars` (3000 caracteres), a cabeça (caput, §, inciso) vira contexto dos filhos, e os pedaços consecutivos são agrupados enquanto couberem. Todo chunk repete o caminho e o caput. Um dispositivo nunca é dividido; só um chunk de um único dispositivo pode passar do limite (hoje, uma cláusula do Anexo I). Tamanhos em caracteres, não em tokens. | ADR-002 |
+| 19 | **`unit_ids` lista só o corpo do chunk**, sem o contexto repetido; cada unit está em exatamente um chunk. Dispositivos revogados ficam em chunks próprios (`…:revN`, `status: revoked`), com o caput vigente como contexto. O `status` do chunk é só `active` ou `revoked`; `amended`/`added` ficam nos units. O chunk ganhou `article_ids` (todos os artigos cobertos), porque a janela fixa pode cruzar artigos. | ADR-002 |
+| 20 | **Config do retrieval:** `k_rerank` virou `k_candidates` (20, entrada do reranker) e `k_final` (5, devolvido por todos os modos, para comparar modos com o mesmo k). Nova seção `embedding` (`batch_size`, `max_length` e `rerank_max_length` = 2048 tokens; o padrão de 512 do reranker truncaria chunks). Novos `chunking.max_chars`, `fixed_size` (1000) e `fixed_overlap` (200). | `config/default.yaml`, ADR-003 |
+| 21 | **Uma coleção por estratégia de chunking:** `<qdrant.collection>_<strategy>` (ex.: `ren1000_v1_structural`), para a ablação não sobrescrever o índice padrão. IDs de ponto são UUIDv5 do `chunk_id`. O cache de embeddings é um SQLite em `data/cache/`. | ADR-003 |
+| 22 | **Sem IDF no vetor esparso:** os pesos léxicos do bge-m3 já são aprendidos. Embedder e reranker falsos (`HashEmbedder`, `OverlapReranker`) ficam no pacote, para o CI rodar os 4 modos sem modelos. Eles não são selecionáveis por config: só os testes os instanciam. | ADR-003 |
+| 23 | **Proveniência do índice** (review do PR #4, item 2): o `make index` grava nos metadados da coleção Qdrant o `corpus_sha256` (do recorte), o `parser_version` e um `index_config_hash`. Antes, ele confere se o `data/processed` veio do recorte e do parser atuais. O `Retriever` (com `expected`) e o CLI de query falham logo (`IndexMismatchError`) se algum dos três divergir, ou se a coleção não existir ou não tiver metadados. O `index_config_hash` cobre só o que muda os vetores e o payload (coleção, `chunking`, modelo de embedding e `embedding.max_length`), e não o `config_hash` completo: modo e k são escolhas de consulta, e as ablações de retrieval da Fase 5 reaproveitam o mesmo índice. | ADR-003, `retrieval/provenance.py` |
+| 24 | **`context_unit_ids`** (review do PR #4, item 5): cada chunk lista os units repetidos como contexto (caput, § ou inciso pai), separados de `unit_ids`, que segue só com o corpo (base das métricas de recall). **Para a Fase 3:** a validação de citação aceita um unit presente em `unit_ids` **ou** em `context_unit_ids` dos chunks recuperados. | ADR-002, Fase 3 |
+| 25 | **Para a Fase 5** (review do PR #4, item 6): o relatório inclui o recall@`k_candidates` (20) do modo `hybrid`, que é o teto do reranker: ele só reordena esse conjunto, então nenhum recall@5 do `hybrid+rerank` pode passar dele. | Fase 5 |
+| 26 | **Latência do `hybrid+rerank` em CPU** (review do PR #4, rodada 3): p50 de 40 s e p95 de 100 s. É uma medição avulsa, **não um relatório de avaliação**, registrada por pedido explícito do revisor como exceção à regra de números: n=10 consultas em PT-BR, Intel Family 6 Model 165 com 8 threads, modelos carregados e uma consulta de aquecimento antes de medir; o p95 por posição mais próxima é o máximo. Quase todo o tempo é do reranker. **No início da Fase 5, antes de qualquer mudança que afete resultado:**<br>a. diagnosticar o reranker: tokens reais por par, padding até `max_length` ou até o par mais longo do lote, threads do torch e tamanho do lote;<br>b. cachear os scores do reranker pela chave (pergunta, hash do chunk, `reranker_model`, `rerank_max_length`);<br>c. incluir na ablação `rerank_max_length` 512/1024 e `k_candidates` 10/20, e escolher o padrão pelos números e pelo teto de recall@20 (decisão 25). | PR #4, Fase 5 |
+| 27 | **Item de atenção para a Fase 5** (review do PR #4, rodada 3): os chunks do Art. 2 juntam cerca de 10 definições cada. Se o recall nas perguntas sobre definições for baixo, considerar um chunk por definição, **só no Art. 2**. | Fase 5 |
 
 ---
 

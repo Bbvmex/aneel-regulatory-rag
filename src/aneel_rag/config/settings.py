@@ -37,6 +37,12 @@ class ModelsConfig(_Strict):
         return value
 
 
+class EmbeddingConfig(_Strict):
+    batch_size: int
+    max_length: int
+    rerank_max_length: int
+
+
 class QdrantConfig(_Strict):
     collection: str
 
@@ -45,13 +51,17 @@ class RetrievalConfig(_Strict):
     mode: Literal["dense", "sparse", "hybrid", "hybrid+rerank"]
     k_dense: int
     k_sparse: int
-    k_rerank: int
+    k_candidates: int
+    k_final: int
     include_revoked: bool = False
     include_annexes: bool = False
 
 
 class ChunkingConfig(_Strict):
     strategy: Literal["structural", "fixed"]
+    max_chars: int
+    fixed_size: int
+    fixed_overlap: int
 
 
 class GenerationConfig(_Strict):
@@ -67,6 +77,7 @@ class CitationsConfig(_Strict):
 class AppConfig(_Strict):
     corpus: CorpusConfig
     models: ModelsConfig
+    embedding: EmbeddingConfig
     qdrant: QdrantConfig
     retrieval: RetrievalConfig
     chunking: ChunkingConfig

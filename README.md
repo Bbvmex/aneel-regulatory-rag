@@ -7,7 +7,7 @@ norm does not answer the question.
 > **Personal project.** Built for learning and as a portfolio piece. It has no relation to any
 > employer or client and uses only the public text of the norm.
 
-**Status:** work in progress — phase 1 (ingestion and parser). Results: TBD.
+**Status:** work in progress — phase 2 (chunking, indexing and retrieval). Results: TBD.
 
 Each citation shows the device ID and the quoted text, plus a link to the official ANEEL page
 (leis.org) using a URL text fragment. The passage is highlighted only in Chromium-based browsers
@@ -43,6 +43,23 @@ devices are kept but excluded from retrieval by default.
 
 `make extract` regenerates the extract from a manual snapshot of the leis.org page
 (`data/raw/ren1000.html`, not versioned), and `make fixtures` re-cuts the test fixtures from it.
+
+## Indexing and retrieval
+
+```bash
+make setup-ml   # CPU torch + FlagEmbedding (local only, not used in CI)
+make qdrant-up
+make index      # chunks data/processed/units.jsonl, embeds with bge-m3 and loads Qdrant
+uv run python -m aneel_rag.retrieval.query "prazo para religação" --mode hybrid+rerank
+```
+
+Chunks are structural: one per article, with long articles split along the device tree and every
+piece repeating the heading path and the caput ([ADR-002](docs/adr/002-html-structural-parsing-and-deep-links.md)).
+Retrieval has four modes: `dense`, `sparse`, `hybrid` (Qdrant RRF over the bge-m3 dense and
+lexical vectors) and `hybrid+rerank` (bge-reranker-v2-m3 over the top 20). Revoked devices and
+annexes are excluded by default; `--include-revoked` and `--include-annexes` lift the filters
+([ADR-003](docs/adr/003-hybrid-retrieval.md)). The first run downloads the models (about 4.5 GB),
+and document embeddings are cached in `data/cache/`.
 
 ## Layout
 
