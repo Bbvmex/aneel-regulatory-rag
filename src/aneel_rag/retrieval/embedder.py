@@ -26,13 +26,17 @@ class Embedder(Protocol):
 class BGEM3Embedder:
     dim = 1024
 
-    def __init__(self, model_id: str, batch_size: int, max_length: int):
+    def __init__(self, model_id: str, revision: str, batch_size: int, max_length: int):
         from FlagEmbedding import BGEM3FlagModel  # heavy, local-only dependency (ml group)
 
-        self.model_id = model_id
+        from aneel_rag.retrieval.hub import local_model_path
+
+        # The revision is part of the id, so the embedding cache never mixes model versions.
+        self.model_id = f"{model_id}@{revision}"
         self.batch_size = batch_size
         self.max_length = max_length
-        self._model = BGEM3FlagModel(model_id, use_fp16=False, devices="cpu")
+        path = local_model_path(model_id, revision)
+        self._model = BGEM3FlagModel(path, use_fp16=False, devices="cpu")
 
     def _encode(self, texts: list[str]) -> list[Embedding]:
         out = self._model.encode(

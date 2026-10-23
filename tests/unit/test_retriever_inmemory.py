@@ -133,3 +133,13 @@ def test_index_config_hash_ignores_query_time_settings():
     chunking = cfg.chunking.model_copy(update={"max_chars": 1234})
     assert index_config_hash(cfg.model_copy(update={"chunking": chunking})) != base
     assert expected_provenance(cfg).index_config_hash == base
+
+
+def test_index_config_hash_tracks_the_embedding_revision_only():
+    cfg = load_config()
+    base = index_config_hash(cfg)
+    embedding = cfg.models.model_copy(update={"embedding_revision": "0" * 40})
+    assert index_config_hash(cfg.model_copy(update={"models": embedding})) != base
+    # The reranker only reorders candidates at query time; swapping it needs no re-index.
+    reranker = cfg.models.model_copy(update={"reranker_revision": "0" * 40})
+    assert index_config_hash(cfg.model_copy(update={"models": reranker})) == base

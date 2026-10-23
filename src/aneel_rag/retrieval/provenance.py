@@ -23,12 +23,13 @@ class IndexProvenance(BaseModel):
 
 
 def index_config_hash(cfg: AppConfig, length: int = 12) -> str:
-    # Only what changes the stored vectors and payloads; retrieval mode and k values are
-    # query-time choices, so the phase 5 ablations can reuse one index.
+    # Only what changes the stored vectors and payloads; retrieval mode, k values and the
+    # reranker are query-time choices, so the phase 5 ablations can reuse one index.
     scope = {
         "collection": cfg.qdrant.collection,
         "chunking": cfg.chunking.model_dump(mode="json"),
         "embedding_model": cfg.models.embedding,
+        "embedding_revision": cfg.models.embedding_revision,
         "embedding_max_length": cfg.embedding.max_length,
     }
     canonical = json.dumps(scope, sort_keys=True, ensure_ascii=False)

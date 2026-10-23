@@ -11,6 +11,7 @@ from aneel_rag.chunking import Chunk, build_chunks, load_units
 from aneel_rag.config.settings import PROJECT_ROOT, AppConfig, get_secrets, load_config
 from aneel_rag.ingest.models import Manifest
 from aneel_rag.retrieval.embedder import BGEM3Embedder, CachedEmbedder, Embedder
+from aneel_rag.retrieval.hub import ModelNotCachedError
 from aneel_rag.retrieval.provenance import IndexProvenance, expected_provenance
 
 PROCESSED = PROJECT_ROOT / "data" / "processed"
@@ -32,7 +33,13 @@ def make_client() -> QdrantClient:
 
 
 def make_embedder(cfg: AppConfig) -> CachedEmbedder:
-    inner = BGEM3Embedder(cfg.models.embedding, cfg.embedding.batch_size, cfg.embedding.max_length)
+    models = cfg.models
+    inner = BGEM3Embedder(
+        models.embedding,
+        models.embedding_revision,
+        cfg.embedding.batch_size,
+        cfg.embedding.max_length,
+    )
     return CachedEmbedder(inner, CACHE, salt=f"max_length={cfg.embedding.max_length}")
 
 
@@ -105,7 +112,12 @@ def main() -> int:
     write_chunks(chunks, PROCESSED / f"chunks_{cfg.chunking.strategy}.jsonl")
     name = collection_name(cfg)
     print(f"{len(chunks)} {cfg.chunking.strategy} chunks -> Qdrant collection '{name}'")
-    index_chunks(make_client(), name, chunks, make_embedder(cfg), provenance)
+    try:
+        embedder = make_embedder(cfg)
+    except ModelNotCachedError as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 2
+    index_chunks(make_client(), name, chunks, embedder, provenance)
     return 0
 
 

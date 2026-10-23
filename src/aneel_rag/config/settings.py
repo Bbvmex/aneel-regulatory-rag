@@ -1,5 +1,6 @@
 import hashlib
 import json
+import re
 from functools import lru_cache
 from pathlib import Path
 from typing import Literal
@@ -26,7 +27,17 @@ class ModelsConfig(_Strict):
     generator: str
     judge: str
     embedding: str
+    embedding_revision: str
     reranker: str
+    reranker_revision: str
+
+    @field_validator("embedding_revision", "reranker_revision")
+    @classmethod
+    def _commit_hash(cls, value: str) -> str:
+        # A branch or tag ("main") moves when the Hub repo is updated; only a commit is fixed.
+        if not re.fullmatch(r"[0-9a-f]{40}", value):
+            raise ValueError(f"revision '{value}' must be a full 40-character commit hash")
+        return value
 
     @field_validator("generator", "judge")
     @classmethod
