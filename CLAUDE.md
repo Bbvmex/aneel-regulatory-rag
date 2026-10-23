@@ -15,7 +15,9 @@ The full approved plan and its current status live in [docs/PLAN.md](docs/PLAN.m
   diverged. CI must be green before handing the PR over.
 - **Never merge.** Never merge a PR, push to `main` or delete remote branches. The user reviews
   and merges.
-- Answer review questions as comments on the PR itself (`gh pr comment`).
+- **PR comments are the channel for review.** All review requests, questions and decisions go
+  through PR comments, in English. Reply on the PR (`gh pr comment`), not only in the terminal.
+  Terminal chat is for operational commands only.
 - After every merged phase, update the **Status** section of `docs/PLAN.md`.
 
 ## Data and evaluation (do not change without an explicit request)
