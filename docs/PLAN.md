@@ -6,13 +6,13 @@
 
 ## Status
 
-_Atualizado em 2026-10-22._
+_Atualizado em 2026-10-23._
 
 | Fase | Estado | Referência |
 |---|---|---|
 | 0 — Scaffold | **concluída** (merge em 2026-10-20) | PR #1, commit `4c3bd1b` |
 | 1 — Ingestão + parser | **concluída** (merge em 2026-10-22) | PR #3, commit `46ea071` |
-| 2 — Chunking + indexação + retrieval | **em revisão** | PR #4 (branch `phase-2`) |
+| 2 — Chunking + indexação + retrieval | **concluída** (merge em 2026-10-23); itens bloqueantes da rodada 5 em revisão | PR #4, commit `6caf7f8`; rodada 5 no PR #6 (branch `fix/phase-2-review-round-5`) |
 | 3–5 | pendentes | — |
 | 6 (opcional), 7, 8 (bônus) | pendentes | — |
 
