@@ -7,7 +7,7 @@ norm does not answer the question.
 > **Personal project.** Built for learning and as a portfolio piece. It has no relation to any
 > employer or client and uses only the public text of the norm.
 
-**Status:** work in progress — phase 3 (answer graph, citation validation and abstention). Results: TBD.
+**Status:** work in progress — phase 4 (evaluation dataset, awaiting human validation). Results: TBD.
 
 Each citation shows the device ID and the quoted text, plus a link to the official ANEEL page
 (leis.org) using a URL text fragment. The passage is highlighted only in Chromium-based browsers
@@ -81,6 +81,21 @@ excerpts ([ADR-004](docs/adr/004-citation-validation-and-abstention.md)). The mo
 config switch between Gemini and a local llama.cpp server
 ([ADR-006](docs/adr/006-llm-provider.md)). `make ask` needs `LLM_API_KEY` in `.env`, the index
 from the previous section, and the cached models.
+
+## Evaluation dataset
+
+`eval/dataset.jsonl` holds 90 candidate questions in PT-BR (30 single-article facts, 20
+multi-article, 20 deadlines or values, 20 near-miss questions the norm does not answer). They were
+written by Claude Code from seeded, stratified samples of the norm, and all of them start as
+drafts: only questions a human marks `validated` count in metrics
+([ADR-007](docs/adr/007-evaluation-dataset-authoring.md),
+[validation guide](eval/VALIDATION_GUIDE.md)).
+
+```bash
+make draft-brief BATCH=1   # seeded sample for a batch (eval/drafts/, not versioned)
+make draft-add BATCH=1     # add eval/drafts/batch-1.jsonl as drafts
+make validate-dataset      # schema, unit IDs against the corpus, counts by status
+```
 
 ## Layout
 

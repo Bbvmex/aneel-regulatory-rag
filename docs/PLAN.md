@@ -6,7 +6,7 @@
 
 ## Status
 
-_Atualizado em 2026-10-23._
+_Atualizado em 2026-11-05._
 
 | Fase | Estado | Referência |
 |---|---|---|
@@ -14,7 +14,8 @@ _Atualizado em 2026-10-23._
 | 1 — Ingestão + parser | **concluída** (merge em 2026-10-22) | PR #3, commit `46ea071` |
 | 2 — Chunking + indexação + retrieval | **concluída** (merge em 2026-10-23), incluindo a rodada 5 de revisão | PR #4, commit `6caf7f8`; rodada 5 no PR #6, commit `b4e01de` |
 | 3 — Grafo + validação + abstenção | **em revisão** | PR #7 (branch `phase-3`) |
-| 4–5 | pendentes | — |
+| 4 — Dataset | **em revisão**: 90 drafts gerados; PARADA para validação | PR #8 (branch `phase-4`, empilhado sobre o PR #7) |
+| 5 | pendente; modelo gerador definido no início da fase | — |
 | 6 (opcional), 7, 8 (bônus) | pendentes | — |
 
 ### Decisões tomadas fora do plano
@@ -61,6 +62,11 @@ _Atualizado em 2026-10-23._
 | 38 | O `llm.provider` troca só o endpoint do **generator**. O juiz usa sempre `JUDGE_*`, para a comparação da Fase 8 não mudar o juiz. | ADR-006 |
 | 39 | **Prompts em inglês**, com a instrução de responder em PT-BR, seguindo a regra de código e docs em inglês. O placeholder dos templates é `{nome}` com substituição simples (sem `str.format`), porque o texto da norma tem chaves e "R$". | `prompts/`, `graph/nodes.py` |
 | 40 | Novo alvo `make ask Q="…"` (`python -m aneel_rag.graph`). `make smoke` passou a exportar `HF_HUB_OFFLINE=1`, já que o smoke do grafo carrega os modelos. | `Makefile` |
+| 41 | **Timeout das chamadas ao LLM em 300 s** (`llm.timeout_s`). O endpoint do Gemini levou cerca de 240 s numa pergunta real, e cada retry por timeout gasta a cota diária. | `config/default.yaml`, PR #7 |
+| 42 | **As perguntas candidatas da Fase 4 são escritas pelo Claude Code**, e não pelo Gemini: a cota gratuita (20 requisições/dia) não comporta a geração, e o gerador avaliado não deve escrever a própria prova. A amostragem continua determinística (seed 1000, estratificada por Título, alternando capítulos, um artigo por candidata, sem repetição entre lotes), e o `draft_questions add` só grava `draft`. O `prompts/draft_questions.md` guarda as regras de autoria. | ADR-007 |
+| 43 | **Cotas por lote:** 30 por lote, com as sobras rodando entre categorias (10/6/7/7, 10/7/6/7, 10/7/7/6). Novo status `rejected` (com `validated_by`) para descartar sem apagar. A regra "sem IDs `annex-*`" vale para todas as categorias, já que os anexos estão fora do dataset (decisão 15). O CI confere o `dataset.jsonl` contra o corpus parseado do recorte. | ADR-007, `eval/schema.py` |
+| 44 | **Correção da decisão 33:** "unidade consumidora" **tem** definição explícita (`art-2-inc-L`), então "O que é unidade consumidora?" não é um quase-acerto sem resposta e ficou fora das `unanswerable`. Também têm resposta o tempo de espera no atendimento presencial (Art. 380, 30 min) e a potência máxima de um MIGDI (Art. 523, 100 kW). A candidata "prazo do orçamento" (Arts. 56 e 64) não entrou nos lotes sorteados. | ADR-007 |
+| 45 | **Avaliação sem cota do Gemini:** o RAGAS (faithfulness, answer relevancy) e a concordância juiz × humano ficam **TBD** até haver cota para o juiz. O modelo gerador da Fase 5 é **definido no início da fase**, provavelmente local via llama.cpp (`llm.provider: local`), com GGUF fixado por SHA-256. **Hardware:** i7-10870H, 64 GB de RAM, RTX 2070 Super com 8 GB; é um notebook que esquenta, então a GPU não pode ficar em 100% por muito tempo (offload parcial, lotes com pausa, cache para retomar). | ADR-005 |
 
 ---
 
