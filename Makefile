@@ -3,7 +3,7 @@
 .DEFAULT_GOAL := help
 UV ?= uv
 
-.PHONY: help setup setup-ml lint format test smoke qdrant-up qdrant-down extract fixtures ingest models index query ask serve eval eval-gate
+.PHONY: help setup setup-ml lint format test smoke qdrant-up qdrant-down extract fixtures ingest models index query ask draft-brief draft-add validate-dataset serve eval eval-gate
 
 help: ## List available targets
 	@$(UV) run --no-sync python scripts/make_help.py $(MAKEFILE_LIST)
@@ -59,6 +59,15 @@ query: ## Inspect retrieval: make query Q="pergunta" [MODE=hybrid+rerank] (offli
 
 ask: ## Answer with validated citations: make ask Q="pergunta" (offline models, needs .env LLM key)
 	$(UV) run python -m aneel_rag.graph "$(Q)"
+
+draft-brief: ## Seeded sample for a question batch: make draft-brief BATCH=1 (writes eval/drafts/)
+	$(UV) run python -m eval.draft_questions brief --batch $(BATCH)
+
+draft-add: ## Add eval/drafts/batch-N.jsonl to the dataset as drafts: make draft-add BATCH=1
+	$(UV) run python -m eval.draft_questions add --batch $(BATCH)
+
+validate-dataset: ## Check eval/dataset.jsonl against the schema and the parsed corpus
+	$(UV) run python -m eval.validate_dataset
 
 serve: ## Run the API (phase 6)
 	$(UV) run uvicorn aneel_rag.api.app:app --reload
