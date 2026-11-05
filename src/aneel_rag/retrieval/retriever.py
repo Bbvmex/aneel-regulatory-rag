@@ -43,6 +43,18 @@ class Retriever:
         include_annexes: bool | None = None,
     ) -> list[Hit]:
         """Arguments left as None fall back to the retrieval config."""
+        pool = self.candidates(query, mode, k, include_revoked, include_annexes)
+        return self.rerank(query, pool, mode, k)
+
+    def candidates(
+        self,
+        query: str,
+        mode: Mode | None = None,
+        k: int | None = None,
+        include_revoked: bool | None = None,
+        include_annexes: bool | None = None,
+    ) -> list[Hit]:
+        """Pool before reranking: k_candidates fused hits in hybrid+rerank, k hits otherwise."""
         cfg = self.cfg
         mode = mode or cfg.mode
         k = k or cfg.k_final
@@ -63,8 +75,21 @@ class Retriever:
             cfg.k_sparse,
             flt,
         )
-        scored = [(p.score, Chunk.model_validate(p.payload)) for p in points]
-        if rerank:
+        return [
+            Hit(rank=i + 1, score=p.score, chunk=Chunk.model_validate(p.payload))
+            for i, p in enumerate(points)
+        ]
+
+    def rerank(
+        self, query: str, hits: list[Hit], mode: Mode | None = None, k: int | None = None
+    ) -> list[Hit]:
+        """Cross-encoder reorder in hybrid+rerank; the other modes only cut to k."""
+        mode = mode or self.cfg.mode
+        k = k or self.cfg.k_final
+        scored = [(h.score, h.chunk) for h in hits]
+        if mode == "hybrid+rerank" and scored:
+            if self.reranker is None:
+                raise ValueError("mode 'hybrid+rerank' needs a reranker")
             scores = self.reranker.score(query, [c.text for _, c in scored])
             # Stable sort: ties keep the fused order.
             order = sorted(range(len(scored)), key=lambda i: -scores[i])

@@ -6,6 +6,7 @@ from aneel_rag.config.settings import (
     file_sha256,
     get_secrets,
     load_config,
+    load_prompt,
 )
 
 __all__ = [
@@ -16,4 +17,5 @@ __all__ = [
     "file_sha256",
     "get_secrets",
     "load_config",
+    "load_prompt",
 ]

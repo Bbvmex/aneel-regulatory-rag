@@ -2,7 +2,7 @@ import pytest
 import yaml
 from pydantic import ValidationError
 
-from aneel_rag.config import AppConfig, config_hash, load_config
+from aneel_rag.config import AppConfig, config_hash, load_config, load_prompt
 from aneel_rag.config.settings import DEFAULT_CONFIG
 
 
@@ -47,3 +47,13 @@ def test_config_hash_is_stable_and_sensitive():
     assert base == config_hash(AppConfig.model_validate(_raw()))
     raw["retrieval"]["k_final"] += 1
     assert config_hash(AppConfig.model_validate(raw)) != base
+
+
+def test_config_hash_covers_prompt_contents(tmp_path):
+    cfg = load_config()
+    prompt = tmp_path / "generate.md"
+    prompt.write_text(load_prompt(cfg, "generate"), encoding="utf-8")
+    copy = cfg.model_copy(update={"prompts": cfg.prompts.model_copy(update={"generate": prompt})})
+    before = config_hash(copy)
+    prompt.write_text("changed", encoding="utf-8")
+    assert config_hash(copy) != before
