@@ -14,7 +14,7 @@ _Atualizado em 2026-11-05._
 | 1 — Ingestão + parser | **concluída** (merge em 2026-10-22) | PR #3, commit `46ea071` |
 | 2 — Chunking + indexação + retrieval | **concluída** (merge em 2026-10-23), incluindo a rodada 5 de revisão | PR #4, commit `6caf7f8`; rodada 5 no PR #6, commit `b4e01de` |
 | 3 — Grafo + validação + abstenção | **em revisão** | PR #7 (branch `phase-3`) |
-| 4 — Dataset | **em revisão**: 90 drafts gerados; PARADA para validação | PR da Fase 4 (branch `phase-4`, sobre o PR #7) |
+| 4 — Dataset | **em revisão**: 90 drafts gerados; PARADA para validação | PR #8 (branch `phase-4`, empilhado sobre o PR #7) |
 | 5 | pendente; modelo gerador definido no início da fase | — |
 | 6 (opcional), 7, 8 (bônus) | pendentes | — |
 
