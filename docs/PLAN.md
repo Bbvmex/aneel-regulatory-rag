@@ -6,15 +6,15 @@
 
 ## Status
 
-_Atualizado em 2026-11-05._
+_Atualizado em 2026-11-12._
 
 | Fase | Estado | Referência |
 |---|---|---|
 | 0 — Scaffold | **concluída** (merge em 2026-10-20) | PR #1, commit `4c3bd1b` |
 | 1 — Ingestão + parser | **concluída** (merge em 2026-10-22) | PR #3, commit `46ea071` |
 | 2 — Chunking + indexação + retrieval | **concluída** (merge em 2026-10-23), incluindo a rodada 5 de revisão | PR #4, commit `6caf7f8`; rodada 5 no PR #6, commit `b4e01de` |
-| 3 — Grafo + validação + abstenção | **em revisão** | PR #7 (branch `phase-3`) |
-| 4 — Dataset | **em revisão**: 90 drafts gerados; PARADA para validação | PR #8 (branch `phase-4`, empilhado sobre o PR #7) |
+| 3 — Grafo + validação + abstenção | **concluída** (merge em 2026-11-12) | PR #7, commit `377cbfd` |
+| 4 — Dataset | **merge em 2026-11-12; PARADA de validação em andamento** (q-001 a q-038 validadas sobre o snapshot de 02/06/2026). A atualização do corpus para a versão de 27/10/2026 (REN nº 1.174/2026) vem antes de continuar | PR #8, commit `000e239`; branch `chore/corpus-2026-10-27` |
 | 5 | pendente; modelo gerador definido no início da fase | — |
 | 6 (opcional), 7, 8 (bônus) | pendentes | — |
 
