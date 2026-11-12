@@ -1,0 +1,3 @@
+# Retrieval ablation (decision 26c): 10 fused candidates passed to the reranker instead of 20.
+retrieval:
+  k_candidates: 10

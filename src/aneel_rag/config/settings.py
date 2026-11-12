@@ -172,9 +172,26 @@ class Secrets(BaseSettings):
     log_level: str = "INFO"
 
 
-def load_config(path: Path | str = DEFAULT_CONFIG) -> AppConfig:
+def deep_merge(base: dict, overlay: dict) -> dict:
+    merged = dict(base)
+    for key, value in overlay.items():
+        if isinstance(value, dict) and isinstance(merged.get(key), dict):
+            merged[key] = deep_merge(merged[key], value)
+        else:
+            merged[key] = value
+    return merged
+
+
+def load_config(
+    path: Path | str = DEFAULT_CONFIG, overlays: tuple[Path | str, ...] = ()
+) -> AppConfig:
+    """Overlays (e.g. config/ablations/*.yaml) override only the keys they set."""
     with open(path, encoding="utf-8") as fh:
-        return AppConfig.model_validate(yaml.safe_load(fh))
+        data = yaml.safe_load(fh)
+    for overlay in overlays:
+        with open(_resolve(Path(overlay)), encoding="utf-8") as fh:
+            data = deep_merge(data, yaml.safe_load(fh) or {})
+    return AppConfig.model_validate(data)
 
 
 @lru_cache

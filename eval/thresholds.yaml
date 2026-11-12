@@ -1,0 +1,6 @@
+# Eval gate thresholds (phase 5). `make eval-gate` fails while this mapping is empty.
+# TODO(owner): set the thresholds after reviewing the first evaluation report. Names are the
+# keys of `gate_metrics` in the report JSON; each takes `min` and/or `max`, for example:
+#   retrieval.article_recall@5: {min: 0.0}
+#   pipeline.false_abstention_rate: {max: 1.0}
+thresholds: {}

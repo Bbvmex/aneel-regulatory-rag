@@ -1,0 +1,4 @@
+# Retrieval ablation (decision 26c): reranker truncated at 512 tokens.
+# 1024 is not run: no (question, chunk) pair passes 1024 tokens, so it equals 2048 (decision 49).
+embedding:
+  rerank_max_length: 512
