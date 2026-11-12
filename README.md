@@ -7,7 +7,8 @@ norm does not answer the question.
 > **Personal project.** Built for learning and as a portfolio piece. It has no relation to any
 > employer or client and uses only the public text of the norm.
 
-**Status:** work in progress — phase 4 (evaluation dataset, awaiting human validation). Results: TBD.
+**Status:** work in progress — phase 5 (evaluation). Results: see the latest report in
+[`eval/reports/`](eval/reports/); RAGAS metrics are TBD until the judge has quota.
 
 Each citation shows the device ID and the quoted text, plus a link to the official ANEEL page
 (leis.org) using a URL text fragment. The passage is highlighted only in Chromium-based browsers
@@ -101,6 +102,29 @@ make draft-brief BATCH=1   # seeded sample for a batch (eval/drafts/, not versio
 make draft-add BATCH=1     # add eval/drafts/batch-1.jsonl as drafts
 make validate-dataset      # schema, unit IDs against the corpus, counts by status
 ```
+
+## Evaluation
+
+```bash
+make index OVERLAY=config/ablations/fixed_chunking.yaml   # once: collection for the chunking ablation
+make eval                  # ablations + full graph on validated items (starts its own llama-server)
+make eval ARGS="--judge"   # also RAGAS faithfulness and answer relevancy (needs judge quota)
+make calibration           # draft eval/judge_calibration.jsonl for human faithfulness labels
+make eval-gate             # compare the current config's report with eval/thresholds.yaml
+```
+
+Only validated questions count. Retrieval is measured per ablation without any LLM: recall@k and
+MRR at article level (main) and unit level, plus the recall of the candidate pool the reranker
+reorders. The ablations are overlays in `config/ablations/` (dense, hybrid, hybrid+rerank, fixed
+chunking, reranker truncated at 512 tokens, 10 reranker candidates). The full graph runs only on
+the main config and reports abstention accuracy on unanswerable questions, the false abstention
+rate, and the share of valid, imprecise and invalid citations. Answers are cached per config hash
+and question, so an interrupted run resumes, and the runner waits for the GPU to cool between
+questions. RAGAS uses the pinned judge with a file cache per judged answer; until the judge has
+quota, faithfulness, answer relevancy and the judge-human agreement are reported as TBD
+([ADR-005](docs/adr/005-ci-and-evaluation.md)). Reports are written to
+`eval/reports/<date>_<git sha>_<config hash>.{md,json}`. The gate fails while
+`eval/thresholds.yaml` is empty.
 
 ## Layout
 
