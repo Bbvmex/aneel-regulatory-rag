@@ -7,7 +7,9 @@ AbstentionReason = Literal["no_results", "insufficient_context", "model_abstaine
 
 
 class Citation(BaseModel):
-    unit_id: str = Field(description="ID of the cited unit, exactly as in the brackets")
+    unit_id: str = Field(
+        description="ID of the cited unit, as written inside the brackets, without them"
+    )
     quote: str = Field(description="Verbatim passage of that unit's text")
 
 

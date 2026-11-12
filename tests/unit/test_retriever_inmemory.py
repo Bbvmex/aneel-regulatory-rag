@@ -143,3 +143,26 @@ def test_index_config_hash_tracks_the_embedding_revision_only():
     # The reranker only reorders candidates at query time; swapping it needs no re-index.
     reranker = cfg.models.model_copy(update={"reranker_revision": "0" * 40})
     assert index_config_hash(cfg.model_copy(update={"models": reranker})) == base
+
+
+class _CountingReranker:
+    def __init__(self):
+        self.calls = []
+
+    def score(self, query, texts):
+        self.calls.append(list(texts))
+        return [float(len(t)) for t in texts]
+
+
+def test_cached_reranker_scores_each_pair_once(tmp_path):
+    from aneel_rag.retrieval.reranker import CachedReranker
+
+    inner = _CountingReranker()
+    cached = CachedReranker(inner, tmp_path / "rerank.sqlite", salt="m@rev|max_length=512")
+    assert cached.score("q", ["aa", "b"]) == [2.0, 1.0]
+    assert cached.score("q", ["b", "ccc", "aa"]) == [1.0, 3.0, 2.0]
+    assert inner.calls == [["aa", "b"], ["ccc"]]
+    assert (cached.hits, cached.misses) == (2, 3)
+    other = CachedReranker(inner, tmp_path / "rerank.sqlite", salt="m@rev|max_length=1024")
+    other.score("q", ["aa"])
+    assert inner.calls[-1] == ["aa"]  # another max_length is another score

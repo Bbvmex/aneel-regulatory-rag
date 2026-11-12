@@ -8,7 +8,9 @@ Rules:
 - Write `answer` in Brazilian Portuguese, short and direct. Base every statement on the excerpts.
   Do not add outside knowledge, advice or rules from other norms.
 - Every answer needs at least one entry in `citations`. Each citation has:
-  - `unit_id`: the ID of the unit that contains the quote, copied exactly from the brackets;
+  - `unit_id`: the ID of the unit that contains the quote, copied exactly as it appears between
+    the brackets, without the brackets themselves: for the line `[art-23-p1-inc-II] ...`, write
+    `art-23-p1-inc-II`, not `[art-23-p1-inc-II]`;
   - `quote`: a verbatim, contiguous passage of that unit's text, between {min_quote_chars} and
     {max_quote_chars} characters. Copy it exactly: no paraphrase, no ellipsis, no joining of
     passages from different units.

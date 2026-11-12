@@ -52,6 +52,7 @@ class EmbeddingConfig(_Strict):
     batch_size: int
     max_length: int
     rerank_max_length: int
+    rerank_batch_size: int
 
 
 class QdrantConfig(_Strict):
@@ -83,6 +84,36 @@ class LLMConfig(_Strict):
     timeout_s: float
 
 
+class LocalLLMConfig(_Strict):
+    """llama.cpp generator, pinned by file hash and server build (decision 48, ADR-008)."""
+
+    gguf_repo: str
+    gguf_file: str
+    gguf_sha256: str
+    quantization: str
+    llama_cpp_build: str
+    ctx_size: int
+    threads: int
+    flash_attn: Literal["on", "off", "auto"]
+    fit_target_mib: int  # VRAM left free when --fit sizes the GPU offload
+    reasoning: Literal["on", "off"]
+
+    @field_validator("gguf_sha256")
+    @classmethod
+    def _sha256(cls, value: str) -> str:
+        if not re.fullmatch(r"[0-9a-f]{64}", value):
+            raise ValueError("gguf_sha256 must be a 64-character lowercase hex digest")
+        return value
+
+    @field_validator("llama_cpp_build")
+    @classmethod
+    def _build(cls, value: str) -> str:
+        # Release names (v0.9.0) are not printed by --version; the build number is.
+        if not re.fullmatch(r"b\d+", value):
+            raise ValueError(f"llama_cpp_build '{value}' must be a build tag such as b12110")
+        return value
+
+
 class GenerationConfig(_Strict):
     temperature: float
     max_citation_retries: int
@@ -111,6 +142,7 @@ class AppConfig(_Strict):
     retrieval: RetrievalConfig
     chunking: ChunkingConfig
     llm: LLMConfig
+    local_llm: LocalLLMConfig
     generation: GenerationConfig
     citations: CitationsConfig
     abstention: AbstentionConfig
@@ -129,6 +161,8 @@ class Secrets(BaseSettings):
     judge_base_url: str = ""
     judge_api_key: str = ""
     local_llm_base_url: str = ""
+    llama_server_bin: str = "llama-server"  # machine paths for `make llm-server`
+    gguf_dir: str = "data/models"
     qdrant_url: str = "http://localhost:6333"
     qdrant_api_key: str = ""
     langfuse_enabled: bool = False

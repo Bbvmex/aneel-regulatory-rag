@@ -57,3 +57,19 @@ def test_config_hash_covers_prompt_contents(tmp_path):
     before = config_hash(copy)
     prompt.write_text("changed", encoding="utf-8")
     assert config_hash(copy) != before
+
+
+@pytest.mark.parametrize(
+    ("field", "value", "match"),
+    [
+        ("gguf_sha256", "abc", "hex digest"),
+        ("gguf_sha256", "A" * 64, "hex digest"),
+        ("llama_cpp_build", "v0.9.0", "build tag"),
+        ("llama_cpp_build", "latest", "build tag"),
+    ],
+)
+def test_local_llm_pins_are_exact(field, value, match):
+    raw = _raw()
+    raw["local_llm"][field] = value
+    with pytest.raises(ValidationError, match=match):
+        AppConfig.model_validate(raw)

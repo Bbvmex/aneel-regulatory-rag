@@ -8,7 +8,7 @@ from aneel_rag.retrieval.hub import ModelNotCachedError
 from aneel_rag.retrieval.index import collection_name, make_client, make_embedder
 from aneel_rag.retrieval.modes import MODES
 from aneel_rag.retrieval.provenance import IndexMismatchError, check_index, expected_provenance
-from aneel_rag.retrieval.reranker import BGEReranker
+from aneel_rag.retrieval.reranker import make_reranker
 from aneel_rag.retrieval.retriever import Retriever
 
 
@@ -32,12 +32,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         reranker = None
         if args.mode == "hybrid+rerank":
-            reranker = BGEReranker(
-                cfg.models.reranker,
-                cfg.models.reranker_revision,
-                cfg.embedding.rerank_max_length,
-                cfg.embedding.batch_size,
-            )
+            reranker = make_reranker(cfg)
         embedder = make_embedder(cfg)
     except ModelNotCachedError as exc:
         print(f"ERROR: {exc}", file=sys.stderr)

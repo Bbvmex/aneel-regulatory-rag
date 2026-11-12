@@ -19,7 +19,7 @@ from aneel_rag.retrieval.index import (
     make_embedder,
 )
 from aneel_rag.retrieval.provenance import check_index, expected_provenance
-from aneel_rag.retrieval.reranker import BGEReranker
+from aneel_rag.retrieval.reranker import make_reranker
 from aneel_rag.retrieval.retriever import Retriever
 
 
@@ -60,12 +60,7 @@ def nodes_from_config(cfg: AppConfig) -> Nodes:
     llm = get_provider("generator", cfg)
     reranker = None
     if cfg.retrieval.mode == "hybrid+rerank":
-        reranker = BGEReranker(
-            cfg.models.reranker,
-            cfg.models.reranker_revision,
-            cfg.embedding.rerank_max_length,
-            cfg.embedding.batch_size,
-        )
+        reranker = make_reranker(cfg)
     retriever = Retriever(client, collection, make_embedder(cfg), cfg.retrieval, reranker)
     units = {u.id: u for u in load_units(PROCESSED / "units.jsonl")}
     return Nodes(retriever, llm, units, cfg, load_prompts(cfg))
