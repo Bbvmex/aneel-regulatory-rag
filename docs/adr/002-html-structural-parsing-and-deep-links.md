@@ -81,6 +81,14 @@ numbers in the original plan were corrected here.
   (Art. 666), and a repeated "d)" with a missing "f)" (Art. 668, III). Art. 485 looked like a gap
   (§ 4º followed by § 7º), but §§ 5º and 6º are inline on the § 4º line, with no `<br>`.
 
+**Snapshot of 2026-11-12** (version of 2026-10-27, last amending act REN nº 1.174/2026; counts
+from `ingest_report.md`): 759 `span.artigo` (723 current; 7 whole articles revoked; 30 superseded
+old versions); 416 annotations (174 "dada", 242 "acrescida"); 27 "(Revogado pela …)". The same
+markup patterns hold, with two new cases: an article revoked right after its own superseded
+wording (Art. 169: the original and the 2023 wording are both struck, then "(Revogado …)"), and
+a struck annotation alone in a row of the Anexo IV table (reported as an orphan, dropped). Figure
+file names carry a suffix that changes with every browser save (`_XiOB`, `__dUo`).
+
 ## Parsing rules (phase 1)
 - **Lines.** Every `<br>` ends a line. Headings and table rows are lines of their own, and inline
   tags never insert spaces. Text is stored in NFC with invisible characters removed. NFKC and
@@ -88,7 +96,9 @@ numbers in the original plan were corrected here.
   stored text.
 - **Validity** (`ingest/vigencia.py`):
   - Struck text followed by "(Revogado pela …)" is `revoked`, together with the contiguous struck
-    block before it, so a whole article or a § with its incisos is revoked as one unit.
+    block before it, so a whole article or a § with its incisos is revoked as one unit. The block
+    stops where a label repeats the label below it: the upper copy is an older wording of the
+    same device and is superseded (parser 1.1.0, for Art. 169 in the 2026-10-27 version).
   - Any other struck text is superseded and dropped, whatever label follows it. A superseded
     block with no new version and no revocation is reported as an orphan.
 - **Status of current text.** It comes from the line's own annotation: "dada" gives `amended`,
