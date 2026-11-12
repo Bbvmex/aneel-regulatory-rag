@@ -1,0 +1,7245 @@
+{
+ "kind": "eval",
+ "date": "2026-11-12",
+ "git_sha": "a61fbc2",
+ "config_hash": "487b79b3beea",
+ "eval_config_hash": "ebc3620c2768",
+ "corpus_sha256": "4c0dbc7f6f25fd5db3e1ca1edeaed55228d0a4b27e3a92c0de3620e3af851ba8",
+ "parts": {
+  "ablations": true,
+  "pipeline": true,
+  "judge": false
+ },
+ "validated_items": 90,
+ "draft_items_ignored": 0,
+ "rejected_items_ignored": 0,
+ "items_by_category": {
+  "factual_single": 30,
+  "multi_article": 20,
+  "deadline_or_value": 20,
+  "unanswerable": 20
+ },
+ "models": {
+  "generator": "qwen3.6-35b-a3b-ud-q4_k_m",
+  "judge": "gemini-3.1-pro-preview",
+  "embedding": "BAAI/bge-m3",
+  "embedding_revision": "5617a9f61b028005a4858fdac845db406aefb181",
+  "reranker": "BAAI/bge-reranker-v2-m3",
+  "reranker_revision": "953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e"
+ },
+ "generator": {
+  "gguf_repo": "unsloth/Qwen3.6-35B-A3B-GGUF",
+  "gguf_file": "Qwen3.6-35B-A3B-UD-Q4_K_M.gguf",
+  "gguf_sha256": "ac0e2c1189e055faa36eff361580e79c5bd6f8e76bffb4ce547f167d53e31a61",
+  "quantization": "UD-Q4_K_M",
+  "llama_cpp_build": "b12110",
+  "ctx_size": 16384,
+  "threads": 8,
+  "flash_attn": "on",
+  "fit_target_mib": 1024,
+  "reasoning": "off"
+ },
+ "retrieval": {
+  "mode": "hybrid+rerank",
+  "k_dense": 20,
+  "k_sparse": 20,
+  "k_candidates": 20,
+  "k_final": 5,
+  "include_revoked": false,
+  "include_annexes": false
+ },
+ "libraries": {
+  "FlagEmbedding": "1.4.2",
+  "torch": "2.14.1+cpu",
+  "qdrant-client": "1.19.1",
+  "langgraph": "1.2.16",
+  "langchain-openai": "1.7.2",
+  "ragas": "0.4.3"
+ },
+ "eval_config": {
+  "recall_ks": [
+   1,
+   3,
+   5
+  ],
+  "ablations": [
+   "config\\ablations\\dense.yaml",
+   "config\\ablations\\hybrid.yaml",
+   "config\\ablations\\hybrid_rerank.yaml",
+   "config\\ablations\\fixed_chunking.yaml",
+   "config\\ablations\\rerank_512.yaml",
+   "config\\ablations\\k_candidates_10.yaml"
+  ],
+  "pipeline": {
+   "pause_s": 8.0,
+   "gpu_hot_c": 80,
+   "gpu_cool_c": 70,
+   "gpu_start_below_c": 60
+  },
+  "judge": {
+   "answer_relevancy_strictness": 3,
+   "faithful_threshold": 1.0
+  },
+  "calibration": {
+   "n": 20,
+   "seed": 20261112
+  }
+ },
+ "gate_metrics": {
+  "retrieval.article_recall@1": 0.719047619047619,
+  "retrieval.article_recall@3": 0.9166666666666667,
+  "retrieval.article_recall@5": 0.9452380952380953,
+  "retrieval.article_mrr": 0.8892857142857142,
+  "retrieval.article_pool_recall@20": 0.9571428571428572,
+  "retrieval.unit_recall@1": 0.7176190476190476,
+  "retrieval.unit_recall@3": 0.9185714285714285,
+  "retrieval.unit_recall@5": 0.9471428571428571,
+  "retrieval.unit_mrr": 0.8892857142857142,
+  "retrieval.unit_pool_recall@20": 0.9571428571428572,
+  "pipeline.abstention_accuracy": 1.0,
+  "pipeline.false_abstention_rate": 0.02857142857142857,
+  "pipeline.answered_citing_expected": 0.9285714285714286,
+  "pipeline.citations_valid": 1.0,
+  "pipeline.citations_imprecise": 0.0,
+  "pipeline.citations_invalid": 0.0,
+  "judge.faithfulness": null,
+  "judge.answer_relevancy": null
+ },
+ "ablations": [
+  {
+   "name": "dense",
+   "overlay": "config/ablations/dense.yaml",
+   "config_hash": "e0cf4491c6d3",
+   "mode": "dense",
+   "chunking": "structural",
+   "k_candidates": 20,
+   "rerank_max_length": null,
+   "metrics": {
+    "all": {
+     "article": {
+      "n": 70,
+      "recall@1": 0.6476190476190476,
+      "recall@3": 0.8238095238095238,
+      "recall@5": 0.888095238095238,
+      "mrr": 0.8076190476190476
+     },
+     "unit": {
+      "n": 70,
+      "recall@1": 0.6485714285714286,
+      "recall@3": 0.8257142857142856,
+      "recall@5": 0.89,
+      "mrr": 0.8076190476190476
+     }
+    },
+    "factual_single": {
+     "article": {
+      "n": 30,
+      "recall@1": 0.7,
+      "recall@3": 0.9333333333333333,
+      "recall@5": 0.9666666666666667,
+      "mrr": 0.8027777777777777
+     },
+     "unit": {
+      "n": 30,
+      "recall@1": 0.7,
+      "recall@3": 0.9333333333333333,
+      "recall@5": 0.9666666666666667,
+      "mrr": 0.8027777777777777
+     }
+    },
+    "multi_article": {
+     "article": {
+      "n": 20,
+      "recall@1": 0.26666666666666666,
+      "recall@3": 0.4833333333333333,
+      "recall@5": 0.6583333333333333,
+      "mrr": 0.6558333333333334
+     },
+     "unit": {
+      "n": 20,
+      "recall@1": 0.27,
+      "recall@3": 0.49000000000000005,
+      "recall@5": 0.665,
+      "mrr": 0.6558333333333334
+     }
+    },
+    "deadline_or_value": {
+     "article": {
+      "n": 20,
+      "recall@1": 0.95,
+      "recall@3": 1.0,
+      "recall@5": 1.0,
+      "mrr": 0.9666666666666666
+     },
+     "unit": {
+      "n": 20,
+      "recall@1": 0.95,
+      "recall@3": 1.0,
+      "recall@5": 1.0,
+      "mrr": 0.9666666666666666
+     }
+    }
+   },
+   "seconds_median": 0.216,
+   "records": [
+    {
+     "id": "q-001",
+     "chunk_ids": [
+      "structural:art-243:0",
+      "structural:art-279:0",
+      "structural:art-242:0",
+      "structural:art-234:0",
+      "structural:art-245:0"
+     ]
+    },
+    {
+     "id": "q-002",
+     "chunk_ids": [
+      "structural:art-354:0",
+      "structural:art-167:0",
+      "structural:art-172:0",
+      "structural:art-96:0",
+      "structural:art-170:0"
+     ]
+    },
+    {
+     "id": "q-003",
+     "chunk_ids": [
+      "structural:art-429:0",
+      "structural:art-431:0",
+      "structural:art-430:0",
+      "structural:art-419:0",
+      "structural:art-421:0"
+     ]
+    },
+    {
+     "id": "q-004",
+     "chunk_ids": [
+      "structural:art-9:0",
+      "structural:art-659:1",
+      "structural:art-6:0",
+      "structural:art-659:0",
+      "structural:art-127:0"
+     ]
+    },
+    {
+     "id": "q-005",
+     "chunk_ids": [
+      "structural:art-554:0",
+      "structural:art-559:0",
+      "structural:art-558:0",
+      "structural:art-553:0",
+      "structural:art-550:0"
+     ]
+    },
+    {
+     "id": "q-006",
+     "chunk_ids": [
+      "structural:art-490:0",
+      "structural:art-480:0",
+      "structural:art-489:0",
+      "structural:art-477:0",
+      "structural:art-486-a:0"
+     ]
+    },
+    {
+     "id": "q-007",
+     "chunk_ids": [
+      "structural:art-207:0",
+      "structural:art-665:0",
+      "structural:art-665:1",
+      "structural:art-205-a:0",
+      "structural:art-199:0"
+     ]
+    },
+    {
+     "id": "q-008",
+     "chunk_ids": [
+      "structural:art-440:0",
+      "structural:art-444:0",
+      "structural:art-443:0",
+      "structural:art-345:0",
+      "structural:art-545:0"
+     ]
+    },
+    {
+     "id": "q-009",
+     "chunk_ids": [
+      "structural:art-665:0",
+      "structural:art-207:0",
+      "structural:art-662:0",
+      "structural:art-665:1",
+      "structural:art-205:0"
+     ]
+    },
+    {
+     "id": "q-010",
+     "chunk_ids": [
+      "structural:art-570:0",
+      "structural:art-346:0",
+      "structural:art-138:1",
+      "structural:art-139:0",
+      "structural:art-344:0"
+     ]
+    },
+    {
+     "id": "q-011",
+     "chunk_ids": [
+      "structural:art-254:0",
+      "structural:art-252:0",
+      "structural:art-250:0",
+      "structural:art-251:0",
+      "structural:art-228:0"
+     ]
+    },
+    {
+     "id": "q-012",
+     "chunk_ids": [
+      "structural:art-280:0",
+      "structural:art-283:0",
+      "structural:art-243:0",
+      "structural:art-278:0",
+      "structural:art-279:0"
+     ]
+    },
+    {
+     "id": "q-013",
+     "chunk_ids": [
+      "structural:art-356:0",
+      "structural:art-436:0",
+      "structural:art-360:0",
+      "structural:art-582:0",
+      "structural:art-355:0"
+     ]
+    },
+    {
+     "id": "q-014",
+     "chunk_ids": [
+      "structural:art-115:0",
+      "structural:art-343:0",
+      "structural:art-344:0",
+      "structural:art-570:0",
+      "structural:art-323:0"
+     ]
+    },
+    {
+     "id": "q-015",
+     "chunk_ids": [
+      "structural:art-219:0",
+      "structural:art-292:0",
+      "structural:art-222:0",
+      "structural:art-290:0",
+      "structural:art-220:0"
+     ]
+    },
+    {
+     "id": "q-016",
+     "chunk_ids": [
+      "structural:art-583:0",
+      "structural:art-255:0",
+      "structural:art-595:0",
+      "structural:art-323:1",
+      "structural:art-323:0"
+     ]
+    },
+    {
+     "id": "q-017",
+     "chunk_ids": [
+      "structural:art-260:0",
+      "structural:art-91:0",
+      "structural:art-250:0",
+      "structural:art-587:0",
+      "structural:art-243:0"
+     ]
+    },
+    {
+     "id": "q-018",
+     "chunk_ids": [
+      "structural:art-244:0",
+      "structural:art-243:0",
+      "structural:art-613:0",
+      "structural:art-320:0",
+      "structural:art-228:0"
+     ]
+    },
+    {
+     "id": "q-019",
+     "chunk_ids": [
+      "structural:art-316:0",
+      "structural:art-302:0",
+      "structural:art-155:0",
+      "structural:art-304:0",
+      "structural:art-287:0"
+     ]
+    },
+    {
+     "id": "q-020",
+     "chunk_ids": [
+      "structural:art-651:0",
+      "structural:art-650:0",
+      "structural:art-649:0",
+      "structural:art-604:0",
+      "structural:art-613:0"
+     ]
+    },
+    {
+     "id": "q-021",
+     "chunk_ids": [
+      "structural:art-596:0",
+      "structural:art-324:0",
+      "structural:art-323:0",
+      "structural:art-323:1",
+      "structural:art-441:0"
+     ]
+    },
+    {
+     "id": "q-022",
+     "chunk_ids": [
+      "structural:art-438:0",
+      "structural:art-543:0",
+      "structural:art-587:0",
+      "structural:art-91:0",
+      "structural:art-250:0"
+     ]
+    },
+    {
+     "id": "q-023",
+     "chunk_ids": [
+      "structural:art-655-c:0",
+      "structural:art-655-c:2",
+      "structural:art-655-c:1",
+      "structural:art-2:4",
+      "structural:art-655-b:0"
+     ]
+    },
+    {
+     "id": "q-031",
+     "chunk_ids": [
+      "structural:art-607:0",
+      "structural:art-612:0",
+      "structural:art-611:0",
+      "structural:art-621:0",
+      "structural:art-618:0"
+     ]
+    },
+    {
+     "id": "q-032",
+     "chunk_ids": [
+      "structural:art-453:0",
+      "structural:art-627-a:2",
+      "structural:art-110:0",
+      "structural:art-486-a:0",
+      "structural:art-627-a:1"
+     ]
+    },
+    {
+     "id": "q-033",
+     "chunk_ids": [
+      "structural:art-254:0",
+      "structural:art-248:0",
+      "structural:art-96:0",
+      "structural:art-97:0",
+      "structural:art-249:0"
+     ]
+    },
+    {
+     "id": "q-034",
+     "chunk_ids": [
+      "structural:art-597:0",
+      "structural:art-245:0",
+      "structural:art-243:0",
+      "structural:art-254:0",
+      "structural:art-228:0"
+     ]
+    },
+    {
+     "id": "q-035",
+     "chunk_ids": [
+      "structural:art-127:0",
+      "structural:art-47:0",
+      "structural:art-294:0",
+      "structural:art-499:0",
+      "structural:art-500:0"
+     ]
+    },
+    {
+     "id": "q-036",
+     "chunk_ids": [
+      "structural:art-14:0",
+      "structural:art-486-a:1",
+      "structural:art-485:0",
+      "structural:art-485:1",
+      "structural:art-481:0"
+     ]
+    },
+    {
+     "id": "q-037",
+     "chunk_ids": [
+      "structural:art-328:0",
+      "structural:art-565:0",
+      "structural:art-342-a:0",
+      "structural:art-327:0",
+      "structural:art-318:0"
+     ]
+    },
+    {
+     "id": "q-038",
+     "chunk_ids": [
+      "structural:art-339:0",
+      "structural:art-582:0",
+      "structural:art-337:0",
+      "structural:art-565:0",
+      "structural:art-576:0"
+     ]
+    },
+    {
+     "id": "q-039",
+     "chunk_ids": [
+      "structural:art-167-c:0",
+      "structural:art-167-b:0",
+      "structural:art-166-a:0",
+      "structural:art-167:0",
+      "structural:art-166:1"
+     ]
+    },
+    {
+     "id": "q-040",
+     "chunk_ids": [
+      "structural:art-453:0",
+      "structural:art-451:0",
+      "structural:art-507:0",
+      "structural:art-480:0",
+      "structural:art-476:0"
+     ]
+    },
+    {
+     "id": "q-041",
+     "chunk_ids": [
+      "structural:art-422:0",
+      "structural:art-421:0",
+      "structural:art-256:0",
+      "structural:art-325:0",
+      "structural:art-587:0"
+     ]
+    },
+    {
+     "id": "q-042",
+     "chunk_ids": [
+      "structural:art-250:0",
+      "structural:art-253:0",
+      "structural:art-587:0",
+      "structural:art-91:0",
+      "structural:art-243:0"
+     ]
+    },
+    {
+     "id": "q-043",
+     "chunk_ids": [
+      "structural:art-324:0",
+      "structural:art-325:0",
+      "structural:art-288:0",
+      "structural:art-323:0",
+      "structural:art-271:0"
+     ]
+    },
+    {
+     "id": "q-044",
+     "chunk_ids": [
+      "structural:art-138:0",
+      "structural:art-6:0",
+      "structural:art-486-a:2",
+      "structural:art-138:1",
+      "structural:art-141:0"
+     ]
+    },
+    {
+     "id": "q-045",
+     "chunk_ids": [
+      "structural:art-324:0",
+      "structural:art-587:0",
+      "structural:art-655-f:0",
+      "structural:art-157:0",
+      "structural:art-596:0"
+     ]
+    },
+    {
+     "id": "q-046",
+     "chunk_ids": [
+      "structural:art-617:0",
+      "structural:art-613:0",
+      "structural:art-602:0",
+      "structural:art-618:0",
+      "structural:art-604:0"
+     ]
+    },
+    {
+     "id": "q-047",
+     "chunk_ids": [
+      "structural:art-663:0",
+      "structural:art-173:0",
+      "structural:art-175:0",
+      "structural:art-82:0",
+      "structural:art-671-c:0"
+     ]
+    },
+    {
+     "id": "q-048",
+     "chunk_ids": [
+      "structural:art-365:0",
+      "structural:art-369:0",
+      "structural:art-366:0",
+      "structural:art-362:0",
+      "structural:art-364:0"
+     ]
+    },
+    {
+     "id": "q-049",
+     "chunk_ids": [
+      "structural:art-421:0",
+      "structural:art-430:0",
+      "structural:art-408:0",
+      "structural:art-587:0",
+      "structural:art-71:0"
+     ]
+    },
+    {
+     "id": "q-050",
+     "chunk_ids": [
+      "structural:art-49:0",
+      "structural:art-88:0",
+      "structural:art-91:0",
+      "structural:art-90:0",
+      "structural:art-64:0"
+     ]
+    },
+    {
+     "id": "q-051",
+     "chunk_ids": [
+      "structural:art-377:0",
+      "structural:art-376:0",
+      "structural:art-375:0",
+      "structural:art-380:0",
+      "structural:art-587:0"
+     ]
+    },
+    {
+     "id": "q-052",
+     "chunk_ids": [
+      "structural:art-582:0",
+      "structural:art-581:0",
+      "structural:art-655-o:0",
+      "structural:art-580:0",
+      "structural:art-587:0"
+     ]
+    },
+    {
+     "id": "q-053",
+     "chunk_ids": [
+      "structural:art-391:0",
+      "structural:art-380:0",
+      "structural:art-408:0",
+      "structural:art-409:0",
+      "structural:art-377:0"
+     ]
+    },
+    {
+     "id": "q-061",
+     "chunk_ids": [
+      "structural:art-363:0",
+      "structural:art-365:0",
+      "structural:art-366:0",
+      "structural:art-364:0",
+      "structural:art-362:0"
+     ]
+    },
+    {
+     "id": "q-062",
+     "chunk_ids": [
+      "structural:art-307:0",
+      "structural:art-309:0",
+      "structural:art-308:0",
+      "structural:art-655-i:0",
+      "structural:art-671-c:0"
+     ]
+    },
+    {
+     "id": "q-063",
+     "chunk_ids": [
+      "structural:art-335:0",
+      "structural:art-334:0",
+      "structural:art-342-a:0",
+      "structural:art-341:0",
+      "structural:art-117:0"
+     ]
+    },
+    {
+     "id": "q-064",
+     "chunk_ids": [
+      "structural:art-186:0",
+      "structural:art-186:1",
+      "structural:art-184:0",
+      "structural:art-184:1",
+      "structural:art-185:0"
+     ]
+    },
+    {
+     "id": "q-065",
+     "chunk_ids": [
+      "structural:art-258:0",
+      "structural:art-267:0",
+      "structural:art-263:0",
+      "structural:art-228:0",
+      "structural:art-273:0"
+     ]
+    },
+    {
+     "id": "q-066",
+     "chunk_ids": [
+      "structural:art-560:0",
+      "structural:art-559:0",
+      "structural:art-109:1",
+      "structural:art-480:0",
+      "structural:art-174:0"
+     ]
+    },
+    {
+     "id": "q-067",
+     "chunk_ids": [
+      "structural:art-621:0",
+      "structural:art-620:0",
+      "structural:art-611:0",
+      "structural:art-599:0",
+      "structural:art-618:0"
+     ]
+    },
+    {
+     "id": "q-068",
+     "chunk_ids": [
+      "structural:art-629:1",
+      "structural:art-630:0",
+      "structural:art-346:0",
+      "structural:art-642:0",
+      "structural:art-629:0"
+     ]
+    },
+    {
+     "id": "q-069",
+     "chunk_ids": [
+      "structural:art-657:0",
+      "structural:art-324:0",
+      "structural:art-325:0",
+      "structural:art-316:0",
+      "structural:art-326:0"
+     ]
+    },
+    {
+     "id": "q-070",
+     "chunk_ids": [
+      "structural:art-648:0",
+      "structural:art-650:0",
+      "structural:art-649:0",
+      "structural:art-98:0",
+      "structural:art-109:2"
+     ]
+    },
+    {
+     "id": "q-071",
+     "chunk_ids": [
+      "structural:art-320:0",
+      "structural:art-465:0",
+      "structural:art-283:0",
+      "structural:art-474:0",
+      "structural:art-503:0"
+     ]
+    },
+    {
+     "id": "q-072",
+     "chunk_ids": [
+      "structural:art-376:0",
+      "structural:art-377:0",
+      "structural:art-382:0",
+      "structural:art-380:0",
+      "structural:art-381:0"
+     ]
+    },
+    {
+     "id": "q-073",
+     "chunk_ids": [
+      "structural:art-43:0",
+      "structural:art-353:0",
+      "structural:art-362:0",
+      "structural:art-436:0",
+      "structural:art-587:0"
+     ]
+    },
+    {
+     "id": "q-074",
+     "chunk_ids": [
+      "structural:art-166-a:0",
+      "structural:art-96-a:0",
+      "structural:art-167-c:0",
+      "structural:art-166-a:1",
+      "structural:art-166:1"
+     ]
+    },
+    {
+     "id": "q-075",
+     "chunk_ids": [
+      "structural:art-324:0",
+      "structural:art-325:0",
+      "structural:art-255:0",
+      "structural:art-256:0",
+      "structural:art-323:0"
+     ]
+    },
+    {
+     "id": "q-076",
+     "chunk_ids": [
+      "structural:art-275:0",
+      "structural:art-274:0",
+      "structural:art-273:0",
+      "structural:art-270:0",
+      "structural:art-267:0"
+     ]
+    },
+    {
+     "id": "q-077",
+     "chunk_ids": [
+      "structural:art-177:0",
+      "structural:art-178-a:0",
+      "structural:art-200:0",
+      "structural:art-205-a:0",
+      "structural:art-176:0"
+     ]
+    },
+    {
+     "id": "q-078",
+     "chunk_ids": [
+      "structural:art-449:0",
+      "structural:art-587:0",
+      "structural:art-438:0",
+      "structural:art-543:0",
+      "structural:art-545:0"
+     ]
+    },
+    {
+     "id": "q-079",
+     "chunk_ids": [
+      "structural:art-223:0",
+      "structural:art-222:0",
+      "structural:art-565:0",
+      "structural:art-655-o:0",
+      "structural:art-533:0"
+     ]
+    },
+    {
+     "id": "q-080",
+     "chunk_ids": [
+      "structural:art-338:0",
+      "structural:art-565:0",
+      "structural:art-671-c:0",
+      "structural:art-141:0",
+      "structural:art-316:0"
+     ]
+    },
+    {
+     "id": "q-081",
+     "chunk_ids": [
+      "structural:art-88:0",
+      "structural:art-91:0",
+      "structural:art-90:0",
+      "structural:art-64:0",
+      "structural:art-89:1"
+     ]
+    },
+    {
+     "id": "q-082",
+     "chunk_ids": [
+      "structural:art-178-a:0",
+      "structural:art-205-a:0",
+      "structural:art-177:0",
+      "structural:art-207:0",
+      "structural:art-201:0"
+     ]
+    },
+    {
+     "id": "q-083",
+     "chunk_ids": [
+      "structural:art-394:0",
+      "structural:art-85:0",
+      "structural:art-119:0",
+      "structural:art-84:0",
+      "structural:art-435:0"
+     ]
+    },
+    {
+     "id": "q-084",
+     "chunk_ids": [
+      "structural:art-276:0",
+      "structural:art-271:0",
+      "structural:art-267:0",
+      "structural:art-274:0",
+      "structural:art-268:0"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "hybrid",
+   "overlay": "config/ablations/hybrid.yaml",
+   "config_hash": "87c98e743f4d",
+   "mode": "hybrid",
+   "chunking": "structural",
+   "k_candidates": 20,
+   "rerank_max_length": null,
+   "metrics": {
+    "all": {
+     "article": {
+      "n": 70,
+      "recall@1": 0.6547619047619048,
+      "recall@3": 0.7952380952380952,
+      "recall@5": 0.8809523809523809,
+      "mrr": 0.7964285714285714
+     },
+     "unit": {
+      "n": 70,
+      "recall@1": 0.6557142857142857,
+      "recall@3": 0.7971428571428572,
+      "recall@5": 0.8828571428571428,
+      "mrr": 0.7964285714285714
+     }
+    },
+    "factual_single": {
+     "article": {
+      "n": 30,
+      "recall@1": 0.7666666666666667,
+      "recall@3": 0.8333333333333334,
+      "recall@5": 0.9333333333333333,
+      "mrr": 0.8194444444444444
+     },
+     "unit": {
+      "n": 30,
+      "recall@1": 0.7666666666666667,
+      "recall@3": 0.8333333333333334,
+      "recall@5": 0.9333333333333333,
+      "mrr": 0.8194444444444444
+     }
+    },
+    "multi_article": {
+     "article": {
+      "n": 20,
+      "recall@1": 0.24166666666666664,
+      "recall@3": 0.5333333333333333,
+      "recall@5": 0.6833333333333333,
+      "mrr": 0.6083333333333333
+     },
+     "unit": {
+      "n": 20,
+      "recall@1": 0.24500000000000002,
+      "recall@3": 0.54,
+      "recall@5": 0.6900000000000001,
+      "mrr": 0.6083333333333333
+     }
+    },
+    "deadline_or_value": {
+     "article": {
+      "n": 20,
+      "recall@1": 0.9,
+      "recall@3": 1.0,
+      "recall@5": 1.0,
+      "mrr": 0.95
+     },
+     "unit": {
+      "n": 20,
+      "recall@1": 0.9,
+      "recall@3": 1.0,
+      "recall@5": 1.0,
+      "mrr": 0.95
+     }
+    }
+   },
+   "seconds_median": 0.222,
+   "records": [
+    {
+     "id": "q-001",
+     "chunk_ids": [
+      "structural:art-279:0",
+      "structural:art-243:0",
+      "structural:art-242:0",
+      "structural:art-234:0",
+      "structural:art-465:0"
+     ]
+    },
+    {
+     "id": "q-002",
+     "chunk_ids": [
+      "structural:art-354:0",
+      "structural:art-167:0",
+      "structural:art-172:0",
+      "structural:art-96:0",
+      "structural:art-170:0"
+     ]
+    },
+    {
+     "id": "q-003",
+     "chunk_ids": [
+      "structural:art-429:0",
+      "structural:art-430:0",
+      "structural:art-420:0",
+      "structural:art-431:0",
+      "structural:art-421:0"
+     ]
+    },
+    {
+     "id": "q-004",
+     "chunk_ids": [
+      "structural:art-9:0",
+      "structural:art-6:0",
+      "structural:art-8:0",
+      "structural:art-659:1",
+      "structural:art-138:0"
+     ]
+    },
+    {
+     "id": "q-005",
+     "chunk_ids": [
+      "structural:art-554:0",
+      "structural:art-553:0",
+      "structural:art-558:0",
+      "structural:art-550:0",
+      "structural:art-559:0"
+     ]
+    },
+    {
+     "id": "q-006",
+     "chunk_ids": [
+      "structural:art-490:0",
+      "structural:art-480:0",
+      "structural:art-489:0",
+      "structural:art-467:0",
+      "structural:art-454:0"
+     ]
+    },
+    {
+     "id": "q-007",
+     "chunk_ids": [
+      "structural:art-207:0",
+      "structural:art-665:0",
+      "structural:art-665:1",
+      "structural:art-662:0",
+      "structural:art-219:0"
+     ]
+    },
+    {
+     "id": "q-008",
+     "chunk_ids": [
+      "structural:art-440:0",
+      "structural:art-444:0",
+      "structural:art-443:0",
+      "structural:art-441:0",
+      "structural:art-371:0"
+     ]
+    },
+    {
+     "id": "q-009",
+     "chunk_ids": [
+      "structural:art-665:0",
+      "structural:art-207:0",
+      "structural:art-662:0",
+      "structural:art-665:1",
+      "structural:art-205:0"
+     ]
+    },
+    {
+     "id": "q-010",
+     "chunk_ids": [
+      "structural:art-570:0",
+      "structural:art-343:0",
+      "structural:art-115:0",
+      "structural:art-346:0",
+      "structural:art-138:1"
+     ]
+    },
+    {
+     "id": "q-011",
+     "chunk_ids": [
+      "structural:art-252:0",
+      "structural:art-254:0",
+      "structural:art-250:0",
+      "structural:art-248:0",
+      "structural:art-251:0"
+     ]
+    },
+    {
+     "id": "q-012",
+     "chunk_ids": [
+      "structural:art-283:0",
+      "structural:art-247:0",
+      "structural:art-280:0",
+      "structural:art-582:0",
+      "structural:art-529:0"
+     ]
+    },
+    {
+     "id": "q-013",
+     "chunk_ids": [
+      "structural:art-636:0",
+      "structural:art-356:0",
+      "structural:art-142:0",
+      "structural:art-436:0",
+      "structural:art-434:0"
+     ]
+    },
+    {
+     "id": "q-014",
+     "chunk_ids": [
+      "structural:art-115:0",
+      "structural:art-344:0",
+      "structural:art-343:0",
+      "structural:art-570:0",
+      "structural:art-109:0"
+     ]
+    },
+    {
+     "id": "q-015",
+     "chunk_ids": [
+      "structural:art-219:0",
+      "structural:art-292:0",
+      "structural:art-290:0",
+      "structural:art-220:0",
+      "structural:art-222:0"
+     ]
+    },
+    {
+     "id": "q-016",
+     "chunk_ids": [
+      "structural:art-583:0",
+      "structural:art-595:0",
+      "structural:art-255:0",
+      "structural:art-323:1",
+      "structural:art-247:0"
+     ]
+    },
+    {
+     "id": "q-017",
+     "chunk_ids": [
+      "structural:art-260:0",
+      "structural:art-285:0",
+      "structural:art-271:0",
+      "structural:art-243:0",
+      "structural:art-91:0"
+     ]
+    },
+    {
+     "id": "q-018",
+     "chunk_ids": [
+      "structural:art-244:0",
+      "structural:art-243:0",
+      "structural:art-613:0",
+      "structural:art-585:0",
+      "structural:art-247:0"
+     ]
+    },
+    {
+     "id": "q-019",
+     "chunk_ids": [
+      "structural:art-316:0",
+      "structural:art-302:0",
+      "structural:art-304:0",
+      "structural:art-155:0",
+      "structural:art-287:0"
+     ]
+    },
+    {
+     "id": "q-020",
+     "chunk_ids": [
+      "structural:art-649:0",
+      "structural:art-651:0",
+      "structural:art-650:0",
+      "structural:art-648:0",
+      "structural:art-102:0"
+     ]
+    },
+    {
+     "id": "q-021",
+     "chunk_ids": [
+      "structural:art-596:0",
+      "structural:art-583:0",
+      "structural:art-504:0",
+      "structural:art-323:0",
+      "structural:art-324:0"
+     ]
+    },
+    {
+     "id": "q-022",
+     "chunk_ids": [
+      "structural:art-438:0",
+      "structural:art-543:0",
+      "structural:art-587:0",
+      "structural:art-437:0",
+      "structural:art-91:0"
+     ]
+    },
+    {
+     "id": "q-023",
+     "chunk_ids": [
+      "structural:art-655-c:0",
+      "structural:art-655-c:2",
+      "structural:art-655-c:1",
+      "structural:art-2:4",
+      "structural:art-655-b:0"
+     ]
+    },
+    {
+     "id": "q-031",
+     "chunk_ids": [
+      "structural:art-602:0",
+      "structural:art-607:0",
+      "structural:art-611:0",
+      "structural:art-621:0",
+      "structural:art-606:0"
+     ]
+    },
+    {
+     "id": "q-032",
+     "chunk_ids": [
+      "structural:art-453:0",
+      "structural:art-325:0",
+      "structural:art-627-a:2",
+      "structural:art-627-a:1",
+      "structural:art-594:0"
+     ]
+    },
+    {
+     "id": "q-033",
+     "chunk_ids": [
+      "structural:art-254:0",
+      "structural:art-248:0",
+      "structural:art-249:0",
+      "structural:art-96:0",
+      "structural:art-250:0"
+     ]
+    },
+    {
+     "id": "q-034",
+     "chunk_ids": [
+      "structural:art-597:0",
+      "structural:art-254:0",
+      "structural:art-245:0",
+      "structural:art-368:0",
+      "structural:art-250:0"
+     ]
+    },
+    {
+     "id": "q-035",
+     "chunk_ids": [
+      "structural:art-127:0",
+      "structural:art-47:0",
+      "structural:art-149:0",
+      "structural:art-499:0",
+      "structural:art-294:0"
+     ]
+    },
+    {
+     "id": "q-036",
+     "chunk_ids": [
+      "structural:art-14:0",
+      "structural:art-485:0",
+      "structural:art-506:0",
+      "structural:art-486-a:1",
+      "structural:art-485:1"
+     ]
+    },
+    {
+     "id": "q-037",
+     "chunk_ids": [
+      "structural:art-328:0",
+      "structural:art-342-a:0",
+      "structural:art-327:0",
+      "structural:art-565:0",
+      "structural:art-2:2"
+     ]
+    },
+    {
+     "id": "q-038",
+     "chunk_ids": [
+      "structural:art-339:0",
+      "structural:art-337:0",
+      "structural:art-582:0",
+      "structural:art-338:0",
+      "structural:art-656:0"
+     ]
+    },
+    {
+     "id": "q-039",
+     "chunk_ids": [
+      "structural:art-167-c:0",
+      "structural:art-167-b:0",
+      "structural:art-166:1",
+      "structural:art-166-a:0",
+      "structural:art-167:0"
+     ]
+    },
+    {
+     "id": "q-040",
+     "chunk_ids": [
+      "structural:art-480:0",
+      "structural:art-453:0",
+      "structural:art-451:0",
+      "structural:art-25:0",
+      "structural:art-292:0"
+     ]
+    },
+    {
+     "id": "q-041",
+     "chunk_ids": [
+      "structural:art-422:0",
+      "structural:art-421:0",
+      "structural:art-325:0",
+      "structural:art-423:0",
+      "structural:art-256:0"
+     ]
+    },
+    {
+     "id": "q-042",
+     "chunk_ids": [
+      "structural:art-250:0",
+      "structural:art-253:0",
+      "structural:art-252:0",
+      "structural:art-257:0",
+      "structural:art-91:0"
+     ]
+    },
+    {
+     "id": "q-043",
+     "chunk_ids": [
+      "structural:art-288:0",
+      "structural:art-324:0",
+      "structural:art-325:0",
+      "structural:art-141:0",
+      "structural:art-268:0"
+     ]
+    },
+    {
+     "id": "q-044",
+     "chunk_ids": [
+      "structural:art-138:0",
+      "structural:art-138:1",
+      "structural:art-139:0",
+      "structural:art-6:0",
+      "structural:art-346:0"
+     ]
+    },
+    {
+     "id": "q-045",
+     "chunk_ids": [
+      "structural:art-324:0",
+      "structural:art-2:2",
+      "structural:art-655-h:0",
+      "structural:art-325:0",
+      "structural:art-655-f:0"
+     ]
+    },
+    {
+     "id": "q-046",
+     "chunk_ids": [
+      "structural:art-617:0",
+      "structural:art-613:0",
+      "structural:art-612:0",
+      "structural:art-602:0",
+      "structural:art-618:0"
+     ]
+    },
+    {
+     "id": "q-047",
+     "chunk_ids": [
+      "structural:art-663:0",
+      "structural:art-173:0",
+      "structural:art-175:0",
+      "structural:art-627-a:1",
+      "structural:art-671-c:0"
+     ]
+    },
+    {
+     "id": "q-048",
+     "chunk_ids": [
+      "structural:art-365:0",
+      "structural:art-369:0",
+      "structural:art-366:0",
+      "structural:art-364:0",
+      "structural:art-362:0"
+     ]
+    },
+    {
+     "id": "q-049",
+     "chunk_ids": [
+      "structural:art-421:0",
+      "structural:art-430:0",
+      "structural:art-423:0",
+      "structural:art-408:0",
+      "structural:art-420:0"
+     ]
+    },
+    {
+     "id": "q-050",
+     "chunk_ids": [
+      "structural:art-49:0",
+      "structural:art-30:0",
+      "structural:art-88:0",
+      "structural:art-465:0",
+      "structural:art-91:0"
+     ]
+    },
+    {
+     "id": "q-051",
+     "chunk_ids": [
+      "structural:art-377:0",
+      "structural:art-376:0",
+      "structural:art-382:0",
+      "structural:art-380:0",
+      "structural:art-371:0"
+     ]
+    },
+    {
+     "id": "q-052",
+     "chunk_ids": [
+      "structural:art-582:0",
+      "structural:art-580:0",
+      "structural:art-581:0",
+      "structural:art-564:0",
+      "structural:art-655-o:0"
+     ]
+    },
+    {
+     "id": "q-053",
+     "chunk_ids": [
+      "structural:art-391:0",
+      "structural:art-371:0",
+      "structural:art-380:0",
+      "structural:art-387:0",
+      "structural:art-127:0"
+     ]
+    },
+    {
+     "id": "q-061",
+     "chunk_ids": [
+      "structural:art-363:0",
+      "structural:art-365:0",
+      "structural:art-366:0",
+      "structural:art-362:0",
+      "structural:art-364:0"
+     ]
+    },
+    {
+     "id": "q-062",
+     "chunk_ids": [
+      "structural:art-307:0",
+      "structural:art-308:0",
+      "structural:art-309:0",
+      "structural:art-2:2",
+      "structural:art-655-i:0"
+     ]
+    },
+    {
+     "id": "q-063",
+     "chunk_ids": [
+      "structural:art-335:0",
+      "structural:art-342-a:0",
+      "structural:art-334:0",
+      "structural:art-339:0",
+      "structural:art-341:0"
+     ]
+    },
+    {
+     "id": "q-064",
+     "chunk_ids": [
+      "structural:art-186:0",
+      "structural:art-184:0",
+      "structural:art-186:1",
+      "structural:art-184:1",
+      "structural:art-185:0"
+     ]
+    },
+    {
+     "id": "q-065",
+     "chunk_ids": [
+      "structural:art-263:0",
+      "structural:art-267:0",
+      "structural:art-258:0",
+      "structural:art-279:0",
+      "structural:art-271:0"
+     ]
+    },
+    {
+     "id": "q-066",
+     "chunk_ids": [
+      "structural:art-560:0",
+      "structural:art-109:1",
+      "structural:art-557:0",
+      "structural:art-559:0",
+      "structural:art-558:0"
+     ]
+    },
+    {
+     "id": "q-067",
+     "chunk_ids": [
+      "structural:art-621:0",
+      "structural:art-649:0",
+      "structural:art-618:0",
+      "structural:art-620:0",
+      "structural:art-611:0"
+     ]
+    },
+    {
+     "id": "q-068",
+     "chunk_ids": [
+      "structural:art-629:1",
+      "structural:art-630:0",
+      "structural:art-628:0",
+      "structural:art-629:0",
+      "structural:art-631:0"
+     ]
+    },
+    {
+     "id": "q-069",
+     "chunk_ids": [
+      "structural:art-657:0",
+      "structural:art-631:0",
+      "structural:art-324:0",
+      "structural:art-668:1",
+      "structural:art-629:0"
+     ]
+    },
+    {
+     "id": "q-070",
+     "chunk_ids": [
+      "structural:art-648:0",
+      "structural:art-109:0",
+      "structural:art-109:2",
+      "structural:art-650:0",
+      "structural:art-109:1"
+     ]
+    },
+    {
+     "id": "q-071",
+     "chunk_ids": [
+      "structural:art-320:0",
+      "structural:art-465:0",
+      "structural:art-247:0",
+      "structural:art-474:0",
+      "structural:art-283:0"
+     ]
+    },
+    {
+     "id": "q-072",
+     "chunk_ids": [
+      "structural:art-376:0",
+      "structural:art-377:0",
+      "structural:art-382:0",
+      "structural:art-380:0",
+      "structural:art-371:0"
+     ]
+    },
+    {
+     "id": "q-073",
+     "chunk_ids": [
+      "structural:art-43:0",
+      "structural:art-353:0",
+      "structural:art-355:0",
+      "structural:art-436:0",
+      "structural:art-362:0"
+     ]
+    },
+    {
+     "id": "q-074",
+     "chunk_ids": [
+      "structural:art-96-a:0",
+      "structural:art-166-a:0",
+      "structural:art-167:0",
+      "structural:art-166:1",
+      "structural:art-167-c:0"
+     ]
+    },
+    {
+     "id": "q-075",
+     "chunk_ids": [
+      "structural:art-325:0",
+      "structural:art-324:0",
+      "structural:art-257:0",
+      "structural:art-255:0",
+      "structural:art-504:0"
+     ]
+    },
+    {
+     "id": "q-076",
+     "chunk_ids": [
+      "structural:art-274:0",
+      "structural:art-275:0",
+      "structural:art-273:0",
+      "structural:art-267:0",
+      "structural:art-270:0"
+     ]
+    },
+    {
+     "id": "q-077",
+     "chunk_ids": [
+      "structural:art-177:0",
+      "structural:art-200:0",
+      "structural:art-178-a:0",
+      "structural:art-176:0",
+      "structural:art-205-a:0"
+     ]
+    },
+    {
+     "id": "q-078",
+     "chunk_ids": [
+      "structural:art-449:0",
+      "structural:art-587:0",
+      "structural:art-371:0",
+      "structural:art-438:0",
+      "structural:art-671-b:0"
+     ]
+    },
+    {
+     "id": "q-079",
+     "chunk_ids": [
+      "structural:art-223:0",
+      "structural:art-222:0",
+      "structural:art-224:0",
+      "structural:art-565:0",
+      "structural:art-231:0"
+     ]
+    },
+    {
+     "id": "q-080",
+     "chunk_ids": [
+      "structural:art-338:0",
+      "structural:art-565:0",
+      "structural:art-660:0",
+      "structural:art-337:0",
+      "structural:art-671-c:0"
+     ]
+    },
+    {
+     "id": "q-081",
+     "chunk_ids": [
+      "structural:art-88:0",
+      "structural:art-91:0",
+      "structural:art-64:0",
+      "structural:art-90:0",
+      "structural:art-96:0"
+     ]
+    },
+    {
+     "id": "q-082",
+     "chunk_ids": [
+      "structural:art-178-a:0",
+      "structural:art-177:0",
+      "structural:art-205-a:0",
+      "structural:art-207:0",
+      "structural:art-205:0"
+     ]
+    },
+    {
+     "id": "q-083",
+     "chunk_ids": [
+      "structural:art-394:0",
+      "structural:art-140:0",
+      "structural:art-119:0",
+      "structural:art-85:0",
+      "structural:art-117:0"
+     ]
+    },
+    {
+     "id": "q-084",
+     "chunk_ids": [
+      "structural:art-276:0",
+      "structural:art-271:0",
+      "structural:art-267:0",
+      "structural:art-263:0",
+      "structural:art-274:0"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "hybrid_rerank",
+   "overlay": "config/ablations/hybrid_rerank.yaml",
+   "config_hash": "487b79b3beea",
+   "mode": "hybrid+rerank",
+   "chunking": "structural",
+   "k_candidates": 20,
+   "rerank_max_length": 2048,
+   "metrics": {
+    "all": {
+     "article": {
+      "n": 70,
+      "recall@1": 0.719047619047619,
+      "recall@3": 0.9166666666666667,
+      "recall@5": 0.9452380952380953,
+      "mrr": 0.8892857142857142,
+      "pool_recall@20": 0.9571428571428572
+     },
+     "unit": {
+      "n": 70,
+      "recall@1": 0.7176190476190476,
+      "recall@3": 0.9185714285714285,
+      "recall@5": 0.9471428571428571,
+      "mrr": 0.8892857142857142,
+      "pool_recall@20": 0.9571428571428572
+     }
+    },
+    "factual_single": {
+     "article": {
+      "n": 30,
+      "recall@1": 0.9,
+      "recall@3": 0.9666666666666667,
+      "recall@5": 0.9666666666666667,
+      "mrr": 0.9277777777777777,
+      "pool_recall@20": 0.9666666666666667
+     },
+     "unit": {
+      "n": 30,
+      "recall@1": 0.9,
+      "recall@3": 0.9666666666666667,
+      "recall@5": 0.9666666666666667,
+      "mrr": 0.9277777777777777,
+      "pool_recall@20": 0.9666666666666667
+     }
+    },
+    "multi_article": {
+     "article": {
+      "n": 20,
+      "recall@1": 0.31666666666666665,
+      "recall@3": 0.7583333333333333,
+      "recall@5": 0.8583333333333334,
+      "mrr": 0.7958333333333333,
+      "pool_recall@20": 0.9
+     },
+     "unit": {
+      "n": 20,
+      "recall@1": 0.31166666666666665,
+      "recall@3": 0.765,
+      "recall@5": 0.865,
+      "mrr": 0.7958333333333333,
+      "pool_recall@20": 0.9
+     }
+    },
+    "deadline_or_value": {
+     "article": {
+      "n": 20,
+      "recall@1": 0.85,
+      "recall@3": 1.0,
+      "recall@5": 1.0,
+      "mrr": 0.925,
+      "pool_recall@20": 1.0
+     },
+     "unit": {
+      "n": 20,
+      "recall@1": 0.85,
+      "recall@3": 1.0,
+      "recall@5": 1.0,
+      "mrr": 0.925,
+      "pool_recall@20": 1.0
+     }
+    }
+   },
+   "seconds_median": 0.23,
+   "records": [
+    {
+     "id": "q-001",
+     "chunk_ids": [
+      "structural:art-279:0",
+      "structural:art-278:0",
+      "structural:art-234:0",
+      "structural:art-243:0",
+      "structural:art-242:0"
+     ]
+    },
+    {
+     "id": "q-002",
+     "chunk_ids": [
+      "structural:art-354:0",
+      "structural:art-172:0",
+      "structural:art-96:0",
+      "structural:art-170:0",
+      "structural:art-96:1"
+     ]
+    },
+    {
+     "id": "q-003",
+     "chunk_ids": [
+      "structural:art-429:0",
+      "structural:art-398:0",
+      "structural:art-423:0",
+      "structural:art-383:0",
+      "structural:art-430:0"
+     ]
+    },
+    {
+     "id": "q-004",
+     "chunk_ids": [
+      "structural:art-9:0",
+      "structural:art-633:0",
+      "structural:art-8:0",
+      "structural:art-6:0",
+      "structural:art-138:1"
+     ]
+    },
+    {
+     "id": "q-005",
+     "chunk_ids": [
+      "structural:art-554:0",
+      "structural:art-559:0",
+      "structural:art-553:0",
+      "structural:art-193:0",
+      "structural:art-2:1"
+     ]
+    },
+    {
+     "id": "q-006",
+     "chunk_ids": [
+      "structural:art-490:0",
+      "structural:art-486-a:0",
+      "structural:art-480:0",
+      "structural:art-489:0",
+      "structural:art-457:0"
+     ]
+    },
+    {
+     "id": "q-007",
+     "chunk_ids": [
+      "structural:art-207:0",
+      "structural:art-665:0",
+      "structural:art-665:1",
+      "structural:art-186:0",
+      "structural:art-177:1"
+     ]
+    },
+    {
+     "id": "q-008",
+     "chunk_ids": [
+      "structural:art-440:0",
+      "structural:art-443:0",
+      "structural:art-441:0",
+      "structural:art-325:0",
+      "structural:art-545:0"
+     ]
+    },
+    {
+     "id": "q-009",
+     "chunk_ids": [
+      "structural:art-662:0",
+      "structural:art-665:0",
+      "structural:art-207:0",
+      "structural:art-205:0",
+      "structural:art-665:1"
+     ]
+    },
+    {
+     "id": "q-010",
+     "chunk_ids": [
+      "structural:art-346:0",
+      "structural:art-138:0",
+      "structural:art-343:0",
+      "structural:art-299:0",
+      "structural:art-138:1"
+     ]
+    },
+    {
+     "id": "q-011",
+     "chunk_ids": [
+      "structural:art-252:0",
+      "structural:art-250:0",
+      "structural:art-257:0",
+      "structural:art-254:0",
+      "structural:art-591:0"
+     ]
+    },
+    {
+     "id": "q-012",
+     "chunk_ids": [
+      "structural:art-278:0",
+      "structural:art-280:0",
+      "structural:art-582:0",
+      "structural:art-283:0",
+      "structural:art-323:1"
+     ]
+    },
+    {
+     "id": "q-013",
+     "chunk_ids": [
+      "structural:art-140:0",
+      "structural:art-360:0",
+      "structural:art-436:0",
+      "structural:art-142:0",
+      "structural:art-582:0"
+     ]
+    },
+    {
+     "id": "q-014",
+     "chunk_ids": [
+      "structural:art-344:0",
+      "structural:art-115:0",
+      "structural:art-343:0",
+      "structural:art-440:0",
+      "structural:art-323:0"
+     ]
+    },
+    {
+     "id": "q-015",
+     "chunk_ids": [
+      "structural:art-222:0",
+      "structural:art-292:0",
+      "structural:art-219:0",
+      "structural:art-561:0",
+      "structural:art-671-a:0"
+     ]
+    },
+    {
+     "id": "q-016",
+     "chunk_ids": [
+      "structural:art-583:0",
+      "structural:art-595:0",
+      "structural:art-596:0",
+      "structural:art-598:0",
+      "structural:art-255:0"
+     ]
+    },
+    {
+     "id": "q-017",
+     "chunk_ids": [
+      "structural:art-271:0",
+      "structural:art-260:0",
+      "structural:art-285:0",
+      "structural:art-243:0",
+      "structural:art-250:0"
+     ]
+    },
+    {
+     "id": "q-018",
+     "chunk_ids": [
+      "structural:art-244:0",
+      "structural:art-243:0",
+      "structural:art-621:0",
+      "structural:art-96:0",
+      "structural:art-235:0"
+     ]
+    },
+    {
+     "id": "q-019",
+     "chunk_ids": [
+      "structural:art-316:0",
+      "structural:art-304:0",
+      "structural:art-90:0",
+      "structural:art-311:0",
+      "structural:art-261:0"
+     ]
+    },
+    {
+     "id": "q-020",
+     "chunk_ids": [
+      "structural:art-651:0",
+      "structural:art-102:0",
+      "structural:art-649:0",
+      "structural:art-618:0",
+      "structural:art-650:0"
+     ]
+    },
+    {
+     "id": "q-021",
+     "chunk_ids": [
+      "structural:art-596:0",
+      "structural:art-323:0",
+      "structural:art-504:0",
+      "structural:art-324:0",
+      "structural:art-583:0"
+     ]
+    },
+    {
+     "id": "q-022",
+     "chunk_ids": [
+      "structural:art-438:0",
+      "structural:art-543:0",
+      "structural:art-587:0",
+      "structural:art-96:0",
+      "structural:art-23:0"
+     ]
+    },
+    {
+     "id": "q-023",
+     "chunk_ids": [
+      "structural:art-655-c:0",
+      "structural:art-655-c:2",
+      "structural:art-655-c:1",
+      "structural:art-67:1",
+      "structural:art-655-b:0"
+     ]
+    },
+    {
+     "id": "q-031",
+     "chunk_ids": [
+      "structural:art-607:0",
+      "structural:art-602:0",
+      "structural:art-618:0",
+      "structural:art-614:0",
+      "structural:art-611:0"
+     ]
+    },
+    {
+     "id": "q-032",
+     "chunk_ids": [
+      "structural:art-453:0",
+      "structural:art-110:0",
+      "structural:art-627-a:1",
+      "structural:art-325:0",
+      "structural:art-304:0"
+     ]
+    },
+    {
+     "id": "q-033",
+     "chunk_ids": [
+      "structural:art-254:0",
+      "structural:art-250:0",
+      "structural:art-248:0",
+      "structural:art-96:0",
+      "structural:art-251:0"
+     ]
+    },
+    {
+     "id": "q-034",
+     "chunk_ids": [
+      "structural:art-597:0",
+      "structural:art-368:0",
+      "structural:art-591:0",
+      "structural:art-254:0",
+      "structural:art-596:0"
+     ]
+    },
+    {
+     "id": "q-035",
+     "chunk_ids": [
+      "structural:art-127:0",
+      "structural:art-149:0",
+      "structural:art-294:0",
+      "structural:art-500:0",
+      "structural:art-47:0"
+     ]
+    },
+    {
+     "id": "q-036",
+     "chunk_ids": [
+      "structural:art-14:0",
+      "structural:art-485:0",
+      "structural:art-11:0",
+      "structural:art-485:1",
+      "structural:art-655:0"
+     ]
+    },
+    {
+     "id": "q-037",
+     "chunk_ids": [
+      "structural:art-328:0",
+      "structural:art-342-a:0",
+      "structural:art-565:0",
+      "structural:art-333:0",
+      "structural:art-327:0"
+     ]
+    },
+    {
+     "id": "q-038",
+     "chunk_ids": [
+      "structural:art-339:0",
+      "structural:art-656:0",
+      "structural:art-337:0",
+      "structural:art-582:0",
+      "structural:art-618:0"
+     ]
+    },
+    {
+     "id": "q-039",
+     "chunk_ids": [
+      "structural:art-166-a:0",
+      "structural:art-167-c:0",
+      "structural:art-167-b:0",
+      "structural:art-166-a:1",
+      "structural:art-168:0"
+     ]
+    },
+    {
+     "id": "q-040",
+     "chunk_ids": [
+      "structural:art-480:0",
+      "structural:art-486-a:0",
+      "structural:art-25:0",
+      "structural:art-479:0",
+      "structural:art-30:0"
+     ]
+    },
+    {
+     "id": "q-041",
+     "chunk_ids": [
+      "structural:art-325:0",
+      "structural:art-422:0",
+      "structural:art-421:0",
+      "structural:art-423:0",
+      "structural:art-257:0"
+     ]
+    },
+    {
+     "id": "q-042",
+     "chunk_ids": [
+      "structural:art-250:0",
+      "structural:art-252:0",
+      "structural:art-253:0",
+      "structural:art-438:0",
+      "structural:art-257:0"
+     ]
+    },
+    {
+     "id": "q-043",
+     "chunk_ids": [
+      "structural:art-324:0",
+      "structural:art-323:0",
+      "structural:art-504:0",
+      "structural:art-288:0",
+      "structural:art-141:0"
+     ]
+    },
+    {
+     "id": "q-044",
+     "chunk_ids": [
+      "structural:art-138:0",
+      "structural:art-346:0",
+      "structural:art-138:1",
+      "structural:art-139:0",
+      "structural:art-299:0"
+     ]
+    },
+    {
+     "id": "q-045",
+     "chunk_ids": [
+      "structural:art-596:0",
+      "structural:art-325:0",
+      "structural:art-655-f:0",
+      "structural:art-504:0",
+      "structural:art-595:0"
+     ]
+    },
+    {
+     "id": "q-046",
+     "chunk_ids": [
+      "structural:art-617:0",
+      "structural:art-618:0",
+      "structural:art-613:0",
+      "structural:art-602:0",
+      "structural:art-621:0"
+     ]
+    },
+    {
+     "id": "q-047",
+     "chunk_ids": [
+      "structural:art-663:0",
+      "structural:art-173:0",
+      "structural:art-627-a:1",
+      "structural:art-175:0",
+      "structural:art-143:0"
+     ]
+    },
+    {
+     "id": "q-048",
+     "chunk_ids": [
+      "structural:art-369:0",
+      "structural:art-365:0",
+      "structural:art-368:0",
+      "structural:art-441:0",
+      "structural:art-366:0"
+     ]
+    },
+    {
+     "id": "q-049",
+     "chunk_ids": [
+      "structural:art-421:0",
+      "structural:art-408:0",
+      "structural:art-418:0",
+      "structural:art-438:0",
+      "structural:art-71:0"
+     ]
+    },
+    {
+     "id": "q-050",
+     "chunk_ids": [
+      "structural:art-49:0",
+      "structural:art-64:0",
+      "structural:art-91:0",
+      "structural:art-507:0",
+      "structural:art-88:0"
+     ]
+    },
+    {
+     "id": "q-051",
+     "chunk_ids": [
+      "structural:art-377:0",
+      "structural:art-376:0",
+      "structural:art-382:0",
+      "structural:art-371-a:0",
+      "structural:art-375:0"
+     ]
+    },
+    {
+     "id": "q-052",
+     "chunk_ids": [
+      "structural:art-582:0",
+      "structural:art-580:0",
+      "structural:art-564:0",
+      "structural:art-565:0",
+      "structural:art-583:0"
+     ]
+    },
+    {
+     "id": "q-053",
+     "chunk_ids": [
+      "structural:art-391:0",
+      "structural:art-380:0",
+      "structural:art-387:0",
+      "structural:art-392:0",
+      "structural:art-668:0"
+     ]
+    },
+    {
+     "id": "q-061",
+     "chunk_ids": [
+      "structural:art-363:0",
+      "structural:art-364:0",
+      "structural:art-623:0",
+      "structural:art-365:0",
+      "structural:art-362:0"
+     ]
+    },
+    {
+     "id": "q-062",
+     "chunk_ids": [
+      "structural:art-307:0",
+      "structural:art-655-i:0",
+      "structural:art-308:0",
+      "structural:art-309:0",
+      "structural:art-655-o:0"
+     ]
+    },
+    {
+     "id": "q-063",
+     "chunk_ids": [
+      "structural:art-335:0",
+      "structural:art-334:0",
+      "structural:art-333:0",
+      "structural:art-341:0",
+      "structural:art-342-a:0"
+     ]
+    },
+    {
+     "id": "q-064",
+     "chunk_ids": [
+      "structural:art-186:0",
+      "structural:art-184:0",
+      "structural:art-184:1",
+      "structural:art-186:1",
+      "structural:art-175-a:0"
+     ]
+    },
+    {
+     "id": "q-065",
+     "chunk_ids": [
+      "structural:art-263:0",
+      "structural:art-234:0",
+      "structural:art-272:0",
+      "structural:art-228:0",
+      "structural:art-258:0"
+     ]
+    },
+    {
+     "id": "q-066",
+     "chunk_ids": [
+      "structural:art-560:0",
+      "structural:art-109:1",
+      "structural:art-109:0",
+      "structural:art-109:2",
+      "structural:art-558:0"
+     ]
+    },
+    {
+     "id": "q-067",
+     "chunk_ids": [
+      "structural:art-621:0",
+      "structural:art-620:0",
+      "structural:art-611:0",
+      "structural:art-618:0",
+      "structural:art-649:0"
+     ]
+    },
+    {
+     "id": "q-068",
+     "chunk_ids": [
+      "structural:art-629:1",
+      "structural:art-629:0",
+      "structural:art-631:0",
+      "structural:art-630:0",
+      "structural:art-628:0"
+     ]
+    },
+    {
+     "id": "q-069",
+     "chunk_ids": [
+      "structural:art-657:0",
+      "structural:art-316:0",
+      "structural:art-631:0",
+      "structural:art-627-a:1",
+      "structural:art-323:0"
+     ]
+    },
+    {
+     "id": "q-070",
+     "chunk_ids": [
+      "structural:art-650:0",
+      "structural:art-648:0",
+      "structural:art-649:0",
+      "structural:art-655-i:0",
+      "structural:art-109:1"
+     ]
+    },
+    {
+     "id": "q-071",
+     "chunk_ids": [
+      "structural:art-320:0",
+      "structural:art-469:0",
+      "structural:art-228:0",
+      "structural:art-465:0",
+      "structural:art-474:0"
+     ]
+    },
+    {
+     "id": "q-072",
+     "chunk_ids": [
+      "structural:art-376:0",
+      "structural:art-377:0",
+      "structural:art-382:0",
+      "structural:art-380:0",
+      "structural:art-375:0"
+     ]
+    },
+    {
+     "id": "q-073",
+     "chunk_ids": [
+      "structural:art-43:0",
+      "structural:art-355:0",
+      "structural:art-436:0",
+      "structural:art-362:0",
+      "structural:art-353:0"
+     ]
+    },
+    {
+     "id": "q-074",
+     "chunk_ids": [
+      "structural:art-166-a:0",
+      "structural:art-96-a:0",
+      "structural:art-166:1",
+      "structural:art-166-a:1",
+      "structural:art-167-b:0"
+     ]
+    },
+    {
+     "id": "q-075",
+     "chunk_ids": [
+      "structural:art-504:0",
+      "structural:art-257:0",
+      "structural:art-255:0",
+      "structural:art-325:0",
+      "structural:art-256:0"
+     ]
+    },
+    {
+     "id": "q-076",
+     "chunk_ids": [
+      "structural:art-275:0",
+      "structural:art-288:0",
+      "structural:art-276:0",
+      "structural:art-283:0",
+      "structural:art-267:0"
+     ]
+    },
+    {
+     "id": "q-077",
+     "chunk_ids": [
+      "structural:art-177:0",
+      "structural:art-200:0",
+      "structural:art-178-a:0",
+      "structural:art-176:0",
+      "structural:art-201:0"
+     ]
+    },
+    {
+     "id": "q-078",
+     "chunk_ids": [
+      "structural:art-449:0",
+      "structural:art-382:0",
+      "structural:art-659:0",
+      "structural:art-418:0",
+      "structural:art-587:0"
+     ]
+    },
+    {
+     "id": "q-079",
+     "chunk_ids": [
+      "structural:art-223:0",
+      "structural:art-222:0",
+      "structural:art-561:0",
+      "structural:art-221:0",
+      "structural:art-565:0"
+     ]
+    },
+    {
+     "id": "q-080",
+     "chunk_ids": [
+      "structural:art-338:0",
+      "structural:art-582:0",
+      "structural:art-341:0",
+      "structural:art-325:0",
+      "structural:art-565:0"
+     ]
+    },
+    {
+     "id": "q-081",
+     "chunk_ids": [
+      "structural:art-88:0",
+      "structural:art-89:1",
+      "structural:art-91:0",
+      "structural:art-86:0",
+      "structural:art-89:0"
+     ]
+    },
+    {
+     "id": "q-082",
+     "chunk_ids": [
+      "structural:art-178-a:0",
+      "structural:art-177:0",
+      "structural:art-49:0",
+      "structural:art-200:0",
+      "structural:art-205-a:0"
+     ]
+    },
+    {
+     "id": "q-083",
+     "chunk_ids": [
+      "structural:art-394:0",
+      "structural:art-143:0",
+      "structural:art-141:0",
+      "structural:art-140:0",
+      "structural:art-119:0"
+     ]
+    },
+    {
+     "id": "q-084",
+     "chunk_ids": [
+      "structural:art-276:0",
+      "structural:art-271:0",
+      "structural:art-288:0",
+      "structural:art-274:0",
+      "structural:art-267:0"
+     ]
+    }
+   ],
+   "rerank_cache": {
+    "hits": 1392,
+    "misses": 8
+   }
+  },
+  {
+   "name": "fixed_chunking",
+   "overlay": "config/ablations/fixed_chunking.yaml",
+   "config_hash": "fc8ba466d7e6",
+   "mode": "hybrid+rerank",
+   "chunking": "fixed",
+   "k_candidates": 20,
+   "rerank_max_length": 2048,
+   "metrics": {
+    "all": {
+     "article": {
+      "n": 70,
+      "recall@1": 0.7833333333333333,
+      "recall@3": 0.9095238095238095,
+      "recall@5": 0.930952380952381,
+      "mrr": 0.9226190476190476,
+      "pool_recall@20": 0.980952380952381
+     },
+     "unit": {
+      "n": 70,
+      "recall@1": 0.7461904761904762,
+      "recall@3": 0.8419047619047618,
+      "recall@5": 0.9014285714285715,
+      "mrr": 0.8969047619047619,
+      "pool_recall@20": 0.9614285714285714
+     }
+    },
+    "factual_single": {
+     "article": {
+      "n": 30,
+      "recall@1": 0.9,
+      "recall@3": 0.9666666666666667,
+      "recall@5": 0.9666666666666667,
+      "mrr": 0.9277777777777777,
+      "pool_recall@20": 0.9666666666666667
+     },
+     "unit": {
+      "n": 30,
+      "recall@1": 0.8666666666666667,
+      "recall@3": 0.9333333333333333,
+      "recall@5": 0.9666666666666667,
+      "mrr": 0.9066666666666666,
+      "pool_recall@20": 0.9666666666666667
+     }
+    },
+    "multi_article": {
+     "article": {
+      "n": 20,
+      "recall@1": 0.4416666666666667,
+      "recall@3": 0.7333333333333333,
+      "recall@5": 0.8083333333333333,
+      "mrr": 0.8625,
+      "pool_recall@20": 0.9833333333333334
+     },
+     "unit": {
+      "n": 20,
+      "recall@1": 0.3616666666666667,
+      "recall@3": 0.5466666666666666,
+      "recall@5": 0.705,
+      "mrr": 0.8125,
+      "pool_recall@20": 0.915
+     }
+    },
+    "deadline_or_value": {
+     "article": {
+      "n": 20,
+      "recall@1": 0.95,
+      "recall@3": 1.0,
+      "recall@5": 1.0,
+      "mrr": 0.975,
+      "pool_recall@20": 1.0
+     },
+     "unit": {
+      "n": 20,
+      "recall@1": 0.95,
+      "recall@3": 1.0,
+      "recall@5": 1.0,
+      "mrr": 0.9666666666666666,
+      "pool_recall@20": 1.0
+     }
+    }
+   },
+   "seconds_median": 0.232,
+   "records": [
+    {
+     "id": "q-001",
+     "chunk_ids": [
+      "fixed:norm:346",
+      "fixed:norm:321",
+      "fixed:norm:320",
+      "fixed:norm:344",
+      "fixed:norm:345"
+     ]
+    },
+    {
+     "id": "q-002",
+     "chunk_ids": [
+      "fixed:norm:426",
+      "fixed:norm:254",
+      "fixed:norm:253",
+      "fixed:norm:250",
+      "fixed:norm:146"
+     ]
+    },
+    {
+     "id": "q-003",
+     "chunk_ids": [
+      "fixed:norm:470",
+      "fixed:norm:484",
+      "fixed:norm:492",
+      "fixed:norm:489",
+      "fixed:norm:494"
+     ]
+    },
+    {
+     "id": "q-004",
+     "chunk_ids": [
+      "fixed:norm:34",
+      "fixed:norm:33",
+      "fixed:norm:691",
+      "fixed:norm:30",
+      "fixed:norm:29"
+     ]
+    },
+    {
+     "id": "q-005",
+     "chunk_ids": [
+      "fixed:norm:612",
+      "fixed:norm:611",
+      "fixed:norm:290",
+      "fixed:norm:610",
+      "fixed:norm:421"
+     ]
+    },
+    {
+     "id": "q-006",
+     "chunk_ids": [
+      "fixed:norm:571",
+      "fixed:norm:561",
+      "fixed:norm:559",
+      "fixed:norm:562",
+      "fixed:norm:551"
+     ]
+    },
+    {
+     "id": "q-007",
+     "chunk_ids": [
+      "fixed:norm:303",
+      "fixed:norm:777",
+      "fixed:norm:782",
+      "fixed:norm:780",
+      "fixed:norm:269"
+     ]
+    },
+    {
+     "id": "q-008",
+     "chunk_ids": [
+      "fixed:norm:507",
+      "fixed:norm:510",
+      "fixed:norm:505",
+      "fixed:norm:436",
+      "fixed:norm:509"
+     ]
+    },
+    {
+     "id": "q-009",
+     "chunk_ids": [
+      "fixed:norm:774",
+      "fixed:norm:777",
+      "fixed:norm:302",
+      "fixed:norm:303",
+      "fixed:norm:778"
+     ]
+    },
+    {
+     "id": "q-010",
+     "chunk_ids": [
+      "fixed:norm:420",
+      "fixed:norm:421",
+      "fixed:norm:193",
+      "fixed:norm:644",
+      "fixed:norm:414"
+     ]
+    },
+    {
+     "id": "q-011",
+     "chunk_ids": [
+      "fixed:norm:328",
+      "fixed:norm:439",
+      "fixed:norm:635",
+      "fixed:norm:335",
+      "fixed:norm:331"
+     ]
+    },
+    {
+     "id": "q-012",
+     "chunk_ids": [
+      "fixed:norm:344",
+      "fixed:norm:345",
+      "fixed:norm:627",
+      "fixed:norm:385",
+      "fixed:norm:387"
+     ]
+    },
+    {
+     "id": "q-013",
+     "chunk_ids": [
+      "fixed:norm:197",
+      "fixed:norm:431",
+      "fixed:norm:694",
+      "fixed:norm:205",
+      "fixed:norm:499"
+     ]
+    },
+    {
+     "id": "q-014",
+     "chunk_ids": [
+      "fixed:norm:416",
+      "fixed:norm:415",
+      "fixed:norm:176",
+      "fixed:norm:414",
+      "fixed:norm:422"
+     ]
+    },
+    {
+     "id": "q-015",
+     "chunk_ids": [
+      "fixed:norm:310",
+      "fixed:norm:356",
+      "fixed:norm:613",
+      "fixed:norm:354",
+      "fixed:norm:232"
+     ]
+    },
+    {
+     "id": "q-016",
+     "chunk_ids": [
+      "fixed:norm:628",
+      "fixed:norm:630",
+      "fixed:norm:640",
+      "fixed:norm:629",
+      "fixed:norm:643"
+     ]
+    },
+    {
+     "id": "q-017",
+     "chunk_ids": [
+      "fixed:norm:349",
+      "fixed:norm:339",
+      "fixed:norm:338",
+      "fixed:norm:320",
+      "fixed:norm:348"
+     ]
+    },
+    {
+     "id": "q-018",
+     "chunk_ids": [
+      "fixed:norm:321",
+      "fixed:norm:320",
+      "fixed:norm:668",
+      "fixed:norm:317",
+      "fixed:norm:658"
+     ]
+    },
+    {
+     "id": "q-019",
+     "chunk_ids": [
+      "fixed:norm:382",
+      "fixed:norm:375",
+      "fixed:norm:374",
+      "fixed:norm:499",
+      "fixed:norm:372"
+     ]
+    },
+    {
+     "id": "q-020",
+     "chunk_ids": [
+      "fixed:norm:708",
+      "fixed:norm:707",
+      "fixed:norm:156",
+      "fixed:norm:664",
+      "fixed:norm:706"
+     ]
+    },
+    {
+     "id": "q-021",
+     "chunk_ids": [
+      "fixed:norm:644",
+      "fixed:norm:643",
+      "fixed:norm:580",
+      "fixed:norm:388",
+      "fixed:norm:394"
+     ]
+    },
+    {
+     "id": "q-022",
+     "chunk_ids": [
+      "fixed:norm:504",
+      "fixed:norm:503",
+      "fixed:norm:505",
+      "fixed:norm:604",
+      "fixed:norm:603"
+     ]
+    },
+    {
+     "id": "q-023",
+     "chunk_ids": [
+      "fixed:norm:712",
+      "fixed:norm:711",
+      "fixed:norm:718",
+      "fixed:norm:716",
+      "fixed:norm:714"
+     ]
+    },
+    {
+     "id": "q-031",
+     "chunk_ids": [
+      "fixed:norm:654",
+      "fixed:norm:652",
+      "fixed:norm:653",
+      "fixed:norm:659",
+      "fixed:norm:664"
+     ]
+    },
+    {
+     "id": "q-032",
+     "chunk_ids": [
+      "fixed:norm:171",
+      "fixed:norm:519",
+      "fixed:norm:644",
+      "fixed:norm:645",
+      "fixed:norm:580"
+     ]
+    },
+    {
+     "id": "q-033",
+     "chunk_ids": [
+      "fixed:norm:331",
+      "fixed:norm:325",
+      "fixed:norm:327",
+      "fixed:norm:324",
+      "fixed:norm:328"
+     ]
+    },
+    {
+     "id": "q-034",
+     "chunk_ids": [
+      "fixed:norm:644",
+      "fixed:norm:439",
+      "fixed:norm:438",
+      "fixed:norm:331",
+      "fixed:norm:645"
+     ]
+    },
+    {
+     "id": "q-035",
+     "chunk_ids": [
+      "fixed:norm:185",
+      "fixed:norm:184",
+      "fixed:norm:186",
+      "fixed:norm:219",
+      "fixed:norm:578"
+     ]
+    },
+    {
+     "id": "q-036",
+     "chunk_ids": [
+      "fixed:norm:37",
+      "fixed:norm:36",
+      "fixed:norm:193",
+      "fixed:norm:555",
+      "fixed:norm:91"
+     ]
+    },
+    {
+     "id": "q-037",
+     "chunk_ids": [
+      "fixed:norm:402",
+      "fixed:norm:401",
+      "fixed:norm:413",
+      "fixed:norm:405",
+      "fixed:norm:617"
+     ]
+    },
+    {
+     "id": "q-038",
+     "chunk_ids": [
+      "fixed:norm:408",
+      "fixed:norm:415",
+      "fixed:norm:430",
+      "fixed:norm:766",
+      "fixed:norm:627"
+     ]
+    },
+    {
+     "id": "q-039",
+     "chunk_ids": [
+      "fixed:norm:242",
+      "fixed:norm:247",
+      "fixed:norm:246",
+      "fixed:norm:240",
+      "fixed:norm:245"
+     ]
+    },
+    {
+     "id": "q-040",
+     "chunk_ids": [
+      "fixed:norm:551",
+      "fixed:norm:552",
+      "fixed:norm:549",
+      "fixed:norm:561",
+      "fixed:norm:571"
+     ]
+    },
+    {
+     "id": "q-041",
+     "chunk_ids": [
+      "fixed:norm:398",
+      "fixed:norm:397",
+      "fixed:norm:487",
+      "fixed:norm:488",
+      "fixed:norm:486"
+     ]
+    },
+    {
+     "id": "q-042",
+     "chunk_ids": [
+      "fixed:norm:325",
+      "fixed:norm:631",
+      "fixed:norm:330",
+      "fixed:norm:326",
+      "fixed:norm:328"
+     ]
+    },
+    {
+     "id": "q-043",
+     "chunk_ids": [
+      "fixed:norm:395",
+      "fixed:norm:394",
+      "fixed:norm:580",
+      "fixed:norm:597",
+      "fixed:norm:644"
+     ]
+    },
+    {
+     "id": "q-044",
+     "chunk_ids": [
+      "fixed:norm:194",
+      "fixed:norm:420",
+      "fixed:norm:421",
+      "fixed:norm:617",
+      "fixed:norm:192"
+     ]
+    },
+    {
+     "id": "q-045",
+     "chunk_ids": [
+      "fixed:norm:644",
+      "fixed:norm:725",
+      "fixed:norm:643",
+      "fixed:norm:726",
+      "fixed:norm:580"
+     ]
+    },
+    {
+     "id": "q-046",
+     "chunk_ids": [
+      "fixed:norm:664",
+      "fixed:norm:662",
+      "fixed:norm:668",
+      "fixed:norm:651",
+      "fixed:norm:652"
+     ]
+    },
+    {
+     "id": "q-047",
+     "chunk_ids": [
+      "fixed:norm:775",
+      "fixed:norm:259",
+      "fixed:norm:262",
+      "fixed:norm:311",
+      "fixed:norm:796"
+     ]
+    },
+    {
+     "id": "q-048",
+     "chunk_ids": [
+      "fixed:norm:436",
+      "fixed:norm:439",
+      "fixed:norm:438",
+      "fixed:norm:510",
+      "fixed:norm:435"
+     ]
+    },
+    {
+     "id": "q-049",
+     "chunk_ids": [
+      "fixed:norm:486",
+      "fixed:norm:397",
+      "fixed:norm:487",
+      "fixed:norm:483",
+      "fixed:norm:484"
+     ]
+    },
+    {
+     "id": "q-050",
+     "chunk_ids": [
+      "fixed:norm:77",
+      "fixed:norm:76",
+      "fixed:norm:86",
+      "fixed:norm:75",
+      "fixed:norm:616"
+     ]
+    },
+    {
+     "id": "q-051",
+     "chunk_ids": [
+      "fixed:norm:449",
+      "fixed:norm:448",
+      "fixed:norm:450",
+      "fixed:norm:447",
+      "fixed:norm:451"
+     ]
+    },
+    {
+     "id": "q-052",
+     "chunk_ids": [
+      "fixed:norm:627",
+      "fixed:norm:624",
+      "fixed:norm:430",
+      "fixed:norm:628",
+      "fixed:norm:625"
+     ]
+    },
+    {
+     "id": "q-053",
+     "chunk_ids": [
+      "fixed:norm:461",
+      "fixed:norm:462",
+      "fixed:norm:451",
+      "fixed:norm:459",
+      "fixed:norm:460"
+     ]
+    },
+    {
+     "id": "q-061",
+     "chunk_ids": [
+      "fixed:norm:435",
+      "fixed:norm:672",
+      "fixed:norm:436",
+      "fixed:norm:434",
+      "fixed:norm:437"
+     ]
+    },
+    {
+     "id": "q-062",
+     "chunk_ids": [
+      "fixed:norm:377",
+      "fixed:norm:376",
+      "fixed:norm:378",
+      "fixed:norm:734",
+      "fixed:norm:3"
+     ]
+    },
+    {
+     "id": "q-063",
+     "chunk_ids": [
+      "fixed:norm:406",
+      "fixed:norm:405",
+      "fixed:norm:177",
+      "fixed:norm:695",
+      "fixed:norm:402"
+     ]
+    },
+    {
+     "id": "q-064",
+     "chunk_ids": [
+      "fixed:norm:285",
+      "fixed:norm:283",
+      "fixed:norm:282",
+      "fixed:norm:263",
+      "fixed:norm:284"
+     ]
+    },
+    {
+     "id": "q-065",
+     "chunk_ids": [
+      "fixed:norm:340",
+      "fixed:norm:339",
+      "fixed:norm:342",
+      "fixed:norm:343",
+      "fixed:norm:341"
+     ]
+    },
+    {
+     "id": "q-066",
+     "chunk_ids": [
+      "fixed:norm:612",
+      "fixed:norm:613",
+      "fixed:norm:169",
+      "fixed:norm:165",
+      "fixed:norm:611"
+     ]
+    },
+    {
+     "id": "q-067",
+     "chunk_ids": [
+      "fixed:norm:668",
+      "fixed:norm:655",
+      "fixed:norm:707",
+      "fixed:norm:656",
+      "fixed:norm:654"
+     ]
+    },
+    {
+     "id": "q-068",
+     "chunk_ids": [
+      "fixed:norm:684",
+      "fixed:norm:688",
+      "fixed:norm:687",
+      "fixed:norm:685",
+      "fixed:norm:690"
+     ]
+    },
+    {
+     "id": "q-069",
+     "chunk_ids": [
+      "fixed:norm:766",
+      "fixed:norm:382",
+      "fixed:norm:689",
+      "fixed:norm:690",
+      "fixed:norm:678"
+     ]
+    },
+    {
+     "id": "q-070",
+     "chunk_ids": [
+      "fixed:norm:707",
+      "fixed:norm:706",
+      "fixed:norm:568",
+      "fixed:norm:708",
+      "fixed:norm:571"
+     ]
+    },
+    {
+     "id": "q-071",
+     "chunk_ids": [
+      "fixed:norm:385",
+      "fixed:norm:384",
+      "fixed:norm:540",
+      "fixed:norm:347",
+      "fixed:norm:542"
+     ]
+    },
+    {
+     "id": "q-072",
+     "chunk_ids": [
+      "fixed:norm:448",
+      "fixed:norm:451",
+      "fixed:norm:450",
+      "fixed:norm:449",
+      "fixed:norm:447"
+     ]
+    },
+    {
+     "id": "q-073",
+     "chunk_ids": [
+      "fixed:norm:427",
+      "fixed:norm:68",
+      "fixed:norm:498",
+      "fixed:norm:29",
+      "fixed:norm:433"
+     ]
+    },
+    {
+     "id": "q-074",
+     "chunk_ids": [
+      "fixed:norm:148",
+      "fixed:norm:240",
+      "fixed:norm:237",
+      "fixed:norm:247",
+      "fixed:norm:239"
+     ]
+    },
+    {
+     "id": "q-075",
+     "chunk_ids": [
+      "fixed:norm:334",
+      "fixed:norm:395",
+      "fixed:norm:644",
+      "fixed:norm:332",
+      "fixed:norm:597"
+     ]
+    },
+    {
+     "id": "q-076",
+     "chunk_ids": [
+      "fixed:norm:343",
+      "fixed:norm:342",
+      "fixed:norm:341",
+      "fixed:norm:348",
+      "fixed:norm:340"
+     ]
+    },
+    {
+     "id": "q-077",
+     "chunk_ids": [
+      "fixed:norm:265",
+      "fixed:norm:297",
+      "fixed:norm:269",
+      "fixed:norm:267",
+      "fixed:norm:266"
+     ]
+    },
+    {
+     "id": "q-078",
+     "chunk_ids": [
+      "fixed:norm:517",
+      "fixed:norm:116",
+      "fixed:norm:594",
+      "fixed:norm:42",
+      "fixed:norm:380"
+     ]
+    },
+    {
+     "id": "q-079",
+     "chunk_ids": [
+      "fixed:norm:310",
+      "fixed:norm:309",
+      "fixed:norm:311",
+      "fixed:norm:293",
+      "fixed:norm:304"
+     ]
+    },
+    {
+     "id": "q-080",
+     "chunk_ids": [
+      "fixed:norm:407",
+      "fixed:norm:408",
+      "fixed:norm:458",
+      "fixed:norm:617",
+      "fixed:norm:411"
+     ]
+    },
+    {
+     "id": "q-081",
+     "chunk_ids": [
+      "fixed:norm:129",
+      "fixed:norm:127",
+      "fixed:norm:130",
+      "fixed:norm:86",
+      "fixed:norm:791"
+     ]
+    },
+    {
+     "id": "q-082",
+     "chunk_ids": [
+      "fixed:norm:266",
+      "fixed:norm:272",
+      "fixed:norm:300",
+      "fixed:norm:76",
+      "fixed:norm:267"
+     ]
+    },
+    {
+     "id": "q-083",
+     "chunk_ids": [
+      "fixed:norm:465",
+      "fixed:norm:178",
+      "fixed:norm:42",
+      "fixed:norm:468",
+      "fixed:norm:197"
+     ]
+    },
+    {
+     "id": "q-084",
+     "chunk_ids": [
+      "fixed:norm:343",
+      "fixed:norm:341",
+      "fixed:norm:342",
+      "fixed:norm:339",
+      "fixed:norm:340"
+     ]
+    }
+   ],
+   "rerank_cache": {
+    "hits": 1385,
+    "misses": 15
+   }
+  },
+  {
+   "name": "rerank_512",
+   "overlay": "config/ablations/rerank_512.yaml",
+   "config_hash": "ed733ee9b66a",
+   "mode": "hybrid+rerank",
+   "chunking": "structural",
+   "k_candidates": 20,
+   "rerank_max_length": 512,
+   "metrics": {
+    "all": {
+     "article": {
+      "n": 70,
+      "recall@1": 0.7047619047619048,
+      "recall@3": 0.9023809523809524,
+      "recall@5": 0.9452380952380953,
+      "mrr": 0.8761904761904762,
+      "pool_recall@20": 0.9571428571428572
+     },
+     "unit": {
+      "n": 70,
+      "recall@1": 0.7033333333333334,
+      "recall@3": 0.9042857142857142,
+      "recall@5": 0.9471428571428571,
+      "mrr": 0.8761904761904762,
+      "pool_recall@20": 0.9571428571428572
+     }
+    },
+    "factual_single": {
+     "article": {
+      "n": 30,
+      "recall@1": 0.8666666666666667,
+      "recall@3": 0.9666666666666667,
+      "recall@5": 0.9666666666666667,
+      "mrr": 0.9055555555555556,
+      "pool_recall@20": 0.9666666666666667
+     },
+     "unit": {
+      "n": 30,
+      "recall@1": 0.8666666666666667,
+      "recall@3": 0.9666666666666667,
+      "recall@5": 0.9666666666666667,
+      "mrr": 0.9055555555555556,
+      "pool_recall@20": 0.9666666666666667
+     }
+    },
+    "multi_article": {
+     "article": {
+      "n": 20,
+      "recall@1": 0.31666666666666665,
+      "recall@3": 0.7083333333333333,
+      "recall@5": 0.8583333333333334,
+      "mrr": 0.7833333333333333,
+      "pool_recall@20": 0.9
+     },
+     "unit": {
+      "n": 20,
+      "recall@1": 0.31166666666666665,
+      "recall@3": 0.7150000000000001,
+      "recall@5": 0.865,
+      "mrr": 0.7833333333333333,
+      "pool_recall@20": 0.9
+     }
+    },
+    "deadline_or_value": {
+     "article": {
+      "n": 20,
+      "recall@1": 0.85,
+      "recall@3": 1.0,
+      "recall@5": 1.0,
+      "mrr": 0.925,
+      "pool_recall@20": 1.0
+     },
+     "unit": {
+      "n": 20,
+      "recall@1": 0.85,
+      "recall@3": 1.0,
+      "recall@5": 1.0,
+      "mrr": 0.925,
+      "pool_recall@20": 1.0
+     }
+    }
+   },
+   "seconds_median": 0.241,
+   "records": [
+    {
+     "id": "q-001",
+     "chunk_ids": [
+      "structural:art-279:0",
+      "structural:art-278:0",
+      "structural:art-234:0",
+      "structural:art-243:0",
+      "structural:art-242:0"
+     ]
+    },
+    {
+     "id": "q-002",
+     "chunk_ids": [
+      "structural:art-354:0",
+      "structural:art-172:0",
+      "structural:art-170:0",
+      "structural:art-96:1",
+      "structural:art-96:0"
+     ]
+    },
+    {
+     "id": "q-003",
+     "chunk_ids": [
+      "structural:art-429:0",
+      "structural:art-398:0",
+      "structural:art-423:0",
+      "structural:art-383:0",
+      "structural:art-430:0"
+     ]
+    },
+    {
+     "id": "q-004",
+     "chunk_ids": [
+      "structural:art-9:0",
+      "structural:art-633:0",
+      "structural:art-8:0",
+      "structural:art-6:0",
+      "structural:art-138:1"
+     ]
+    },
+    {
+     "id": "q-005",
+     "chunk_ids": [
+      "structural:art-554:0",
+      "structural:art-559:0",
+      "structural:art-553:0",
+      "structural:art-193:0",
+      "structural:art-558:0"
+     ]
+    },
+    {
+     "id": "q-006",
+     "chunk_ids": [
+      "structural:art-490:0",
+      "structural:art-486-a:0",
+      "structural:art-480:0",
+      "structural:art-489:0",
+      "structural:art-457:0"
+     ]
+    },
+    {
+     "id": "q-007",
+     "chunk_ids": [
+      "structural:art-207:0",
+      "structural:art-665:0",
+      "structural:art-665:1",
+      "structural:art-177:1",
+      "structural:art-186:0"
+     ]
+    },
+    {
+     "id": "q-008",
+     "chunk_ids": [
+      "structural:art-440:0",
+      "structural:art-443:0",
+      "structural:art-441:0",
+      "structural:art-545:0",
+      "structural:art-444:0"
+     ]
+    },
+    {
+     "id": "q-009",
+     "chunk_ids": [
+      "structural:art-662:0",
+      "structural:art-207:0",
+      "structural:art-205:0",
+      "structural:art-665:0",
+      "structural:art-665:1"
+     ]
+    },
+    {
+     "id": "q-010",
+     "chunk_ids": [
+      "structural:art-346:0",
+      "structural:art-138:0",
+      "structural:art-343:0",
+      "structural:art-299:0",
+      "structural:art-138:1"
+     ]
+    },
+    {
+     "id": "q-011",
+     "chunk_ids": [
+      "structural:art-252:0",
+      "structural:art-250:0",
+      "structural:art-257:0",
+      "structural:art-254:0",
+      "structural:art-592:0"
+     ]
+    },
+    {
+     "id": "q-012",
+     "chunk_ids": [
+      "structural:art-278:0",
+      "structural:art-280:0",
+      "structural:art-582:0",
+      "structural:art-283:0",
+      "structural:art-243:0"
+     ]
+    },
+    {
+     "id": "q-013",
+     "chunk_ids": [
+      "structural:art-140:0",
+      "structural:art-360:0",
+      "structural:art-436:0",
+      "structural:art-582:0",
+      "structural:art-636:0"
+     ]
+    },
+    {
+     "id": "q-014",
+     "chunk_ids": [
+      "structural:art-344:0",
+      "structural:art-115:0",
+      "structural:art-343:0",
+      "structural:art-440:0",
+      "structural:art-570:0"
+     ]
+    },
+    {
+     "id": "q-015",
+     "chunk_ids": [
+      "structural:art-222:0",
+      "structural:art-292:0",
+      "structural:art-219:0",
+      "structural:art-561:0",
+      "structural:art-671-a:0"
+     ]
+    },
+    {
+     "id": "q-016",
+     "chunk_ids": [
+      "structural:art-583:0",
+      "structural:art-595:0",
+      "structural:art-596:0",
+      "structural:art-255:0",
+      "structural:art-598:0"
+     ]
+    },
+    {
+     "id": "q-017",
+     "chunk_ids": [
+      "structural:art-271:0",
+      "structural:art-260:0",
+      "structural:art-285:0",
+      "structural:art-243:0",
+      "structural:art-250:0"
+     ]
+    },
+    {
+     "id": "q-018",
+     "chunk_ids": [
+      "structural:art-244:0",
+      "structural:art-243:0",
+      "structural:art-621:0",
+      "structural:art-235:0",
+      "structural:art-613:0"
+     ]
+    },
+    {
+     "id": "q-019",
+     "chunk_ids": [
+      "structural:art-316:0",
+      "structural:art-90:0",
+      "structural:art-311:0",
+      "structural:art-304:0",
+      "structural:art-261:0"
+     ]
+    },
+    {
+     "id": "q-020",
+     "chunk_ids": [
+      "structural:art-651:0",
+      "structural:art-102:0",
+      "structural:art-649:0",
+      "structural:art-650:0",
+      "structural:art-618:0"
+     ]
+    },
+    {
+     "id": "q-021",
+     "chunk_ids": [
+      "structural:art-596:0",
+      "structural:art-504:0",
+      "structural:art-324:0",
+      "structural:art-323:0",
+      "structural:art-583:0"
+     ]
+    },
+    {
+     "id": "q-022",
+     "chunk_ids": [
+      "structural:art-438:0",
+      "structural:art-543:0",
+      "structural:art-587:0",
+      "structural:art-91:0",
+      "structural:art-549:0"
+     ]
+    },
+    {
+     "id": "q-023",
+     "chunk_ids": [
+      "structural:art-655-c:0",
+      "structural:art-655-c:2",
+      "structural:art-655-c:1",
+      "structural:art-655-b:0",
+      "structural:art-67:1"
+     ]
+    },
+    {
+     "id": "q-031",
+     "chunk_ids": [
+      "structural:art-607:0",
+      "structural:art-614:0",
+      "structural:art-602:0",
+      "structural:art-618:0",
+      "structural:art-611:0"
+     ]
+    },
+    {
+     "id": "q-032",
+     "chunk_ids": [
+      "structural:art-453:0",
+      "structural:art-110:0",
+      "structural:art-368:0",
+      "structural:art-585:0",
+      "structural:art-325:0"
+     ]
+    },
+    {
+     "id": "q-033",
+     "chunk_ids": [
+      "structural:art-254:0",
+      "structural:art-248:0",
+      "structural:art-250:0",
+      "structural:art-251:0",
+      "structural:art-249:0"
+     ]
+    },
+    {
+     "id": "q-034",
+     "chunk_ids": [
+      "structural:art-597:0",
+      "structural:art-368:0",
+      "structural:art-254:0",
+      "structural:art-596:0",
+      "structural:art-591:0"
+     ]
+    },
+    {
+     "id": "q-035",
+     "chunk_ids": [
+      "structural:art-127:0",
+      "structural:art-149:0",
+      "structural:art-294:0",
+      "structural:art-500:0",
+      "structural:art-47:0"
+     ]
+    },
+    {
+     "id": "q-036",
+     "chunk_ids": [
+      "structural:art-14:0",
+      "structural:art-11:0",
+      "structural:art-485:0",
+      "structural:art-485:1",
+      "structural:art-655:0"
+     ]
+    },
+    {
+     "id": "q-037",
+     "chunk_ids": [
+      "structural:art-328:0",
+      "structural:art-342-a:0",
+      "structural:art-565:0",
+      "structural:art-333:0",
+      "structural:art-327:0"
+     ]
+    },
+    {
+     "id": "q-038",
+     "chunk_ids": [
+      "structural:art-339:0",
+      "structural:art-656:0",
+      "structural:art-337:0",
+      "structural:art-582:0",
+      "structural:art-618:0"
+     ]
+    },
+    {
+     "id": "q-039",
+     "chunk_ids": [
+      "structural:art-166-a:0",
+      "structural:art-167-c:0",
+      "structural:art-167-b:0",
+      "structural:art-166-a:1",
+      "structural:art-168:0"
+     ]
+    },
+    {
+     "id": "q-040",
+     "chunk_ids": [
+      "structural:art-480:0",
+      "structural:art-486-a:0",
+      "structural:art-479:0",
+      "structural:art-30:0",
+      "structural:art-25:0"
+     ]
+    },
+    {
+     "id": "q-041",
+     "chunk_ids": [
+      "structural:art-422:0",
+      "structural:art-421:0",
+      "structural:art-423:0",
+      "structural:art-325:0",
+      "structural:art-257:0"
+     ]
+    },
+    {
+     "id": "q-042",
+     "chunk_ids": [
+      "structural:art-250:0",
+      "structural:art-252:0",
+      "structural:art-253:0",
+      "structural:art-438:0",
+      "structural:art-257:0"
+     ]
+    },
+    {
+     "id": "q-043",
+     "chunk_ids": [
+      "structural:art-324:0",
+      "structural:art-504:0",
+      "structural:art-288:0",
+      "structural:art-323:0",
+      "structural:art-141:0"
+     ]
+    },
+    {
+     "id": "q-044",
+     "chunk_ids": [
+      "structural:art-138:0",
+      "structural:art-346:0",
+      "structural:art-138:1",
+      "structural:art-139:0",
+      "structural:art-299:0"
+     ]
+    },
+    {
+     "id": "q-045",
+     "chunk_ids": [
+      "structural:art-596:0",
+      "structural:art-655-f:0",
+      "structural:art-325:0",
+      "structural:art-504:0",
+      "structural:art-324:0"
+     ]
+    },
+    {
+     "id": "q-046",
+     "chunk_ids": [
+      "structural:art-617:0",
+      "structural:art-618:0",
+      "structural:art-613:0",
+      "structural:art-621:0",
+      "structural:art-602:0"
+     ]
+    },
+    {
+     "id": "q-047",
+     "chunk_ids": [
+      "structural:art-663:0",
+      "structural:art-173:0",
+      "structural:art-175:0",
+      "structural:art-627-a:1",
+      "structural:art-143:0"
+     ]
+    },
+    {
+     "id": "q-048",
+     "chunk_ids": [
+      "structural:art-369:0",
+      "structural:art-365:0",
+      "structural:art-368:0",
+      "structural:art-441:0",
+      "structural:art-366:0"
+     ]
+    },
+    {
+     "id": "q-049",
+     "chunk_ids": [
+      "structural:art-421:0",
+      "structural:art-408:0",
+      "structural:art-418:0",
+      "structural:art-71:0",
+      "structural:art-438:0"
+     ]
+    },
+    {
+     "id": "q-050",
+     "chunk_ids": [
+      "structural:art-49:0",
+      "structural:art-64:0",
+      "structural:art-91:0",
+      "structural:art-507:0",
+      "structural:art-90:0"
+     ]
+    },
+    {
+     "id": "q-051",
+     "chunk_ids": [
+      "structural:art-377:0",
+      "structural:art-376:0",
+      "structural:art-371-a:0",
+      "structural:art-375:0",
+      "structural:art-380:0"
+     ]
+    },
+    {
+     "id": "q-052",
+     "chunk_ids": [
+      "structural:art-582:0",
+      "structural:art-580:0",
+      "structural:art-564:0",
+      "structural:art-565:0",
+      "structural:art-583:0"
+     ]
+    },
+    {
+     "id": "q-053",
+     "chunk_ids": [
+      "structural:art-391:0",
+      "structural:art-380:0",
+      "structural:art-387:0",
+      "structural:art-392:0",
+      "structural:art-371:0"
+     ]
+    },
+    {
+     "id": "q-061",
+     "chunk_ids": [
+      "structural:art-363:0",
+      "structural:art-364:0",
+      "structural:art-365:0",
+      "structural:art-623:0",
+      "structural:art-362:0"
+     ]
+    },
+    {
+     "id": "q-062",
+     "chunk_ids": [
+      "structural:art-307:0",
+      "structural:art-308:0",
+      "structural:art-309:0",
+      "structural:art-655-i:0",
+      "structural:art-2:2"
+     ]
+    },
+    {
+     "id": "q-063",
+     "chunk_ids": [
+      "structural:art-335:0",
+      "structural:art-334:0",
+      "structural:art-333:0",
+      "structural:art-341:0",
+      "structural:art-342-a:0"
+     ]
+    },
+    {
+     "id": "q-064",
+     "chunk_ids": [
+      "structural:art-184:1",
+      "structural:art-184:0",
+      "structural:art-186:0",
+      "structural:art-186:1",
+      "structural:art-175-a:0"
+     ]
+    },
+    {
+     "id": "q-065",
+     "chunk_ids": [
+      "structural:art-263:0",
+      "structural:art-234:0",
+      "structural:art-272:0",
+      "structural:art-228:0",
+      "structural:art-258:0"
+     ]
+    },
+    {
+     "id": "q-066",
+     "chunk_ids": [
+      "structural:art-560:0",
+      "structural:art-109:0",
+      "structural:art-109:2",
+      "structural:art-109:1",
+      "structural:art-558:0"
+     ]
+    },
+    {
+     "id": "q-067",
+     "chunk_ids": [
+      "structural:art-621:0",
+      "structural:art-620:0",
+      "structural:art-611:0",
+      "structural:art-649:0",
+      "structural:art-618:0"
+     ]
+    },
+    {
+     "id": "q-068",
+     "chunk_ids": [
+      "structural:art-629:1",
+      "structural:art-629:0",
+      "structural:art-631:0",
+      "structural:art-630:0",
+      "structural:art-628:0"
+     ]
+    },
+    {
+     "id": "q-069",
+     "chunk_ids": [
+      "structural:art-657:0",
+      "structural:art-316:0",
+      "structural:art-631:0",
+      "structural:art-627-a:1",
+      "structural:art-629:0"
+     ]
+    },
+    {
+     "id": "q-070",
+     "chunk_ids": [
+      "structural:art-650:0",
+      "structural:art-648:0",
+      "structural:art-649:0",
+      "structural:art-655-i:0",
+      "structural:art-304:0"
+     ]
+    },
+    {
+     "id": "q-071",
+     "chunk_ids": [
+      "structural:art-320:0",
+      "structural:art-469:0",
+      "structural:art-228:0",
+      "structural:art-465:0",
+      "structural:art-474:0"
+     ]
+    },
+    {
+     "id": "q-072",
+     "chunk_ids": [
+      "structural:art-376:0",
+      "structural:art-377:0",
+      "structural:art-380:0",
+      "structural:art-382:0",
+      "structural:art-375:0"
+     ]
+    },
+    {
+     "id": "q-073",
+     "chunk_ids": [
+      "structural:art-43:0",
+      "structural:art-355:0",
+      "structural:art-436:0",
+      "structural:art-362:0",
+      "structural:art-353:0"
+     ]
+    },
+    {
+     "id": "q-074",
+     "chunk_ids": [
+      "structural:art-166-a:0",
+      "structural:art-96-a:0",
+      "structural:art-166-a:1",
+      "structural:art-167-b:0",
+      "structural:art-167-c:0"
+     ]
+    },
+    {
+     "id": "q-075",
+     "chunk_ids": [
+      "structural:art-504:0",
+      "structural:art-257:0",
+      "structural:art-255:0",
+      "structural:art-256:0",
+      "structural:art-320:0"
+     ]
+    },
+    {
+     "id": "q-076",
+     "chunk_ids": [
+      "structural:art-275:0",
+      "structural:art-288:0",
+      "structural:art-276:0",
+      "structural:art-283:0",
+      "structural:art-267:0"
+     ]
+    },
+    {
+     "id": "q-077",
+     "chunk_ids": [
+      "structural:art-177:0",
+      "structural:art-200:0",
+      "structural:art-178-a:0",
+      "structural:art-176:0",
+      "structural:art-201:0"
+     ]
+    },
+    {
+     "id": "q-078",
+     "chunk_ids": [
+      "structural:art-449:0",
+      "structural:art-382:0",
+      "structural:art-659:0",
+      "structural:art-418:0",
+      "structural:art-587:0"
+     ]
+    },
+    {
+     "id": "q-079",
+     "chunk_ids": [
+      "structural:art-223:0",
+      "structural:art-222:0",
+      "structural:art-561:0",
+      "structural:art-221:0",
+      "structural:art-565:0"
+     ]
+    },
+    {
+     "id": "q-080",
+     "chunk_ids": [
+      "structural:art-338:0",
+      "structural:art-582:0",
+      "structural:art-341:0",
+      "structural:art-565:0",
+      "structural:art-660:0"
+     ]
+    },
+    {
+     "id": "q-081",
+     "chunk_ids": [
+      "structural:art-88:0",
+      "structural:art-89:1",
+      "structural:art-91:0",
+      "structural:art-89:0",
+      "structural:art-90:0"
+     ]
+    },
+    {
+     "id": "q-082",
+     "chunk_ids": [
+      "structural:art-178-a:0",
+      "structural:art-177:0",
+      "structural:art-49:0",
+      "structural:art-200:0",
+      "structural:art-205-a:0"
+     ]
+    },
+    {
+     "id": "q-083",
+     "chunk_ids": [
+      "structural:art-394:0",
+      "structural:art-143:0",
+      "structural:art-141:0",
+      "structural:art-140:0",
+      "structural:art-119:0"
+     ]
+    },
+    {
+     "id": "q-084",
+     "chunk_ids": [
+      "structural:art-276:0",
+      "structural:art-271:0",
+      "structural:art-288:0",
+      "structural:art-274:0",
+      "structural:art-267:0"
+     ]
+    }
+   ],
+   "rerank_cache": {
+    "hits": 1382,
+    "misses": 18
+   }
+  },
+  {
+   "name": "k_candidates_10",
+   "overlay": "config/ablations/k_candidates_10.yaml",
+   "config_hash": "008b4eae1191",
+   "mode": "hybrid+rerank",
+   "chunking": "structural",
+   "k_candidates": 10,
+   "rerank_max_length": 2048,
+   "metrics": {
+    "all": {
+     "article": {
+      "n": 70,
+      "recall@1": 0.719047619047619,
+      "recall@3": 0.9095238095238095,
+      "recall@5": 0.930952380952381,
+      "mrr": 0.8916666666666666,
+      "pool_recall@10": 0.9380952380952382
+     },
+     "unit": {
+      "n": 70,
+      "recall@1": 0.7176190476190476,
+      "recall@3": 0.9114285714285714,
+      "recall@5": 0.9328571428571428,
+      "mrr": 0.8916666666666666,
+      "pool_recall@10": 0.94
+     }
+    },
+    "factual_single": {
+     "article": {
+      "n": 30,
+      "recall@1": 0.9,
+      "recall@3": 0.9666666666666667,
+      "recall@5": 0.9666666666666667,
+      "mrr": 0.9277777777777777,
+      "pool_recall@10": 0.9666666666666667
+     },
+     "unit": {
+      "n": 30,
+      "recall@1": 0.9,
+      "recall@3": 0.9666666666666667,
+      "recall@5": 0.9666666666666667,
+      "mrr": 0.9277777777777777,
+      "pool_recall@10": 0.9666666666666667
+     }
+    },
+    "multi_article": {
+     "article": {
+      "n": 20,
+      "recall@1": 0.31666666666666665,
+      "recall@3": 0.7333333333333333,
+      "recall@5": 0.8083333333333333,
+      "mrr": 0.8041666666666666,
+      "pool_recall@10": 0.8333333333333334
+     },
+     "unit": {
+      "n": 20,
+      "recall@1": 0.31166666666666665,
+      "recall@3": 0.74,
+      "recall@5": 0.8150000000000001,
+      "mrr": 0.8041666666666666,
+      "pool_recall@10": 0.8400000000000001
+     }
+    },
+    "deadline_or_value": {
+     "article": {
+      "n": 20,
+      "recall@1": 0.85,
+      "recall@3": 1.0,
+      "recall@5": 1.0,
+      "mrr": 0.925,
+      "pool_recall@10": 1.0
+     },
+     "unit": {
+      "n": 20,
+      "recall@1": 0.85,
+      "recall@3": 1.0,
+      "recall@5": 1.0,
+      "mrr": 0.925,
+      "pool_recall@10": 1.0
+     }
+    }
+   },
+   "seconds_median": 0.225,
+   "records": [
+    {
+     "id": "q-001",
+     "chunk_ids": [
+      "structural:art-279:0",
+      "structural:art-234:0",
+      "structural:art-243:0",
+      "structural:art-242:0",
+      "structural:art-283:0"
+     ]
+    },
+    {
+     "id": "q-002",
+     "chunk_ids": [
+      "structural:art-354:0",
+      "structural:art-172:0",
+      "structural:art-96:0",
+      "structural:art-170:0",
+      "structural:art-168:0"
+     ]
+    },
+    {
+     "id": "q-003",
+     "chunk_ids": [
+      "structural:art-429:0",
+      "structural:art-398:0",
+      "structural:art-423:0",
+      "structural:art-430:0",
+      "structural:art-421:0"
+     ]
+    },
+    {
+     "id": "q-004",
+     "chunk_ids": [
+      "structural:art-9:0",
+      "structural:art-633:0",
+      "structural:art-8:0",
+      "structural:art-6:0",
+      "structural:art-138:0"
+     ]
+    },
+    {
+     "id": "q-005",
+     "chunk_ids": [
+      "structural:art-554:0",
+      "structural:art-559:0",
+      "structural:art-553:0",
+      "structural:art-193:0",
+      "structural:art-2:1"
+     ]
+    },
+    {
+     "id": "q-006",
+     "chunk_ids": [
+      "structural:art-490:0",
+      "structural:art-480:0",
+      "structural:art-489:0",
+      "structural:art-454:0",
+      "structural:art-456:0"
+     ]
+    },
+    {
+     "id": "q-007",
+     "chunk_ids": [
+      "structural:art-207:0",
+      "structural:art-665:0",
+      "structural:art-665:1",
+      "structural:art-186:0",
+      "structural:art-219:0"
+     ]
+    },
+    {
+     "id": "q-008",
+     "chunk_ids": [
+      "structural:art-440:0",
+      "structural:art-443:0",
+      "structural:art-441:0",
+      "structural:art-325:0",
+      "structural:art-545:0"
+     ]
+    },
+    {
+     "id": "q-009",
+     "chunk_ids": [
+      "structural:art-662:0",
+      "structural:art-665:0",
+      "structural:art-207:0",
+      "structural:art-205:0",
+      "structural:art-665:1"
+     ]
+    },
+    {
+     "id": "q-010",
+     "chunk_ids": [
+      "structural:art-346:0",
+      "structural:art-138:0",
+      "structural:art-343:0",
+      "structural:art-138:1",
+      "structural:art-139:0"
+     ]
+    },
+    {
+     "id": "q-011",
+     "chunk_ids": [
+      "structural:art-252:0",
+      "structural:art-250:0",
+      "structural:art-257:0",
+      "structural:art-254:0",
+      "structural:art-592:0"
+     ]
+    },
+    {
+     "id": "q-012",
+     "chunk_ids": [
+      "structural:art-278:0",
+      "structural:art-280:0",
+      "structural:art-582:0",
+      "structural:art-283:0",
+      "structural:art-243:0"
+     ]
+    },
+    {
+     "id": "q-013",
+     "chunk_ids": [
+      "structural:art-360:0",
+      "structural:art-436:0",
+      "structural:art-142:0",
+      "structural:art-582:0",
+      "structural:art-636:0"
+     ]
+    },
+    {
+     "id": "q-014",
+     "chunk_ids": [
+      "structural:art-344:0",
+      "structural:art-115:0",
+      "structural:art-343:0",
+      "structural:art-323:0",
+      "structural:art-109:0"
+     ]
+    },
+    {
+     "id": "q-015",
+     "chunk_ids": [
+      "structural:art-222:0",
+      "structural:art-292:0",
+      "structural:art-219:0",
+      "structural:art-561:0",
+      "structural:art-671-a:0"
+     ]
+    },
+    {
+     "id": "q-016",
+     "chunk_ids": [
+      "structural:art-583:0",
+      "structural:art-595:0",
+      "structural:art-596:0",
+      "structural:art-598:0",
+      "structural:art-255:0"
+     ]
+    },
+    {
+     "id": "q-017",
+     "chunk_ids": [
+      "structural:art-271:0",
+      "structural:art-260:0",
+      "structural:art-285:0",
+      "structural:art-243:0",
+      "structural:art-250:0"
+     ]
+    },
+    {
+     "id": "q-018",
+     "chunk_ids": [
+      "structural:art-244:0",
+      "structural:art-243:0",
+      "structural:art-621:0",
+      "structural:art-96:0",
+      "structural:art-235:0"
+     ]
+    },
+    {
+     "id": "q-019",
+     "chunk_ids": [
+      "structural:art-316:0",
+      "structural:art-304:0",
+      "structural:art-671-a:0",
+      "structural:art-23:0",
+      "structural:art-302:0"
+     ]
+    },
+    {
+     "id": "q-020",
+     "chunk_ids": [
+      "structural:art-651:0",
+      "structural:art-102:0",
+      "structural:art-649:0",
+      "structural:art-618:0",
+      "structural:art-650:0"
+     ]
+    },
+    {
+     "id": "q-021",
+     "chunk_ids": [
+      "structural:art-596:0",
+      "structural:art-323:0",
+      "structural:art-504:0",
+      "structural:art-324:0",
+      "structural:art-583:0"
+     ]
+    },
+    {
+     "id": "q-022",
+     "chunk_ids": [
+      "structural:art-438:0",
+      "structural:art-543:0",
+      "structural:art-587:0",
+      "structural:art-23:0",
+      "structural:art-91:0"
+     ]
+    },
+    {
+     "id": "q-023",
+     "chunk_ids": [
+      "structural:art-655-c:0",
+      "structural:art-655-c:2",
+      "structural:art-655-c:1",
+      "structural:art-67:1",
+      "structural:art-655-b:0"
+     ]
+    },
+    {
+     "id": "q-031",
+     "chunk_ids": [
+      "structural:art-607:0",
+      "structural:art-602:0",
+      "structural:art-618:0",
+      "structural:art-611:0",
+      "structural:art-615:0"
+     ]
+    },
+    {
+     "id": "q-032",
+     "chunk_ids": [
+      "structural:art-453:0",
+      "structural:art-110:0",
+      "structural:art-627-a:1",
+      "structural:art-325:0",
+      "structural:art-585:0"
+     ]
+    },
+    {
+     "id": "q-033",
+     "chunk_ids": [
+      "structural:art-254:0",
+      "structural:art-250:0",
+      "structural:art-248:0",
+      "structural:art-96:0",
+      "structural:art-251:0"
+     ]
+    },
+    {
+     "id": "q-034",
+     "chunk_ids": [
+      "structural:art-597:0",
+      "structural:art-368:0",
+      "structural:art-254:0",
+      "structural:art-245:0",
+      "structural:art-590:0"
+     ]
+    },
+    {
+     "id": "q-035",
+     "chunk_ids": [
+      "structural:art-127:0",
+      "structural:art-149:0",
+      "structural:art-294:0",
+      "structural:art-500:0",
+      "structural:art-47:0"
+     ]
+    },
+    {
+     "id": "q-036",
+     "chunk_ids": [
+      "structural:art-14:0",
+      "structural:art-485:0",
+      "structural:art-11:0",
+      "structural:art-485:1",
+      "structural:art-591:0"
+     ]
+    },
+    {
+     "id": "q-037",
+     "chunk_ids": [
+      "structural:art-328:0",
+      "structural:art-342-a:0",
+      "structural:art-565:0",
+      "structural:art-327:0",
+      "structural:art-2:2"
+     ]
+    },
+    {
+     "id": "q-038",
+     "chunk_ids": [
+      "structural:art-339:0",
+      "structural:art-656:0",
+      "structural:art-337:0",
+      "structural:art-582:0",
+      "structural:art-338:0"
+     ]
+    },
+    {
+     "id": "q-039",
+     "chunk_ids": [
+      "structural:art-166-a:0",
+      "structural:art-167-c:0",
+      "structural:art-167-b:0",
+      "structural:art-168:0",
+      "structural:art-166:1"
+     ]
+    },
+    {
+     "id": "q-040",
+     "chunk_ids": [
+      "structural:art-480:0",
+      "structural:art-486-a:0",
+      "structural:art-25:0",
+      "structural:art-292:0",
+      "structural:art-451:0"
+     ]
+    },
+    {
+     "id": "q-041",
+     "chunk_ids": [
+      "structural:art-325:0",
+      "structural:art-422:0",
+      "structural:art-421:0",
+      "structural:art-423:0",
+      "structural:art-416:0"
+     ]
+    },
+    {
+     "id": "q-042",
+     "chunk_ids": [
+      "structural:art-250:0",
+      "structural:art-252:0",
+      "structural:art-253:0",
+      "structural:art-257:0",
+      "structural:art-91:0"
+     ]
+    },
+    {
+     "id": "q-043",
+     "chunk_ids": [
+      "structural:art-324:0",
+      "structural:art-323:0",
+      "structural:art-288:0",
+      "structural:art-141:0",
+      "structural:art-325:0"
+     ]
+    },
+    {
+     "id": "q-044",
+     "chunk_ids": [
+      "structural:art-138:0",
+      "structural:art-346:0",
+      "structural:art-138:1",
+      "structural:art-139:0",
+      "structural:art-486-a:2"
+     ]
+    },
+    {
+     "id": "q-045",
+     "chunk_ids": [
+      "structural:art-596:0",
+      "structural:art-325:0",
+      "structural:art-655-f:0",
+      "structural:art-324:0",
+      "structural:art-157:0"
+     ]
+    },
+    {
+     "id": "q-046",
+     "chunk_ids": [
+      "structural:art-617:0",
+      "structural:art-618:0",
+      "structural:art-613:0",
+      "structural:art-602:0",
+      "structural:art-611:0"
+     ]
+    },
+    {
+     "id": "q-047",
+     "chunk_ids": [
+      "structural:art-663:0",
+      "structural:art-173:0",
+      "structural:art-627-a:1",
+      "structural:art-175:0",
+      "structural:art-304:0"
+     ]
+    },
+    {
+     "id": "q-048",
+     "chunk_ids": [
+      "structural:art-369:0",
+      "structural:art-365:0",
+      "structural:art-368:0",
+      "structural:art-366:0",
+      "structural:art-362:0"
+     ]
+    },
+    {
+     "id": "q-049",
+     "chunk_ids": [
+      "structural:art-421:0",
+      "structural:art-408:0",
+      "structural:art-71:0",
+      "structural:art-423:0",
+      "structural:art-430:0"
+     ]
+    },
+    {
+     "id": "q-050",
+     "chunk_ids": [
+      "structural:art-49:0",
+      "structural:art-64:0",
+      "structural:art-91:0",
+      "structural:art-507:0",
+      "structural:art-88:0"
+     ]
+    },
+    {
+     "id": "q-051",
+     "chunk_ids": [
+      "structural:art-377:0",
+      "structural:art-376:0",
+      "structural:art-382:0",
+      "structural:art-375:0",
+      "structural:art-380:0"
+     ]
+    },
+    {
+     "id": "q-052",
+     "chunk_ids": [
+      "structural:art-582:0",
+      "structural:art-580:0",
+      "structural:art-564:0",
+      "structural:art-562:0",
+      "structural:art-574:0"
+     ]
+    },
+    {
+     "id": "q-053",
+     "chunk_ids": [
+      "structural:art-391:0",
+      "structural:art-380:0",
+      "structural:art-387:0",
+      "structural:art-392:0",
+      "structural:art-371:0"
+     ]
+    },
+    {
+     "id": "q-061",
+     "chunk_ids": [
+      "structural:art-363:0",
+      "structural:art-364:0",
+      "structural:art-365:0",
+      "structural:art-362:0",
+      "structural:art-366:0"
+     ]
+    },
+    {
+     "id": "q-062",
+     "chunk_ids": [
+      "structural:art-307:0",
+      "structural:art-655-i:0",
+      "structural:art-308:0",
+      "structural:art-309:0",
+      "structural:art-655-o:0"
+     ]
+    },
+    {
+     "id": "q-063",
+     "chunk_ids": [
+      "structural:art-335:0",
+      "structural:art-334:0",
+      "structural:art-341:0",
+      "structural:art-342-a:0",
+      "structural:art-327:0"
+     ]
+    },
+    {
+     "id": "q-064",
+     "chunk_ids": [
+      "structural:art-186:0",
+      "structural:art-184:0",
+      "structural:art-184:1",
+      "structural:art-186:1",
+      "structural:art-175-a:0"
+     ]
+    },
+    {
+     "id": "q-065",
+     "chunk_ids": [
+      "structural:art-263:0",
+      "structural:art-228:0",
+      "structural:art-258:0",
+      "structural:art-267:0",
+      "structural:art-279:0"
+     ]
+    },
+    {
+     "id": "q-066",
+     "chunk_ids": [
+      "structural:art-560:0",
+      "structural:art-109:1",
+      "structural:art-109:0",
+      "structural:art-109:2",
+      "structural:art-558:0"
+     ]
+    },
+    {
+     "id": "q-067",
+     "chunk_ids": [
+      "structural:art-621:0",
+      "structural:art-620:0",
+      "structural:art-611:0",
+      "structural:art-618:0",
+      "structural:art-649:0"
+     ]
+    },
+    {
+     "id": "q-068",
+     "chunk_ids": [
+      "structural:art-629:1",
+      "structural:art-629:0",
+      "structural:art-631:0",
+      "structural:art-630:0",
+      "structural:art-628:0"
+     ]
+    },
+    {
+     "id": "q-069",
+     "chunk_ids": [
+      "structural:art-657:0",
+      "structural:art-316:0",
+      "structural:art-631:0",
+      "structural:art-629:0",
+      "structural:art-283:0"
+     ]
+    },
+    {
+     "id": "q-070",
+     "chunk_ids": [
+      "structural:art-650:0",
+      "structural:art-648:0",
+      "structural:art-649:0",
+      "structural:art-109:1",
+      "structural:art-109:0"
+     ]
+    },
+    {
+     "id": "q-071",
+     "chunk_ids": [
+      "structural:art-320:0",
+      "structural:art-228:0",
+      "structural:art-465:0",
+      "structural:art-474:0",
+      "structural:art-283:0"
+     ]
+    },
+    {
+     "id": "q-072",
+     "chunk_ids": [
+      "structural:art-376:0",
+      "structural:art-377:0",
+      "structural:art-382:0",
+      "structural:art-380:0",
+      "structural:art-375:0"
+     ]
+    },
+    {
+     "id": "q-073",
+     "chunk_ids": [
+      "structural:art-43:0",
+      "structural:art-355:0",
+      "structural:art-436:0",
+      "structural:art-362:0",
+      "structural:art-353:0"
+     ]
+    },
+    {
+     "id": "q-074",
+     "chunk_ids": [
+      "structural:art-166-a:0",
+      "structural:art-96-a:0",
+      "structural:art-166:1",
+      "structural:art-166-a:1",
+      "structural:art-167-b:0"
+     ]
+    },
+    {
+     "id": "q-075",
+     "chunk_ids": [
+      "structural:art-504:0",
+      "structural:art-257:0",
+      "structural:art-255:0",
+      "structural:art-325:0",
+      "structural:art-256:0"
+     ]
+    },
+    {
+     "id": "q-076",
+     "chunk_ids": [
+      "structural:art-275:0",
+      "structural:art-288:0",
+      "structural:art-276:0",
+      "structural:art-267:0",
+      "structural:art-274:0"
+     ]
+    },
+    {
+     "id": "q-077",
+     "chunk_ids": [
+      "structural:art-177:0",
+      "structural:art-200:0",
+      "structural:art-178-a:0",
+      "structural:art-176:0",
+      "structural:art-205-a:0"
+     ]
+    },
+    {
+     "id": "q-078",
+     "chunk_ids": [
+      "structural:art-449:0",
+      "structural:art-382:0",
+      "structural:art-587:0",
+      "structural:art-371:0",
+      "structural:art-438:0"
+     ]
+    },
+    {
+     "id": "q-079",
+     "chunk_ids": [
+      "structural:art-223:0",
+      "structural:art-222:0",
+      "structural:art-565:0",
+      "structural:art-224:0",
+      "structural:art-212:0"
+     ]
+    },
+    {
+     "id": "q-080",
+     "chunk_ids": [
+      "structural:art-338:0",
+      "structural:art-582:0",
+      "structural:art-341:0",
+      "structural:art-565:0",
+      "structural:art-660:0"
+     ]
+    },
+    {
+     "id": "q-081",
+     "chunk_ids": [
+      "structural:art-88:0",
+      "structural:art-89:1",
+      "structural:art-91:0",
+      "structural:art-90:0",
+      "structural:art-83:0"
+     ]
+    },
+    {
+     "id": "q-082",
+     "chunk_ids": [
+      "structural:art-178-a:0",
+      "structural:art-177:0",
+      "structural:art-49:0",
+      "structural:art-200:0",
+      "structural:art-205-a:0"
+     ]
+    },
+    {
+     "id": "q-083",
+     "chunk_ids": [
+      "structural:art-394:0",
+      "structural:art-141:0",
+      "structural:art-140:0",
+      "structural:art-119:0",
+      "structural:art-85:0"
+     ]
+    },
+    {
+     "id": "q-084",
+     "chunk_ids": [
+      "structural:art-276:0",
+      "structural:art-271:0",
+      "structural:art-288:0",
+      "structural:art-274:0",
+      "structural:art-267:0"
+     ]
+    }
+   ],
+   "rerank_cache": {
+    "hits": 700,
+    "misses": 0
+   }
+  }
+ ],
+ "pipeline": {
+  "metrics": {
+   "questions": 90,
+   "errors": 0,
+   "abstention_accuracy": 1.0,
+   "false_abstention_rate": 0.02857142857142857,
+   "unanswerable": 20,
+   "answerable": 70,
+   "answered_citing_expected": 0.9285714285714286,
+   "abstention_reasons": {
+    "insufficient_context": 22
+   },
+   "citation_rates": {
+    "citations": 95,
+    "valid": 1.0,
+    "imprecise": 0.0,
+    "invalid": 0.0
+   },
+   "retried": 7,
+   "seconds_median": 34.8
+  },
+  "records": [
+   {
+    "id": "q-001",
+    "category": "factual_single",
+    "expected": [
+     "art-279-p2"
+    ],
+    "seconds": 27.7,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "Não. A distribuidora não pode cobrar o custo do sistema de comunicação quando o consumidor opta pela leitura local ou pela medição externa.",
+    "cited": [
+     "art-279-p2"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-279:0",
+     "structural:art-278:0",
+     "structural:art-234:0",
+     "structural:art-243:0",
+     "structural:art-242:0"
+    ],
+    "question": "Quando o leiturista não consegue acessar o medidor e eu escolho instalar leitura local ou medição externa, a distribuidora pode me cobrar o custo do sistema de comunicação?"
+   },
+   {
+    "id": "q-002",
+    "category": "factual_single",
+    "expected": [
+     "art-354"
+    ],
+    "seconds": 28.4,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "A distribuidora deve suspender o fornecimento de energia de todas as unidades consumidoras modeladas na CCEE de titularidade desse consumidor.",
+    "cited": [
+     "art-354"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-354:0",
+     "structural:art-172:0",
+     "structural:art-96:0",
+     "structural:art-170:0",
+     "structural:art-96:1"
+    ],
+    "question": "O que a distribuidora deve fazer com as unidades consumidoras de um consumidor livre que foi desligado da CCEE?"
+   },
+   {
+    "id": "q-003",
+    "category": "factual_single",
+    "expected": [
+     "art-429-inc-V"
+    ],
+    "seconds": 31.0,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "Sim, a distribuidora é obrigada a divulgar a existência da Ouvidoria em sua página na internet.",
+    "cited": [
+     "art-429-inc-V",
+     "art-398-inc-XI"
+    ],
+    "verdicts": [
+     "valid",
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-429:0",
+     "structural:art-398:0",
+     "structural:art-423:0",
+     "structural:art-383:0",
+     "structural:art-430:0"
+    ],
+    "question": "A distribuidora é obrigada a divulgar a existência da sua Ouvidoria no site?"
+   },
+   {
+    "id": "q-004",
+    "category": "factual_single",
+    "expected": [
+     "art-9-p3"
+    ],
+    "seconds": 28.0,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "Sim, o titular pode cadastrar o cônjuge ou companheiro a qualquer tempo, fornecendo os documentos previstos no art. 67.",
+    "cited": [
+     "art-9-p3"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-9:0",
+     "structural:art-633:0",
+     "structural:art-8:0",
+     "structural:art-6:0",
+     "structural:art-138:1"
+    ],
+    "question": "O titular da conta de luz pode cadastrar o cônjuge ou companheiro junto à distribuidora? Em que momento?"
+   },
+   {
+    "id": "q-005",
+    "category": "factual_single",
+    "expected": [
+     "art-554"
+    ],
+    "seconds": 25.0,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "Sim, é permitida a recarga de veículos que não sejam do titular da unidade consumidora, inclusive para fins de exploração comercial a preços livremente negociados.",
+    "cited": [
+     "art-554"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-554:0",
+     "structural:art-559:0",
+     "structural:art-553:0",
+     "structural:art-193:0",
+     "structural:art-2:1"
+    ],
+    "question": "Posso cobrar de outras pessoas pela recarga de carros elétricos na estação instalada na minha unidade consumidora?"
+   },
+   {
+    "id": "q-006",
+    "category": "factual_single",
+    "expected": [
+     "art-490"
+    ],
+    "seconds": 24.4,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "Não. A distribuidora não deve incorporar as instalações de iluminação pública e iluminação das vias internas, pois não são objeto do seu contrato de concessão ou permissão.",
+    "cited": [
+     "art-490"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-490:0",
+     "structural:art-486-a:0",
+     "structural:art-480:0",
+     "structural:art-489:0",
+     "structural:art-457:0"
+    ],
+    "question": "Ao incorporar a rede elétrica de um loteamento, a distribuidora também assume a iluminação das vias internas?"
+   },
+   {
+    "id": "q-007",
+    "category": "factual_single",
+    "expected": [
+     "art-207-inc-IV-al-b"
+    ],
+    "seconds": 35.8,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "Não, a visita técnica não é obrigatória para o Grupo B. Ela é facultativa, sendo realizada apenas se houver dúvidas sobre a documentação ou necessidade de comprovação da atividade e da finalidade do uso da energia.",
+    "cited": [
+     "art-207-inc-IV-al-b"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-207:0",
+     "structural:art-665:0",
+     "structural:art-665:1",
+     "structural:art-186:0",
+     "structural:art-177:1"
+    ],
+    "question": "Na revisão cadastral de benefícios tarifários, a visita técnica é obrigatória para unidades do grupo B?"
+   },
+   {
+    "id": "q-008",
+    "category": "factual_single",
+    "expected": [
+     "art-440-p2"
+    ],
+    "seconds": 38.3,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "A compensação é calculada individualmente para cada descumprimento e os valores são somados no mês de apuração.",
+    "cited": [
+     "art-440-p2"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-440:0",
+     "structural:art-443:0",
+     "structural:art-441:0",
+     "structural:art-325:0",
+     "structural:art-545:0"
+    ],
+    "question": "Se a distribuidora descumprir o mesmo prazo de atendimento duas vezes no mesmo mês, como fica a compensação ao consumidor?"
+   },
+   {
+    "id": "q-009",
+    "category": "factual_single",
+    "expected": [
+     "art-662"
+    ],
+    "seconds": 50.6,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 2,
+    "answer": "A distribuidora pode sofrer glosa no valor mensal da subvenção recebida para o custeio dos benefícios tarifários, bem como a suspensão dos pagamentos pela CCEE até a regularização.",
+    "cited": [
+     "art-662"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-662:0",
+     "structural:art-665:0",
+     "structural:art-207:0",
+     "structural:art-205:0",
+     "structural:art-665:1"
+    ],
+    "question": "Que consequências a distribuidora pode sofrer se não fizer a revisão cadastral dos beneficiários de descontos tarifários?"
+   },
+   {
+    "id": "q-010",
+    "category": "factual_single",
+    "expected": [
+     "art-346-p1-inc-I",
+     "art-346-p1-inc-II"
+    ],
+    "seconds": 36.2,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "A distribuidora só pode exigir o pagamento da dívida do antigo dono (terceiros) na alteração de titularidade se você for uma pessoa jurídica que adquiriu o fundo de comércio ou estabelecimento e houver continuidade na exploração da atividade econômica.",
+    "cited": [
+     "art-346-p1-inc-I",
+     "art-346-p1-inc-II"
+    ],
+    "verdicts": [
+     "valid",
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-346:0",
+     "structural:art-138:0",
+     "structural:art-343:0",
+     "structural:art-299:0",
+     "structural:art-138:1"
+    ],
+    "question": "Comprei um estabelecimento comercial que tinha contas de luz em atraso. Em que situação a distribuidora pode me cobrar essa dívida do antigo dono para fazer a troca de titularidade?"
+   },
+   {
+    "id": "q-011",
+    "category": "multi_article",
+    "expected": [
+     "art-252-inc-I",
+     "art-254-inc-I"
+    ],
+    "seconds": 37.2,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "A distribuidora deve entregar o Termo de Ocorrência e Inspeção (TOI). Se o medidor estiver funcionando corretamente, a inspeção é custeada pelo consumidor.",
+    "cited": [
+     "art-252-inc-I",
+     "art-254-inc-I"
+    ],
+    "verdicts": [
+     "valid",
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-252:0",
+     "structural:art-250:0",
+     "structural:art-257:0",
+     "structural:art-254:0",
+     "structural:art-591:0"
+    ],
+    "question": "Na inspeção do sistema de medição, que documento a distribuidora deve entregar ao consumidor, e quem paga a inspeção se o medidor estiver funcionando corretamente?"
+   },
+   {
+    "id": "q-012",
+    "category": "multi_article",
+    "expected": [
+     "art-289-inc-II",
+     "art-278-inc-IV-al-f"
+    ],
+    "seconds": 16.9,
+    "error": null,
+    "abstained": true,
+    "abstention_reason": "insufficient_context",
+    "attempts": 0,
+    "answer": "Não encontrei na REN ANEEL nº 1.000/2021 base suficiente para responder com segurança. Seguem os trechos mais próximos do que foi perguntado.",
+    "cited": [],
+    "verdicts": [],
+    "chunk_ids": [
+     "structural:art-278:0",
+     "structural:art-280:0",
+     "structural:art-582:0",
+     "structural:art-283:0",
+     "structural:art-323:1"
+    ],
+    "question": "Quando o leiturista não consegue entrar para ler o medidor, como a distribuidora calcula o consumo da fatura, e a partir de quando ela pode suspender o fornecimento por isso?"
+   },
+   {
+    "id": "q-013",
+    "category": "multi_article",
+    "expected": [
+     "art-360-p1-inc-II",
+     "art-140-p1"
+    ],
+    "seconds": 44.7,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "A distribuidora deve notificar o consumidor com antecedência mínima de 15 dias antes da suspensão do fornecimento por inadimplência. Após a suspensão regular e ininterrupta, o contrato pode ser encerrado após o decurso de 2 ciclos de faturamento, desde que o consumidor tenha sido notificado com pelo menos 15 dias de antecedência.",
+    "cited": [
+     "art-360-p1-inc-II",
+     "art-140-p1"
+    ],
+    "verdicts": [
+     "valid",
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-140:0",
+     "structural:art-360:0",
+     "structural:art-436:0",
+     "structural:art-142:0",
+     "structural:art-582:0"
+    ],
+    "question": "Se a minha energia for cortada por falta de pagamento, com quanta antecedência eu devo ser avisado do corte e depois de quanto tempo a distribuidora pode encerrar o meu contrato?"
+   },
+   {
+    "id": "q-014",
+    "category": "multi_article",
+    "expected": [
+     "art-344-p2",
+     "art-343",
+     "art-343-p1"
+    ],
+    "seconds": 40.5,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "No caso de atraso no pagamento de parcela de débito parcelado, incidem multa, juros de mora e atualização monetária. O limite da multa é de até 2%.",
+    "cited": [
+     "art-344-p2",
+     "art-343-p1"
+    ],
+    "verdicts": [
+     "valid",
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-344:0",
+     "structural:art-115:0",
+     "structural:art-343:0",
+     "structural:art-440:0",
+     "structural:art-323:0"
+    ],
+    "question": "Se eu atrasar uma parcela de um débito parcelado com a distribuidora, que encargos posso pagar e qual é o limite da multa?"
+   },
+   {
+    "id": "q-015",
+    "category": "multi_article",
+    "expected": [
+     "art-220-p1",
+     "art-219-inc-II"
+    ],
+    "seconds": 37.6,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "Sim, a unidade do grupo A com opção de faturamento no grupo B pode aderir à tarifa branca, mediante aditivo contratual.",
+    "cited": [
+     "art-222-p2"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-222:0",
+     "structural:art-292:0",
+     "structural:art-219:0",
+     "structural:art-561:0",
+     "structural:art-671-a:0"
+    ],
+    "question": "Uma unidade do grupo A que optou por ser faturada no grupo B pode aderir à tarifa branca?"
+   },
+   {
+    "id": "q-016",
+    "category": "multi_article",
+    "expected": [
+     "art-583-p2",
+     "art-595"
+    ],
+    "seconds": 36.1,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "A distribuidora deve observar os critérios dispostos no art. 595 da REN 1.000/2021.",
+    "cited": [
+     "art-583-p2"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-583:0",
+     "structural:art-595:0",
+     "structural:art-596:0",
+     "structural:art-598:0",
+     "structural:art-255:0"
+    ],
+    "question": "Se uma irregularidade no medidor começou antes de a unidade passar para o pré-pagamento, quais critérios a distribuidora usa para recuperar o consumo não faturado?"
+   },
+   {
+    "id": "q-017",
+    "category": "deadline_or_value",
+    "expected": [
+     "art-260"
+    ],
+    "seconds": 27.0,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "A leitura deve ser realizada em intervalos de aproximadamente 30 dias, com mínimo de 27 e máximo de 33 dias.",
+    "cited": [
+     "art-260"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-271:0",
+     "structural:art-260:0",
+     "structural:art-285:0",
+     "structural:art-243:0",
+     "structural:art-250:0"
+    ],
+    "question": "De quanto em quanto tempo a distribuidora deve fazer a leitura do medidor de uma residência do grupo B?"
+   },
+   {
+    "id": "q-018",
+    "category": "deadline_or_value",
+    "expected": [
+     "art-244"
+    ],
+    "seconds": 32.2,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "A distribuidora deve ressarcir os custos incorridos na preparação do local de medição caso a implantação da medição externa seja efetuada em até 6 meses da conexão inicial.",
+    "cited": [
+     "art-244"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-244:0",
+     "structural:art-243:0",
+     "structural:art-621:0",
+     "structural:art-96:0",
+     "structural:art-235:0"
+    ],
+    "question": "Se a distribuidora passar o medidor para fora do imóvel pouco depois da ligação, até quando ela precisa me ressarcir pelo que gastei preparando o local de medição?"
+   },
+   {
+    "id": "q-019",
+    "category": "deadline_or_value",
+    "expected": [
+     "art-316"
+    ],
+    "seconds": 30.2,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "O período de ajustes do fator de potência para uma unidade do grupo A no início do fornecimento dura 3 ciclos consecutivos e completos de faturamento.",
+    "cited": [
+     "art-316"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-316:0",
+     "structural:art-304:0",
+     "structural:art-90:0",
+     "structural:art-311:0",
+     "structural:art-261:0"
+    ],
+    "question": "Quanto tempo dura o período de ajustes do fator de potência para uma unidade do grupo A no início do fornecimento?"
+   },
+   {
+    "id": "q-020",
+    "category": "deadline_or_value",
+    "expected": [
+     "art-651"
+    ],
+    "seconds": 34.8,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "O pagamento do ressarcimento ao proprietário deve ocorrer em até 180 dias após a efetiva incorporação dos bens expressos no contrato de incorporação.",
+    "cited": [
+     "art-651"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-651:0",
+     "structural:art-102:0",
+     "structural:art-649:0",
+     "structural:art-618:0",
+     "structural:art-650:0"
+    ],
+    "question": "Depois que a distribuidora incorpora uma rede particular, em quanto tempo ela deve pagar o ressarcimento ao proprietário?"
+   },
+   {
+    "id": "q-021",
+    "category": "deadline_or_value",
+    "expected": [
+     "art-596-p5"
+    ],
+    "seconds": 39.2,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "A distribuidora pode cobrar o consumo não faturado de uma ligação irregular por até 36 ciclos, conforme o prazo de cobrança retroativa estabelecido. Caso não seja possível identificar o período exato da irregularidade, a cobrança fica limitada aos 6 ciclos imediatamente anteriores à constatação.",
+    "cited": [
+     "art-596-p5",
+     "art-596-p1"
+    ],
+    "verdicts": [
+     "valid",
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-596:0",
+     "structural:art-323:0",
+     "structural:art-504:0",
+     "structural:art-324:0",
+     "structural:art-583:0"
+    ],
+    "question": "Por quantos ciclos para trás a distribuidora pode cobrar o consumo não faturado de uma ligação irregular?"
+   },
+   {
+    "id": "q-022",
+    "category": "deadline_or_value",
+    "expected": [
+     "art-438-p2-inc-I"
+    ],
+    "seconds": 39.9,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "Você tem o prazo de até 5 dias para solicitar a medição de 168 horas.",
+    "cited": [
+     "art-438-p2-inc-I"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-438:0",
+     "structural:art-543:0",
+     "structural:art-587:0",
+     "structural:art-96:0",
+     "structural:art-23:0"
+    ],
+    "question": "Reclamei da tensão e a distribuidora disse que a reclamação é improcedente. Quanto tempo tenho para pedir a medição de 168 horas?"
+   },
+   {
+    "id": "q-023",
+    "category": "deadline_or_value",
+    "expected": [
+     "art-655-c-p1"
+    ],
+    "seconds": 47.7,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "O percentual utilizado no cálculo da garantia de fiel cumprimento para uma minigeração distribuída de 800 kW é de 2,5%, pois a potência é superior a 500 kW e inferior a 1.000 kW.",
+    "cited": [
+     "art-655-c-p1"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-655-c:0",
+     "structural:art-655-c:2",
+     "structural:art-655-c:1",
+     "structural:art-67:1",
+     "structural:art-655-b:0"
+    ],
+    "question": "Qual percentual é usado no cálculo da garantia de fiel cumprimento para uma minigeração distribuída de 800 kW?"
+   },
+   {
+    "id": "q-024",
+    "category": "unanswerable",
+    "expected": [],
+    "seconds": 37.2,
+    "error": null,
+    "abstained": true,
+    "abstention_reason": "insufficient_context",
+    "attempts": 0,
+    "answer": "Não encontrei na REN ANEEL nº 1.000/2021 base suficiente para responder com segurança. Seguem os trechos mais próximos do que foi perguntado.",
+    "cited": [],
+    "verdicts": [],
+    "chunk_ids": [
+     "structural:art-350:0",
+     "structural:art-495:0",
+     "structural:art-2:3",
+     "structural:art-506:0",
+     "structural:art-172-b:1"
+    ],
+    "question": "Qual é a pena criminal para quem faz uma ligação clandestina de energia (gato)?"
+   },
+   {
+    "id": "q-025",
+    "category": "unanswerable",
+    "expected": [],
+    "seconds": 29.9,
+    "error": null,
+    "abstained": true,
+    "abstention_reason": "insufficient_context",
+    "attempts": 0,
+    "answer": "Não encontrei na REN ANEEL nº 1.000/2021 base suficiente para responder com segurança. Seguem os trechos mais próximos do que foi perguntado.",
+    "cited": [],
+    "verdicts": [],
+    "chunk_ids": [
+     "structural:art-189:0",
+     "structural:art-455:0",
+     "structural:art-450:0",
+     "structural:art-454:0",
+     "structural:art-463:0"
+    ],
+    "question": "Que tipo de lâmpada a prefeitura deve usar na iluminação pública, LED ou vapor de sódio?"
+   },
+   {
+    "id": "q-026",
+    "category": "unanswerable",
+    "expected": [],
+    "seconds": 28.4,
+    "error": null,
+    "abstained": true,
+    "abstention_reason": "insufficient_context",
+    "attempts": 0,
+    "answer": "Não encontrei na REN ANEEL nº 1.000/2021 base suficiente para responder com segurança. Seguem os trechos mais próximos do que foi perguntado.",
+    "cited": [],
+    "verdicts": [],
+    "chunk_ids": [
+     "structural:art-545:0",
+     "structural:art-2:7",
+     "structural:art-546:0",
+     "structural:art-543:0",
+     "structural:art-531:0"
+    ],
+    "question": "Qual é o valor da compensação que recebo quando o limite de DIC do meu sistema SIGFI é ultrapassado?"
+   },
+   {
+    "id": "q-027",
+    "category": "unanswerable",
+    "expected": [],
+    "seconds": 33.3,
+    "error": null,
+    "abstained": true,
+    "abstention_reason": "insufficient_context",
+    "attempts": 0,
+    "answer": "Não encontrei na REN ANEEL nº 1.000/2021 base suficiente para responder com segurança. Seguem os trechos mais próximos do que foi perguntado.",
+    "cited": [],
+    "verdicts": [],
+    "chunk_ids": [
+     "structural:art-668:1",
+     "structural:art-645:0",
+     "structural:art-629:0",
+     "structural:art-221:0",
+     "structural:art-629:1"
+    ],
+    "question": "Que percentual da receita com atividades acessórias a distribuidora precisa reverter para a modicidade tarifária?"
+   },
+   {
+    "id": "q-028",
+    "category": "unanswerable",
+    "expected": [],
+    "seconds": 37.4,
+    "error": null,
+    "abstained": true,
+    "abstention_reason": "insufficient_context",
+    "attempts": 0,
+    "answer": "Não encontrei na REN ANEEL nº 1.000/2021 base suficiente para responder com segurança. Seguem os trechos mais próximos do que foi perguntado.",
+    "cited": [],
+    "verdicts": [],
+    "chunk_ids": [
+     "structural:art-179:0",
+     "structural:art-178-a:0",
+     "structural:art-176:0",
+     "structural:art-177:0",
+     "structural:art-200:0"
+    ],
+    "question": "Qual é o percentual de desconto na conta de luz da subclasse residencial desconto social?"
+   },
+   {
+    "id": "q-029",
+    "category": "unanswerable",
+    "expected": [],
+    "seconds": 25.4,
+    "error": null,
+    "abstained": true,
+    "abstention_reason": "insufficient_context",
+    "attempts": 0,
+    "answer": "Não encontrei na REN ANEEL nº 1.000/2021 base suficiente para responder com segurança. Seguem os trechos mais próximos do que foi perguntado.",
+    "cited": [],
+    "verdicts": [],
+    "chunk_ids": [
+     "structural:art-109:0",
+     "structural:art-2:1",
+     "structural:art-644:1",
+     "structural:art-304:0",
+     "structural:art-293:0"
+    ],
+    "question": "Quanto custa, em média, a energia no mercado livre em comparação com a tarifa da distribuidora?"
+   },
+   {
+    "id": "q-030",
+    "category": "unanswerable",
+    "expected": [],
+    "seconds": 39.8,
+    "error": null,
+    "abstained": true,
+    "abstention_reason": "insufficient_context",
+    "attempts": 0,
+    "answer": "Não encontrei na REN ANEEL nº 1.000/2021 base suficiente para responder com segurança. Seguem os trechos mais próximos do que foi perguntado.",
+    "cited": [],
+    "verdicts": [],
+    "chunk_ids": [
+     "structural:art-304:0",
+     "structural:art-98:0",
+     "structural:art-507:0",
+     "structural:art-668:1",
+     "structural:art-504:0"
+    ],
+    "question": "Qual é o valor que a distribuidora cobra para ligar energia provisória em um canteiro de obras?"
+   },
+   {
+    "id": "q-031",
+    "category": "factual_single",
+    "expected": [
+     "art-607-pu"
+    ],
+    "seconds": 49.7,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "Não. O consumidor não pode pedir a inclusão de outros equipamentos danificados em uma solicitação de ressarcimento já realizada. Caso necessário, deve fazer uma nova solicitação.",
+    "cited": [
+     "art-607-pu"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-607:0",
+     "structural:art-602:0",
+     "structural:art-618:0",
+     "structural:art-614:0",
+     "structural:art-611:0"
+    ],
+    "question": "Já pedi ressarcimento de uma geladeira queimada. Posso incluir depois a televisão que também estragou no mesmo pedido?"
+   },
+   {
+    "id": "q-032",
+    "category": "factual_single",
+    "expected": [
+     "art-623-p4"
+    ],
+    "seconds": 55.3,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 2,
+    "answer": "Não, a distribuidora não pode cobrar. Ela deve executar e custear o deslocamento ou a remoção de postes quando houver instalação irregular realizada pela própria distribuidora.",
+    "cited": [
+     "art-110-p3-inc-I"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-453:0",
+     "structural:art-110:0",
+     "structural:art-627-a:1",
+     "structural:art-325:0",
+     "structural:art-304:0"
+    ],
+    "question": "A distribuidora pode cobrar para remover um poste que ela mesma instalou de forma irregular na frente do meu imóvel?"
+   },
+   {
+    "id": "q-033",
+    "category": "factual_single",
+    "expected": [
+     "art-254-inc-III"
+    ],
+    "seconds": 29.2,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "A inspeção do sistema de medição, quando solicitada pela CCEE, deve ser custeada pelo responsável pelo sistema de medição.",
+    "cited": [
+     "art-254-inc-III"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-254:0",
+     "structural:art-250:0",
+     "structural:art-248:0",
+     "structural:art-96:0",
+     "structural:art-251:0"
+    ],
+    "question": "Quem paga a inspeção do sistema de medição quando ela é pedida pela CCEE?"
+   },
+   {
+    "id": "q-034",
+    "category": "factual_single",
+    "expected": [
+     "art-597-inc-I"
+    ],
+    "seconds": 32.6,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "A distribuidora pode cobrar o custo administrativo da inspeção quando o consumidor for responsável pela custódia dos equipamentos de medição instalados no interior de seu imóvel, ou quando houver ação comprovada ou responsabilidade comprovadamente atribuída ao consumidor.",
+    "cited": [
+     "art-597-inc-I",
+     "art-597-inc-II",
+     "art-597-inc-III"
+    ],
+    "verdicts": [
+     "valid",
+     "valid",
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-597:0",
+     "structural:art-368:0",
+     "structural:art-591:0",
+     "structural:art-254:0",
+     "structural:art-596:0"
+    ],
+    "question": "Em caso de irregularidade na medição, em que situação a distribuidora pode cobrar o custo administrativo da inspeção quando o medidor fica dentro da casa do consumidor?"
+   },
+   {
+    "id": "q-035",
+    "category": "factual_single",
+    "expected": [
+     "art-127-p2"
+    ],
+    "seconds": 35.0,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "Deve ser celebrado um único Contrato de Uso do Sistema de Distribuição (CUSD).",
+    "cited": [
+     "art-127-p2"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-127:0",
+     "structural:art-149:0",
+     "structural:art-294:0",
+     "structural:art-500:0",
+     "structural:art-47:0"
+    ],
+    "question": "Uma central geradora que consome e injeta energia pelo mesmo ponto de conexão precisa assinar quantos contratos de uso do sistema de distribuição?"
+   },
+   {
+    "id": "q-036",
+    "category": "factual_single",
+    "expected": [
+     "art-14-pu"
+    ],
+    "seconds": 33.2,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "A comprovação de posse pode ser realizada por declaração escrita firmada pelo consumidor, acompanhada de outros comprovantes de residência.",
+    "cited": [
+     "art-14-pu"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-14:0",
+     "structural:art-485:0",
+     "structural:art-11:0",
+     "structural:art-485:1",
+     "structural:art-655:0"
+    ],
+    "question": "Moro em um núcleo urbano informal consolidado e não tenho escritura. Como posso comprovar a posse do imóvel para a distribuidora?"
+   },
+   {
+    "id": "q-037",
+    "category": "factual_single",
+    "expected": [
+     "art-328-p2"
+    ],
+    "seconds": 26.7,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "Sim, você pode voltar a receber a fatura completa a qualquer tempo, conforme previsto no § 2º do Art. 328.",
+    "cited": [
+     "art-328-p2"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-328:0",
+     "structural:art-342-a:0",
+     "structural:art-565:0",
+     "structural:art-333:0",
+     "structural:art-327:0"
+    ],
+    "question": "Aceitei receber só o resumo da fatura de energia. Posso voltar a receber a fatura completa?"
+   },
+   {
+    "id": "q-038",
+    "category": "factual_single",
+    "expected": [
+     "art-339-pu"
+    ],
+    "seconds": 26.2,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "Sim, o pagamento pode ser realizado no primeiro dia útil subsequente.",
+    "cited": [
+     "art-339-pu"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-339:0",
+     "structural:art-656:0",
+     "structural:art-337:0",
+     "structural:art-582:0",
+     "structural:art-618:0"
+    ],
+    "question": "Se o vencimento da minha conta de luz cair num domingo, posso pagar no dia seguinte?"
+   },
+   {
+    "id": "q-039",
+    "category": "factual_single",
+    "expected": [
+     "art-166-a-p2-inc-I"
+    ],
+    "seconds": 29.9,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "Sim, a distribuidora pode reprovar a migração se houver débitos na unidade consumutora.",
+    "cited": [
+     "art-166-a-p2-inc-I"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-166-a:0",
+     "structural:art-167-c:0",
+     "structural:art-167-b:0",
+     "structural:art-166-a:1",
+     "structural:art-168:0"
+    ],
+    "question": "Se a minha unidade consumidora tiver contas em atraso, a distribuidora pode reprovar o meu pedido de migração para o mercado livre?"
+   },
+   {
+    "id": "q-040",
+    "category": "factual_single",
+    "expected": [
+     "art-480-p1",
+     "art-480-p1-inc-III"
+    ],
+    "seconds": 37.5,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "No caso de loteamentos (empreendimentos de múltiplas unidades), a responsabilidade financeira pela implantação dos postos de transformação, mesmo quando localizados em via pública, é do responsável pela implantação do empreendimento ou da regularização fundiária.",
+    "cited": [
+     "art-480-p1-inc-III",
+     "art-480-p1"
+    ],
+    "verdicts": [
+     "valid",
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-480:0",
+     "structural:art-486-a:0",
+     "structural:art-25:0",
+     "structural:art-479:0",
+     "structural:art-30:0"
+    ],
+    "question": "Em um loteamento, quem paga os transformadores necessários para atender o empreendimento, mesmo quando ficam na via pública?"
+   },
+   {
+    "id": "q-041",
+    "category": "multi_article",
+    "expected": [
+     "art-422-inc-II",
+     "art-325-p5"
+    ],
+    "seconds": 63.0,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 2,
+    "answer": "Não, a distribuidora não pode cortar sua energia. O registro de reclamação na Ouvidoria suspende a cobrança e a suspensão do fornecimento até a resposta final. O prazo para registrar a reclamação na Ouvidoria é de até 30 dias contados a partir do recebimento da resposta da reclamação feita diretamente à distribuidora.",
+    "cited": [
+     "art-325-p6",
+     "art-422-inc-II",
+     "art-325-p5"
+    ],
+    "verdicts": [
+     "valid",
+     "valid",
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-325:0",
+     "structural:art-422:0",
+     "structural:art-421:0",
+     "structural:art-423:0",
+     "structural:art-257:0"
+    ],
+    "question": "Contestei na Ouvidoria a cobrança de diferenças por defeito no medidor. A distribuidora pode cortar minha energia por esse débito enquanto a Ouvidoria não responde, e qual é o prazo para eu levar a reclamação à Ouvidoria?"
+   },
+   {
+    "id": "q-042",
+    "category": "multi_article",
+    "expected": [
+     "art-250",
+     "art-252-inc-II"
+    ],
+    "seconds": 41.7,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "O prazo para a distribuidora realizar a inspeção é de até 30 dias, contados a partir da solicitação. Caso o medidor apresente defeito, a substituição deve ocorrer em até 30 dias após a data da constatação do defeito.",
+    "cited": [
+     "art-250",
+     "art-252-inc-II"
+    ],
+    "verdicts": [
+     "valid",
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-250:0",
+     "structural:art-252:0",
+     "structural:art-253:0",
+     "structural:art-438:0",
+     "structural:art-257:0"
+    ],
+    "question": "Pedi a inspeção do meu medidor. Qual é o prazo para a distribuidora fazer a inspeção e, se o medidor estiver com defeito, em quanto tempo ela deve trocá-lo?"
+   },
+   {
+    "id": "q-043",
+    "category": "multi_article",
+    "expected": [
+     "art-269",
+     "art-323-inc-I"
+    ],
+    "seconds": 38.0,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "A distribuidora pode cobrar a diferença por até 36 ciclos de faturamento. No entanto, se o erro ocorreu devido a impedimento de acesso para fins de leitura, a cobrança fica limitada aos últimos 3 ciclos imediatamente anteriores ao ciclo vigente.",
+    "cited": [
+     "art-324-p2"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-324:0",
+     "structural:art-323:0",
+     "structural:art-504:0",
+     "structural:art-288:0",
+     "structural:art-141:0"
+    ],
+    "question": "Se a fatura vier errada por causa da autoleitura e eu tiver pago a menos, por quantos ciclos a distribuidora pode cobrar a diferença?"
+   },
+   {
+    "id": "q-044",
+    "category": "multi_article",
+    "expected": [
+     "art-138-p4",
+     "art-346-inc-I"
+    ],
+    "seconds": 42.1,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "A distribuidora deve realizar a alteração no prazo de até 3 dias úteis na área urbana. Ela não pode exigir o pagamento da dívida do inquilino anterior (terceiros), salvo se houver comprovação de aquisição de fundo de comércio com continuidade da atividade econômica.",
+    "cited": [
+     "art-138-p4",
+     "art-346-inc-I",
+     "art-346-p1-inc-I"
+    ],
+    "verdicts": [
+     "valid",
+     "valid",
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-138:0",
+     "structural:art-346:0",
+     "structural:art-138:1",
+     "structural:art-139:0",
+     "structural:art-299:0"
+    ],
+    "question": "Na troca de titularidade de um imóvel urbano, em quanto tempo a distribuidora deve fazer a alteração, e ela pode exigir que eu pague a dívida do inquilino anterior?"
+   },
+   {
+    "id": "q-045",
+    "category": "multi_article",
+    "expected": [
+     "art-655-f-p2-inc-II-al-b",
+     "art-325-p2"
+    ],
+    "seconds": 43.7,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "A distribuidora pode cobrar a diferença por até 36 ciclos de faturamento. O consumidor tem o direito de registrar reclamação na distribuidora em até 30 dias contados a partir da notificação.",
+    "cited": [
+     "art-655-f-p2-inc-II-al-b",
+     "art-325-p2"
+    ],
+    "verdicts": [
+     "valid",
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-596:0",
+     "structural:art-325:0",
+     "structural:art-655-f:0",
+     "structural:art-504:0",
+     "structural:art-595:0"
+    ],
+    "question": "A distribuidora constatou que minha unidade recebia créditos de micro ou minigeração distribuída de forma irregular. Por quantos ciclos ela pode cobrar a diferença e em quanto tempo posso reclamar?"
+   },
+   {
+    "id": "q-046",
+    "category": "multi_article",
+    "expected": [
+     "art-617-inc-I",
+     "art-618-inc-II"
+    ],
+    "seconds": 48.2,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "Como o pedido foi feito em até 90 dias do dano, o resultado da análise deve ser disponibilizado em até 15 dias. Se aprovado, o ressarcimento deve ser feito em até 20 dias, contados do vencimento do prazo de análise ou da disponibilização do resultado, o que ocorrer primeiro.",
+    "cited": [
+     "art-617-inc-I",
+     "art-618-inc-II"
+    ],
+    "verdicts": [
+     "valid",
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-617:0",
+     "structural:art-618:0",
+     "structural:art-613:0",
+     "structural:art-602:0",
+     "structural:art-621:0"
+    ],
+    "question": "Pedi ressarcimento de um aparelho queimado um mês depois do dano. Em quanto tempo sai o resultado da análise e, se for aprovado, em quanto tempo devo ser ressarcido?"
+   },
+   {
+    "id": "q-047",
+    "category": "multi_article",
+    "expected": [
+     "art-173-p1",
+     "art-663-inc-I"
+    ],
+    "seconds": 42.3,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "Não. A distribuidora não tem direito à recuperação do equilíbrio econômico-financeiro do contrato caso o desequilíbrio tenha sido causado pela cobrança de tarifas menores que as homologadas.",
+    "cited": [
+     "art-663-inc-I",
+     "art-663"
+    ],
+    "verdicts": [
+     "valid",
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-663:0",
+     "structural:art-173:0",
+     "structural:art-627-a:1",
+     "structural:art-175:0",
+     "structural:art-143:0"
+    ],
+    "question": "Se a distribuidora decidir cobrar tarifas menores que as homologadas, ela pode depois pedir o reequilíbrio econômico-financeiro do contrato por isso?"
+   },
+   {
+    "id": "q-048",
+    "category": "deadline_or_value",
+    "expected": [
+     "art-365-p2"
+    ],
+    "seconds": 34.1,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "A distribuidora pode cobrar até 30% do valor da religação solicitada.",
+    "cited": [
+     "art-365-p2"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-369:0",
+     "structural:art-365:0",
+     "structural:art-368:0",
+     "structural:art-441:0",
+     "structural:art-366:0"
+    ],
+    "question": "Se no corte por falta de pagamento a distribuidora só desligou o disjuntor, quanto ela pode cobrar pela religação?"
+   },
+   {
+    "id": "q-049",
+    "category": "deadline_or_value",
+    "expected": [
+     "art-421-p1-inc-II"
+    ],
+    "seconds": 33.9,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "A Ouvidoria deve comunicar as providências adotadas em até 10 dias úteis.",
+    "cited": [
+     "art-421-p1-inc-II"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-421:0",
+     "structural:art-408:0",
+     "structural:art-418:0",
+     "structural:art-438:0",
+     "structural:art-71:0"
+    ],
+    "question": "Em quanto tempo a Ouvidoria da distribuidora deve me informar as providências tomadas sobre a minha reclamação?"
+   },
+   {
+    "id": "q-050",
+    "category": "deadline_or_value",
+    "expected": [
+     "art-49-p4"
+    ],
+    "seconds": 39.2,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "Sim, você tem direito à instalação gratuita do padrão de entrada. Se não houver necessidade de obra específica, a distribuidora deve instalar o padrão, a medição e realizar a conexão no prazo de até 10 dias úteis, contados a partir da solicitação.",
+    "cited": [
+     "art-49-p4"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-49:0",
+     "structural:art-64:0",
+     "structural:art-91:0",
+     "structural:art-507:0",
+     "structural:art-88:0"
+    ],
+    "question": "Tenho direito à instalação gratuita do padrão de entrada. Se não houver necessidade de obra, em quanto tempo a distribuidora deve instalar o padrão e fazer a ligação?"
+   },
+   {
+    "id": "q-051",
+    "category": "deadline_or_value",
+    "expected": [
+     "art-377-inc-III"
+    ],
+    "seconds": 32.4,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "8 horas diárias.",
+    "cited": [
+     "art-377-inc-III"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-377:0",
+     "structural:art-376:0",
+     "structural:art-382:0",
+     "structural:art-371-a:0",
+     "structural:art-375:0"
+    ],
+    "question": "Por quantas horas por dia, no mínimo, deve funcionar o posto de atendimento presencial da distribuidora em um município com mais de 10 mil unidades consumidoras?"
+   },
+   {
+    "id": "q-052",
+    "category": "deadline_or_value",
+    "expected": [
+     "art-582-p1"
+    ],
+    "seconds": 28.1,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "A distribuidora deve observar um intervalo de pelo menos 30 dias entre a data de vencimento da fatura e a data de suspensão do fornecimento.",
+    "cited": [
+     "art-582-p1"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-582:0",
+     "structural:art-580:0",
+     "structural:art-564:0",
+     "structural:art-565:0",
+     "structural:art-583:0"
+    ],
+    "question": "No pós-pagamento eletrônico, quantos dias depois do vencimento a distribuidora pode cortar a energia de uma família baixa renda?"
+   },
+   {
+    "id": "q-053",
+    "category": "deadline_or_value",
+    "expected": [
+     "art-391-pu-inc-IV"
+    ],
+    "seconds": 39.6,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "O tempo máximo para o contato direto com o atendente, após selecionar essa opção no menu, é de até 60 segundos.",
+    "cited": [
+     "art-391-pu-inc-IV"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-391:0",
+     "structural:art-380:0",
+     "structural:art-387:0",
+     "structural:art-392:0",
+     "structural:art-668:0"
+    ],
+    "question": "Quando ligo para a distribuidora e escolho falar com um atendente no menu, quanto tempo no máximo posso esperar?"
+   },
+   {
+    "id": "q-054",
+    "category": "unanswerable",
+    "expected": [],
+    "seconds": 47.1,
+    "error": null,
+    "abstained": true,
+    "abstention_reason": "insufficient_context",
+    "attempts": 0,
+    "answer": "Não encontrei na REN ANEEL nº 1.000/2021 base suficiente para responder com segurança. Seguem os trechos mais próximos do que foi perguntado.",
+    "cited": [],
+    "verdicts": [],
+    "chunk_ids": [
+     "structural:art-123:0",
+     "structural:art-343:0",
+     "structural:art-627-a:1",
+     "structural:art-115:0",
+     "structural:art-140:0"
+    ],
+    "question": "Que multa a distribuidora paga se o contrato de adesão vier impresso com letra menor que o corpo 12?"
+   },
+   {
+    "id": "q-055",
+    "category": "unanswerable",
+    "expected": [],
+    "seconds": 36.9,
+    "error": null,
+    "abstained": true,
+    "abstention_reason": "insufficient_context",
+    "attempts": 0,
+    "answer": "Não encontrei na REN ANEEL nº 1.000/2021 base suficiente para responder com segurança. Seguem os trechos mais próximos do que foi perguntado.",
+    "cited": [],
+    "verdicts": [],
+    "chunk_ids": [
+     "structural:art-112:0",
+     "structural:art-624:0",
+     "structural:art-173:0",
+     "structural:art-279:0",
+     "structural:art-110:0"
+    ],
+    "question": "Qual é o valor homologado pela ANEEL para um novo comissionamento de obra feito pela distribuidora?"
+   },
+   {
+    "id": "q-056",
+    "category": "unanswerable",
+    "expected": [],
+    "seconds": 49.3,
+    "error": null,
+    "abstained": true,
+    "abstention_reason": "insufficient_context",
+    "attempts": 0,
+    "answer": "Não encontrei na REN ANEEL nº 1.000/2021 base suficiente para responder com segurança. Seguem os trechos mais próximos do que foi perguntado.",
+    "cited": [],
+    "verdicts": [],
+    "chunk_ids": [
+     "structural:art-109:1",
+     "structural:art-664:0",
+     "structural:art-109:0",
+     "structural:art-668:1",
+     "structural:art-627-a:1"
+    ],
+    "question": "Qual foi o percentual do último reajuste tarifário da minha distribuidora?"
+   },
+   {
+    "id": "q-057",
+    "category": "unanswerable",
+    "expected": [],
+    "seconds": 30.5,
+    "error": null,
+    "abstained": true,
+    "abstention_reason": "insufficient_context",
+    "attempts": 0,
+    "answer": "Não encontrei na REN ANEEL nº 1.000/2021 base suficiente para responder com segurança. Seguem os trechos mais próximos do que foi perguntado.",
+    "cited": [],
+    "verdicts": [],
+    "chunk_ids": [
+     "structural:art-650:0",
+     "structural:art-648:0",
+     "structural:art-649:0",
+     "structural:art-652:0",
+     "structural:art-109:0"
+    ],
+    "question": "O valor que recebo da distribuidora pela incorporação da minha rede particular paga imposto de renda?"
+   },
+   {
+    "id": "q-058",
+    "category": "unanswerable",
+    "expected": [],
+    "seconds": 19.2,
+    "error": null,
+    "abstained": true,
+    "abstention_reason": "insufficient_context",
+    "attempts": 0,
+    "answer": "Não encontrei na REN ANEEL nº 1.000/2021 base suficiente para responder com segurança. Seguem os trechos mais próximos do que foi perguntado.",
+    "cited": [],
+    "verdicts": [],
+    "chunk_ids": [
+     "structural:art-250:0",
+     "structural:art-592:0",
+     "structural:art-438:0",
+     "structural:art-253:0",
+     "structural:art-252:0"
+    ],
+    "question": "O consumidor pode filmar a inspeção que o técnico da distribuidora faz no medidor do seu imóvel?"
+   },
+   {
+    "id": "q-059",
+    "category": "unanswerable",
+    "expected": [],
+    "seconds": 24.8,
+    "error": null,
+    "abstained": true,
+    "abstention_reason": "insufficient_context",
+    "attempts": 0,
+    "answer": "Não encontrei na REN ANEEL nº 1.000/2021 base suficiente para responder com segurança. Seguem os trechos mais próximos do que foi perguntado.",
+    "cited": [],
+    "verdicts": [],
+    "chunk_ids": [
+     "structural:art-522:0",
+     "structural:art-519:0",
+     "structural:art-2:7",
+     "structural:art-521:0",
+     "structural:art-545:0"
+    ],
+    "question": "Qual deve ser a vida útil mínima das baterias de um sistema SIGFI?"
+   },
+   {
+    "id": "q-060",
+    "category": "unanswerable",
+    "expected": [],
+    "seconds": 23.6,
+    "error": null,
+    "abstained": true,
+    "abstention_reason": "insufficient_context",
+    "attempts": 0,
+    "answer": "Não encontrei na REN ANEEL nº 1.000/2021 base suficiente para responder com segurança. Seguem os trechos mais próximos do que foi perguntado.",
+    "cited": [],
+    "verdicts": [],
+    "chunk_ids": [
+     "structural:art-440:0",
+     "structural:art-443:0",
+     "structural:art-325:0",
+     "structural:art-441:0",
+     "structural:art-671-c:0"
+    ],
+    "question": "A compensação que recebo na fatura por descumprimento de prazo da distribuidora tem incidência de ICMS?"
+   },
+   {
+    "id": "q-061",
+    "category": "factual_single",
+    "expected": [
+     "art-363"
+    ],
+    "seconds": 29.9,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "Não. A implantação do serviço de religação de urgência é opcional para a distribuidora.",
+    "cited": [
+     "art-363"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-363:0",
+     "structural:art-364:0",
+     "structural:art-623:0",
+     "structural:art-365:0",
+     "structural:art-362:0"
+    ],
+    "question": "A distribuidora é obrigada a oferecer o serviço de religação de urgência?"
+   },
+   {
+    "id": "q-062",
+    "category": "factual_single",
+    "expected": [
+     "art-307-p2"
+    ],
+    "seconds": 30.8,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "Não. As bandeiras tarifárias não incidem sobre a energia compensada nas unidades consumidoras participantes do SCEE.",
+    "cited": [
+     "art-307-p2"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-307:0",
+     "structural:art-655-i:0",
+     "structural:art-308:0",
+     "structural:art-309:0",
+     "structural:art-655-o:0"
+    ],
+    "question": "Quem tem painel solar no sistema de compensação paga bandeira tarifária sobre a energia compensada?"
+   },
+   {
+    "id": "q-063",
+    "category": "factual_single",
+    "expected": [
+     "art-335-inc-II"
+    ],
+    "seconds": 25.8,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "Sim, você pode indicar outro endereço atendido pelo serviço postal para receber a fatura, sem cobrança de despesas adicionais.",
+    "cited": [
+     "art-335-inc-II"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-335:0",
+     "structural:art-334:0",
+     "structural:art-333:0",
+     "structural:art-341:0",
+     "structural:art-342-a:0"
+    ],
+    "question": "Moro em uma área que os Correios não atendem. Posso receber a fatura de energia em outro endereço sem pagar nada a mais?"
+   },
+   {
+    "id": "q-064",
+    "category": "factual_single",
+    "expected": [
+     "art-186-p7"
+    ],
+    "seconds": 63.6,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 2,
+    "answer": "Não, a titularidade desses documentos não precisa ser do consumidor.",
+    "cited": [
+     "art-186-p7"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-186:0",
+     "structural:art-184:0",
+     "structural:art-184:1",
+     "structural:art-186:1",
+     "structural:art-175-a:0"
+    ],
+    "question": "Para ter o desconto rural de irrigação, a licença ambiental e a outorga de uso da água precisam estar no meu nome?"
+   },
+   {
+    "id": "q-065",
+    "category": "factual_single",
+    "expected": [
+     "art-263-pu"
+    ],
+    "seconds": 30.6,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "A distribuidora continua responsável pela atividade de leitura.",
+    "cited": [
+     "art-263-pu"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-263:0",
+     "structural:art-234:0",
+     "structural:art-272:0",
+     "structural:art-228:0",
+     "structural:art-258:0"
+    ],
+    "question": "Se a distribuidora adotar a autoleitura, quem continua responsável pela leitura do medidor?"
+   },
+   {
+    "id": "q-066",
+    "category": "factual_single",
+    "expected": [
+     "art-560"
+    ],
+    "seconds": 35.6,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "Não. Os ativos que compõem a infraestrutura das estações de recarga não integram a base de ativos da distribuidora para fins de remuneração durante o processo de revisão ou reajuste tarifário.",
+    "cited": [
+     "art-560"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-560:0",
+     "structural:art-109:1",
+     "structural:art-109:0",
+     "structural:art-109:2",
+     "structural:art-558:0"
+    ],
+    "question": "Os investimentos da distribuidora em estações de recarga de veículos elétricos entram na base de ativos remunerada pela tarifa?"
+   },
+   {
+    "id": "q-067",
+    "category": "factual_single",
+    "expected": [
+     "art-620"
+    ],
+    "seconds": 29.5,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "Não. A distribuidora responde independentemente da existência de dolo ou culpa pelos danos elétricos causados a equipamentos.",
+    "cited": [
+     "art-620"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-621:0",
+     "structural:art-620:0",
+     "structural:art-611:0",
+     "structural:art-618:0",
+     "structural:art-649:0"
+    ],
+    "question": "A distribuidora só precisa ressarcir aparelhos queimados por problema na rede se tiver culpa?"
+   },
+   {
+    "id": "q-068",
+    "category": "factual_single",
+    "expected": [
+     "art-629-p8"
+    ],
+    "seconds": 27.9,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "Não. A distribuidora deve solicitar prévia autorização da ANEEL para exercer atividades acessórias complementares inovadoras criadas a partir de novas tecnologias ou que não estejam estabelecidas no artigo.",
+    "cited": [
+     "art-629-p8"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-629:1",
+     "structural:art-629:0",
+     "structural:art-631:0",
+     "structural:art-630:0",
+     "structural:art-628:0"
+    ],
+    "question": "A distribuidora pode começar a oferecer uma atividade acessória nova, baseada em uma tecnologia que a norma não lista, sem pedir autorização?"
+   },
+   {
+    "id": "q-069",
+    "category": "factual_single",
+    "expected": [
+     "art-657"
+    ],
+    "seconds": 47.3,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 2,
+    "answer": "Não, a distribuidora não pode arredondar os valores durante os cálculos. O arredondamento é permitido apenas na fatura final, com duas casas decimais para valores monetários, conforme regras da ABNT.",
+    "cited": [
+     "art-657",
+     "art-657-pu"
+    ],
+    "verdicts": [
+     "valid",
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-657:0",
+     "structural:art-316:0",
+     "structural:art-631:0",
+     "structural:art-627-a:1",
+     "structural:art-323:0"
+    ],
+    "question": "A distribuidora pode arredondar os valores da conta de luz durante os cálculos?"
+   },
+   {
+    "id": "q-070",
+    "category": "factual_single",
+    "expected": [
+     "art-649"
+    ],
+    "seconds": 33.7,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "O valor do ressarcimento pago pela distribuidora é calculado com base no Valor de Mercado em Uso (VMU), conforme a regulação da ANEEL.",
+    "cited": [
+     "art-649"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-650:0",
+     "structural:art-648:0",
+     "structural:art-649:0",
+     "structural:art-655-i:0",
+     "structural:art-109:1"
+    ],
+    "question": "Como é calculado o valor que a distribuidora paga ao incorporar uma rede elétrica particular?"
+   },
+   {
+    "id": "q-071",
+    "category": "multi_article",
+    "expected": [
+     "art-228-p1-inc-V",
+     "art-282-inc-II"
+    ],
+    "seconds": 43.7,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 2,
+    "answer": "Sim, a instalação de medição pela distribuidora é opcional para equipamentos instalados em via pública. O faturamento nesses casos segue as disposições do Capítulo I do Título II, que trata da iluminação pública, incluindo o faturamento pelo custo de disponibilidade e demanda contratada quando aplicável.",
+    "cited": [
+     "art-228-p1-inc-V",
+     "art-320-pu"
+    ],
+    "verdicts": [
+     "valid",
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-320:0",
+     "structural:art-469:0",
+     "structural:art-228:0",
+     "structural:art-465:0",
+     "structural:art-474:0"
+    ],
+    "question": "Equipamentos instalados na via pública podem ficar sem medidor da distribuidora? Nesse caso, a que período corresponde o faturamento?"
+   },
+   {
+    "id": "q-072",
+    "category": "multi_article",
+    "expected": [
+     "art-376-inc-I",
+     "art-377-inc-I"
+    ],
+    "seconds": 33.3,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "Não é obrigatório. A implantação do posto é opcional para distribuidoras que atendam até 2.000 unidades consumidoras no município, desde que não atendam a sede municipal.",
+    "cited": [
+     "art-376-inc-I"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-376:0",
+     "structural:art-377:0",
+     "structural:art-382:0",
+     "structural:art-380:0",
+     "structural:art-375:0"
+    ],
+    "question": "Num município com 1.500 unidades consumidoras, a distribuidora é obrigada a ter posto de atendimento presencial? Se tiver, por quanto tempo ele deve funcionar?"
+   },
+   {
+    "id": "q-073",
+    "category": "multi_article",
+    "expected": [
+     "art-355-inc-II",
+     "art-360-p1-inc-I"
+    ],
+    "seconds": 14.9,
+    "error": null,
+    "abstained": true,
+    "abstention_reason": "insufficient_context",
+    "attempts": 0,
+    "answer": "Não encontrei na REN ANEEL nº 1.000/2021 base suficiente para responder com segurança. Seguem os trechos mais próximos do que foi perguntado.",
+    "cited": [],
+    "verdicts": [],
+    "chunk_ids": [
+     "structural:art-43:0",
+     "structural:art-355:0",
+     "structural:art-436:0",
+     "structural:art-362:0",
+     "structural:art-353:0"
+    ],
+    "question": "Se eu não fizer no prazo as correções que a distribuidora pediu em uma deficiência não emergencial das minhas instalações, ela pode cortar a energia? Com quanto tempo de aviso?"
+   },
+   {
+    "id": "q-074",
+    "category": "multi_article",
+    "expected": [
+     "art-96-a-p1",
+     "art-166-a",
+     "art-166-a-p1-inc-I",
+     "art-96-a-p2",
+     "art-440-p1"
+    ],
+    "seconds": 37.9,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "A distribuidora tem o prazo de até 5 dias úteis para analisar a migração. Em caso de descumprimento desse prazo, deve creditar ao consumidor a compensação prevista no art. 440.",
+    "cited": [
+     "art-166-a",
+     "art-96-a-p2"
+    ],
+    "verdicts": [
+     "valid",
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-166-a:0",
+     "structural:art-96-a:0",
+     "structural:art-166:1",
+     "structural:art-166-a:1",
+     "structural:art-167-b:0"
+    ],
+    "question": "Na migração para o mercado livre pelo modelo simplificado varejista, qual é o prazo da distribuidora para analisar a migração e, se ela atrasar, em quanto tempo deve creditar a compensação ao consumidor?"
+   },
+   {
+    "id": "q-075",
+    "category": "multi_article",
+    "expected": [
+     "art-256-pu-inc-I",
+     "art-257-p3"
+    ],
+    "seconds": 39.1,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "A distribuidora pode cobrar a diferença por até 3 ciclos. O pagamento deve ser parcelado em número de parcelas igual ao dobro do período apurado (6 parcelas), podendo ser menor por solicitação do consumidor.",
+    "cited": [
+     "art-256-pu-inc-I",
+     "art-257-p3"
+    ],
+    "verdicts": [
+     "valid",
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-504:0",
+     "structural:art-257:0",
+     "structural:art-255:0",
+     "structural:art-325:0",
+     "structural:art-256:0"
+    ],
+    "question": "Houve defeito no meu medidor e ele registrou consumo a menos. Por quantos ciclos a distribuidora pode cobrar a diferença e em quantas parcelas eu posso pagar?"
+   },
+   {
+    "id": "q-076",
+    "category": "multi_article",
+    "expected": [
+     "art-275",
+     "art-288-inc-III"
+    ],
+    "seconds": 35.5,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "A distribuidora deve faturar utilizando a média aritmética dos valores dos 12 últimos ciclos de faturamento. Se o histórico for menor que 12 ciclos, usa a média dos disponíveis ou o custo de disponibilidade. Caso não realize a leitura no ciclo devido e não haja impedimento de acesso, o faturamento será pelo custo de disponibilidade.",
+    "cited": [
+     "art-275",
+     "art-288-inc-III",
+     "art-288-p1",
+     "art-288-p2"
+    ],
+    "verdicts": [
+     "valid",
+     "valid",
+     "valid",
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-275:0",
+     "structural:art-288:0",
+     "structural:art-276:0",
+     "structural:art-283:0",
+     "structural:art-267:0"
+    ],
+    "question": "Se eu não enviar a autoleitura de acordo com o calendário, como a distribuidora calcula a minha conta?"
+   },
+   {
+    "id": "q-077",
+    "category": "multi_article",
+    "expected": [
+     "art-176-pu",
+     "art-201-inc-III"
+    ],
+    "seconds": 89.9,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 2,
+    "answer": "Sim, a unidade residencial rural pode ser reclassificada para as subclasses de tarifa social, desde que atendidos os critérios de enquadramento. As informações do CadÚnico necessárias são: CPF, código familiar no CadÚnico ou Número do Benefício (NB) do BPC. A data da última atualização no CadÚnico deve ser de até 2 anos.",
+    "cited": [
+     "art-176-pu",
+     "art-201-inc-III",
+     "art-177-p2"
+    ],
+    "verdicts": [
+     "valid",
+     "valid",
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-177:0",
+     "structural:art-200:0",
+     "structural:art-178-a:0",
+     "structural:art-176:0",
+     "structural:art-201:0"
+    ],
+    "question": "Uma unidade residencial rural pode passar para a tarifa social de baixa renda? Que informação do CadÚnico preciso apresentar?"
+   },
+   {
+    "id": "q-078",
+    "category": "deadline_or_value",
+    "expected": [
+     "art-449-p1"
+    ],
+    "seconds": 34.4,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "A periodicidade mínima para as pesquisas de satisfação é anual.",
+    "cited": [
+     "art-449-p1"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-449:0",
+     "structural:art-382:0",
+     "structural:art-659:0",
+     "structural:art-418:0",
+     "structural:art-587:0"
+    ],
+    "question": "Com que frequência mínima a distribuidora deve fazer pesquisas de satisfação com os consumidores?"
+   },
+   {
+    "id": "q-079",
+    "category": "deadline_or_value",
+    "expected": [
+     "art-223-pu"
+    ],
+    "seconds": 24.9,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "Após sair da tarifa branca, o consumidor deve aguardar o prazo de 180 dias para poder aderir novamente à modalidade horária branca, salvo se a distribuidora permitir um prazo menor.",
+    "cited": [
+     "art-223-pu"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-223:0",
+     "structural:art-222:0",
+     "structural:art-561:0",
+     "structural:art-221:0",
+     "structural:art-565:0"
+    ],
+    "question": "Depois de sair da tarifa branca, quanto tempo preciso esperar para aderir a ela de novo?"
+   },
+   {
+    "id": "q-080",
+    "category": "deadline_or_value",
+    "expected": [
+     "art-338-p2"
+    ],
+    "seconds": 31.0,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "A distribuidora só pode modificar a data de vencimento da fatura em um intervalo maior ou igual a 12 meses, e isso exige autorização prévia do consumidor.",
+    "cited": [
+     "art-338-p2"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-338:0",
+     "structural:art-582:0",
+     "structural:art-341:0",
+     "structural:art-325:0",
+     "structural:art-565:0"
+    ],
+    "question": "Com que frequência a distribuidora pode mudar a data de vencimento da minha fatura?"
+   },
+   {
+    "id": "q-081",
+    "category": "deadline_or_value",
+    "expected": [
+     "art-88-inc-I"
+    ],
+    "seconds": 40.5,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "O prazo para a distribuidora concluir a obra é de até 60 dias, pois a troca de transformador em poste existente está incluída nas obras na rede aérea em tensão menor que 2,3 kV.",
+    "cited": [
+     "art-88-inc-I"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-88:0",
+     "structural:art-89:1",
+     "structural:art-91:0",
+     "structural:art-86:0",
+     "structural:art-89:0"
+    ],
+    "question": "Qual é o prazo para a distribuidora concluir uma obra de conexão na rede aérea de baixa tensão, incluindo a troca de transformador no poste?"
+   },
+   {
+    "id": "q-082",
+    "category": "deadline_or_value",
+    "expected": [
+     "art-177-p2"
+    ],
+    "seconds": 39.8,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "A última atualização cadastral no CadÚnico deve ser de até 2 anos.",
+    "cited": [
+     "art-178-a-inc-II",
+     "art-177-p2"
+    ],
+    "verdicts": [
+     "valid",
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-178-a:0",
+     "structural:art-177:0",
+     "structural:art-49:0",
+     "structural:art-200:0",
+     "structural:art-205-a:0"
+    ],
+    "question": "Para ter a tarifa social, quão recente precisa ser a última atualização do meu cadastro no CadÚnico?"
+   },
+   {
+    "id": "q-083",
+    "category": "deadline_or_value",
+    "expected": [
+     "art-394-p2"
+    ],
+    "seconds": 35.9,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "O acesso deve ser assegurado pelo prazo de pelo menos 6 meses após o encerramento contratual.",
+    "cited": [
+     "art-394-p2"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-394:0",
+     "structural:art-143:0",
+     "structural:art-141:0",
+     "structural:art-140:0",
+     "structural:art-119:0"
+    ],
+    "question": "Depois que encerro o contrato com a distribuidora, por quanto tempo ainda posso acessar a minha área no site dela?"
+   },
+   {
+    "id": "q-084",
+    "category": "deadline_or_value",
+    "expected": [
+     "art-276"
+    ],
+    "seconds": 20.3,
+    "error": null,
+    "abstained": false,
+    "abstention_reason": null,
+    "attempts": 1,
+    "answer": "A distribuidora deve realizar a leitura no ciclo subsequente sempre que o consumidor não enviar a autoleitura por 2 ciclos consecutivos.",
+    "cited": [
+     "art-276"
+    ],
+    "verdicts": [
+     "valid"
+    ],
+    "chunk_ids": [
+     "structural:art-276:0",
+     "structural:art-271:0",
+     "structural:art-288:0",
+     "structural:art-274:0",
+     "structural:art-267:0"
+    ],
+    "question": "Se eu deixar de enviar a autoleitura, depois de quantos ciclos a distribuidora deve fazer ela mesma a leitura?"
+   },
+   {
+    "id": "q-085",
+    "category": "unanswerable",
+    "expected": [],
+    "seconds": 28.5,
+    "error": null,
+    "abstained": true,
+    "abstention_reason": "insufficient_context",
+    "attempts": 0,
+    "answer": "Não encontrei na REN ANEEL nº 1.000/2021 base suficiente para responder com segurança. Seguem os trechos mais próximos do que foi perguntado.",
+    "cited": [],
+    "verdicts": [],
+    "chunk_ids": [
+     "structural:art-480:0",
+     "structural:art-486-a:0",
+     "structural:art-241:0",
+     "structural:art-484:0",
+     "structural:art-110:0"
+    ],
+    "question": "Quem é responsável pela poda das árvores que encostam na rede elétrica da minha rua?"
+   },
+   {
+    "id": "q-086",
+    "category": "unanswerable",
+    "expected": [],
+    "seconds": 34.9,
+    "error": null,
+    "abstained": true,
+    "abstention_reason": "insufficient_context",
+    "attempts": 0,
+    "answer": "Não encontrei na REN ANEEL nº 1.000/2021 base suficiente para responder com segurança. Seguem os trechos mais próximos do que foi perguntado.",
+    "cited": [],
+    "verdicts": [],
+    "chunk_ids": [
+     "structural:art-227:0",
+     "structural:art-2:5",
+     "structural:art-226:0",
+     "structural:art-225:0",
+     "structural:art-304:0"
+    ],
+    "question": "Quais são os horários do posto tarifário ponta da minha distribuidora?"
+   },
+   {
+    "id": "q-087",
+    "category": "unanswerable",
+    "expected": [],
+    "seconds": 39.8,
+    "error": null,
+    "abstained": true,
+    "abstention_reason": "insufficient_context",
+    "attempts": 0,
+    "answer": "Não encontrei na REN ANEEL nº 1.000/2021 base suficiente para responder com segurança. Seguem os trechos mais próximos do que foi perguntado.",
+    "cited": [],
+    "verdicts": [],
+    "chunk_ids": [
+     "structural:art-177:0",
+     "structural:art-200:0",
+     "structural:art-205-a:0",
+     "structural:art-666:0",
+     "structural:art-545:0"
+    ],
+    "question": "Qual é o valor mensal do Benefício de Prestação Continuada (BPC) pago pelo governo?"
+   },
+   {
+    "id": "q-088",
+    "category": "unanswerable",
+    "expected": [],
+    "seconds": 35.3,
+    "error": null,
+    "abstained": true,
+    "abstention_reason": "insufficient_context",
+    "attempts": 0,
+    "answer": "Não encontrei na REN ANEEL nº 1.000/2021 base suficiente para responder com segurança. Seguem os trechos mais próximos do que foi perguntado.",
+    "cited": [],
+    "verdicts": [],
+    "chunk_ids": [
+     "structural:art-616:0",
+     "structural:art-612:0",
+     "structural:art-610:0",
+     "structural:art-602:0",
+     "structural:art-611:0"
+    ],
+    "question": "Quais oficinas credenciadas a minha distribuidora tem na minha cidade para fazer laudo de aparelho queimado?"
+   },
+   {
+    "id": "q-089",
+    "category": "unanswerable",
+    "expected": [],
+    "seconds": 29.6,
+    "error": null,
+    "abstained": true,
+    "abstention_reason": "insufficient_context",
+    "attempts": 0,
+    "answer": "Não encontrei na REN ANEEL nº 1.000/2021 base suficiente para responder com segurança. Seguem os trechos mais próximos do que foi perguntado.",
+    "cited": [],
+    "verdicts": [],
+    "chunk_ids": [
+     "structural:art-321:0",
+     "structural:art-571:0",
+     "structural:art-643:0",
+     "structural:art-353:0",
+     "structural:art-7:0"
+    ],
+    "question": "Durante uma calamidade pública decretada, a distribuidora deve dar desconto nas contas de luz?"
+   },
+   {
+    "id": "q-090",
+    "category": "unanswerable",
+    "expected": [],
+    "seconds": 30.2,
+    "error": null,
+    "abstained": true,
+    "abstention_reason": "insufficient_context",
+    "attempts": 0,
+    "answer": "Não encontrei na REN ANEEL nº 1.000/2021 base suficiente para responder com segurança. Seguem os trechos mais próximos do que foi perguntado.",
+    "cited": [],
+    "verdicts": [],
+    "chunk_ids": [
+     "structural:art-581:0",
+     "structural:art-572:0",
+     "structural:art-579:0",
+     "structural:art-583:0",
+     "structural:art-564:0"
+    ],
+    "question": "Qual é o valor mínimo de cada recarga de créditos na modalidade de pré-pagamento?"
+   }
+  ],
+  "cache": {
+   "dir": "data/cache/eval/487b79b3beea",
+   "reused": 90,
+   "new": 0,
+   "record_git_shas": [
+    "06c66f9"
+   ]
+  }
+ },
+ "judge": "TBD: judge not run (no Gemini quota, ADR-005); use --judge",
+ "calibration": {
+  "items": 0,
+  "validated": 0
+ }
+}
