@@ -495,8 +495,11 @@ def run(args: argparse.Namespace) -> Path:
     stamp = f"{report['date']}_{sha}_{main_hash}{suffix}"
     REPORTS.mkdir(parents=True, exist_ok=True)
     json_path = REPORTS / f"{stamp}.json"
-    json_path.write_text(json.dumps(report, ensure_ascii=False, indent=1) + "\n", "utf-8")
-    (REPORTS / f"{stamp}.md").write_text(render(report) + "\n", "utf-8")
+    # LF on every OS, so committed reports match what git stores.
+    json_path.write_text(
+        json.dumps(report, ensure_ascii=False, indent=1) + "\n", "utf-8", newline="\n"
+    )
+    (REPORTS / f"{stamp}.md").write_text(render(report) + "\n", "utf-8", newline="\n")
     return json_path
 
 

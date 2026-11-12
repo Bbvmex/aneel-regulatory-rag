@@ -56,3 +56,17 @@ make test               # includes the same checks against the versioned extract
   and moved because their answer is a value; `notes` says so.
 - Some `unanswerable` items are deliberate near misses where a related device exists (for
   example DIC limits without the compensation amount); the related device is named in `notes`.
+
+## Labelling the judge calibration set
+
+`eval/judge_calibration.jsonl` (from `make calibration`) holds 20 real answers of the main
+configuration, each with the excerpts the generator saw (`contexts`). For each line, read the
+answer against the contexts only, not against your own knowledge of the norm:
+
+- `"faithful": true` when every claim of the answer is supported by the contexts;
+- `"faithful": false` when at least one claim is not;
+- then `"status": "validated", "validated_by": "<your name>"`.
+
+The report compares these labels with the judge (faithful when the RAGAS faithfulness score
+reaches `judge.faithful_threshold` in `config/eval.yaml`) once the judge can run
+(`make eval ARGS="--judge"`).
