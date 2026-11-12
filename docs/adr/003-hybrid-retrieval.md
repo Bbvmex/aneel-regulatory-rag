@@ -40,6 +40,16 @@ Everything must run on CPU, and CI runs without models.
 - **Embedding cache.** Document embeddings are cached in SQLite (`data/cache/embeddings.sqlite`,
   not versioned), keyed by SHA-256 of model ID, `max_length` and chunk text. Re-indexing after a
   chunking change only embeds the chunks whose text changed. Queries are not cached.
+- **Reranker scoring and cache** (decisions 49 and 50). `BGEReranker` loads the model through
+  FlagEmbedding but scores with its own loop: pairs sorted by length, padded per batch, under
+  `torch.inference_mode`. `FlagReranker.compute_score` runs its first batch, the longest pairs,
+  once more to probe the batch size; the own loop skips that probe and gives the same normalized
+  scores (sigmoid of the logits). `embedding.rerank_batch_size` is 1, separate from the embedding
+  batch size: with one pair per batch nothing is padded, which was the fastest setting on this CPU.
+  The diagnosis is `scripts/diagnose_reranker.py`; its measurements are in the PR, not here.
+  Scores are cached in SQLite (`data/cache/rerank.sqlite`, not versioned), keyed by SHA-256 of
+  reranker ID, revision, `rerank_max_length`, query and chunk text, so evaluation reruns and
+  ablations over the same pool skip the cross-encoder.
 - **Index provenance.** `make index` stamps the collection metadata with `corpus_sha256` (of the
   extract), `parser_version` and `index_config_hash`. Before that, it checks that
   `data/processed` was produced from the current extract and parser. `Retriever(...,

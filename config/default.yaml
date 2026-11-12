@@ -5,7 +5,7 @@ corpus:
   fragment_min_words: 6                # deep-link text-fragment prefix, extended until unique
 
 models:
-  generator: gemini-3.8-flash          # also used by grade_context in the MVP
+  generator: qwen3.6-35b-a3b-ud-q4_k_m # llama-server alias of local_llm; also runs grade_context
   judge: gemini-3.1-pro-preview        # preview model: risk accepted, see ADR-006
   embedding: BAAI/bge-m3
   embedding_revision: 5617a9f61b028005a4858fdac845db406aefb181   # Hub commit; part of the index stamp
@@ -16,6 +16,7 @@ embedding:
   batch_size: 8
   max_length: 2048                     # tokens; longest structural chunk is ~1.3k tokens
   rerank_max_length: 2048              # FlagReranker default (512) would truncate chunks
+  rerank_batch_size: 1                 # no padding; the fastest on CPU (decision 49)
 
 qdrant:
   collection: ren1000_v1
@@ -36,11 +37,23 @@ chunking:
   fixed_overlap: 200
 
 llm:
-  provider: gemini                     # gemini | local: .env endpoint used by the generator (ADR-006)
+  provider: local                      # gemini | local: .env endpoint used by the generator (ADR-006)
   structured_output: json_schema       # json_schema | json_mode; json_schema falls back to json_mode
   max_parse_retries: 1                 # malformed JSON only; citation retries are separate
   max_retries: 3                       # HTTP retries with backoff (rate limits, 5xx)
   timeout_s: 300                       # seconds per request; the Gemini endpoint has taken ~240 s
+
+local_llm:                             # pinned llama.cpp generator (ADR-008); `make llm-server`
+  gguf_repo: unsloth/Qwen3.6-35B-A3B-GGUF
+  gguf_file: Qwen3.6-35B-A3B-UD-Q4_K_M.gguf
+  gguf_sha256: ac0e2c1189e055faa36eff361580e79c5bd6f8e76bffb4ce547f167d53e31a61
+  quantization: UD-Q4_K_M
+  llama_cpp_build: b12110              # release v0.9.0; Windows CUDA 12.4 binaries
+  ctx_size: 16384
+  threads: 8                           # physical cores of the i7-10870H
+  flash_attn: "on"
+  fit_target_mib: 1024                 # --fit keeps this much VRAM free; MoE experts go to RAM
+  reasoning: "off"                     # thinking off: deterministic, shorter, JSON-only replies
 
 generation:
   temperature: 0

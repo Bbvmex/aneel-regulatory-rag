@@ -67,10 +67,11 @@ index config it was built from, so a stale index is refused.
 ## Answering
 
 ```bash
+make llm-server   # in its own terminal: checks the pinned GGUF and llama.cpp build, then serves it
 make ask Q="Qual o prazo de religação após a suspensão por falta de pagamento?"
 ```
 
-A LangGraph pipeline retrieves and reranks, asks the generator (`gemini-3.8-flash`) whether the
+A LangGraph pipeline retrieves and reranks, asks the generator (Qwen3.6-35B-A3B, local) whether the
 excerpts answer the question, and only then generates an answer with citations
 `{unit_id, quote}`. Every citation is checked deterministically: the unit must be among those
 retrieved, and the quote (20 to 300 characters) must be a verbatim passage of that unit's text
@@ -79,8 +80,12 @@ paragraphs is accepted but flagged `imprecise`. A failed check gets one retry wi
 after that, or when the excerpts are not enough, the system abstains and shows the three closest
 excerpts ([ADR-004](docs/adr/004-citation-validation-and-abstention.md)). The model endpoint is a
 config switch between Gemini and a local llama.cpp server
-([ADR-006](docs/adr/006-llm-provider.md)). `make ask` needs `LLM_API_KEY` in `.env`, the index
-from the previous section, and the cached models.
+([ADR-006](docs/adr/006-llm-provider.md)). The generator runs locally: the GGUF file, its
+SHA-256, the quantization and the llama.cpp build are pinned in `config/default.yaml`, and
+`make llm-server` refuses to start on any mismatch ([ADR-008](docs/adr/008-local-generator.md)).
+Download the GGUF named there into `GGUF_DIR` and point `LLAMA_SERVER_BIN` to the llama.cpp
+build, both in `.env`. `make ask` needs that server, the index from the previous section, and
+the cached models.
 
 ## Evaluation dataset
 

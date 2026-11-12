@@ -3,7 +3,7 @@
 .DEFAULT_GOAL := help
 UV ?= uv
 
-.PHONY: help setup setup-ml lint format test smoke qdrant-up qdrant-down extract fixtures ingest models index query ask draft-brief draft-add validate-dataset serve eval eval-gate
+.PHONY: help setup setup-ml lint format test smoke qdrant-up qdrant-down extract fixtures ingest models index query llm-server ask draft-brief draft-add validate-dataset generator-pilot serve eval eval-gate
 
 help: ## List available targets
 	@$(UV) run --no-sync python scripts/make_help.py $(MAKEFILE_LIST)
@@ -57,6 +57,9 @@ index: ## Chunk, embed and index into Qdrant (offline; run `make models` first)
 query: ## Inspect retrieval: make query Q="pergunta" [MODE=hybrid+rerank] (offline)
 	$(UV) run python -m aneel_rag.retrieval.query "$(Q)" $(if $(MODE),--mode $(MODE))
 
+llm-server: ## Verify the pinned GGUF and llama.cpp build, then run llama-server (ADR-008)
+	$(UV) run python -m aneel_rag.llm.server
+
 ask: ## Answer with validated citations: make ask Q="pergunta" (offline models, needs .env LLM key)
 	$(UV) run python -m aneel_rag.graph "$(Q)"
 
@@ -65,6 +68,9 @@ draft-brief: ## Seeded sample for a question batch: make draft-brief BATCH=1 (wr
 
 draft-add: ## Add eval/drafts/batch-N.jsonl to the dataset as drafts: make draft-add BATCH=1
 	$(UV) run python -m eval.draft_questions add --batch $(BATCH)
+
+generator-pilot: ## Compare local generator candidates of config/pilots/generator.yaml (writes eval/reports)
+	$(UV) run python -m eval.generator_pilot
 
 validate-dataset: ## Check eval/dataset.jsonl against the schema and the parsed corpus
 	$(UV) run python -m eval.validate_dataset

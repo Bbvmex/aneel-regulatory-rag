@@ -39,11 +39,12 @@ The full approved plan and its current status live in [docs/PLAN.md](docs/PLAN.m
   temperature, quote limits and prompts.
 - **`.env` holds only secrets and endpoints.** `.env.example` is committed. Never hardcode
   secrets, and never read or commit `.env`.
-- Model IDs are pinned: generator `gemini-3.8-flash`, judge `gemini-3.1-pro-preview`.
-  **`-latest` aliases are forbidden**, and `settings.py` rejects them.
-- The phase 5 generator is chosen with the user at the start of phase 5 (likely local, llama.cpp
-  through `llm.provider: local`). A local model is pinned like the others: GGUF SHA-256,
-  quantization and llama.cpp version in config.
+- Model IDs are pinned: judge `gemini-3.1-pro-preview`; **`-latest` aliases are forbidden**, and
+  `settings.py` rejects them.
+- The generator is local since phase 5 (ADR-008): Qwen3.6-35B-A3B through llama.cpp
+  (`llm.provider: local`), pinned in `local_llm` by GGUF SHA-256, quantization and llama.cpp build.
+  `make llm-server` verifies the pins before serving. Changing the generator is a new pilot
+  (`make generator-pilot`) and a user decision.
 
 ## Local hardware
 - Laptop: Intel Core i7-10870H, 64 GB RAM, NVIDIA RTX 2070 Super (8 GB VRAM). It overheats:

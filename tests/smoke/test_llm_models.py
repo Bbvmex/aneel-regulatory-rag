@@ -2,6 +2,7 @@ import httpx
 import pytest
 
 from aneel_rag.config import get_secrets, load_config
+from aneel_rag.llm.factory import endpoint
 
 pytestmark = pytest.mark.smoke
 
@@ -19,14 +20,12 @@ def _list_model_ids(base_url: str, api_key: str) -> set[str]:
 
 @pytest.mark.parametrize("role", ["generator", "judge"])
 def test_configured_model_exists(role):
-    secrets = get_secrets()
-    if role == "generator":
-        base_url, api_key = secrets.llm_base_url, secrets.llm_api_key
-    else:
-        base_url, api_key = secrets.judge_base_url, secrets.judge_api_key
+    # With llm.provider: local, `make llm-server` serves the GGUF under the generator ID.
+    cfg = load_config()
+    base_url, api_key = endpoint(role, cfg, get_secrets())
     if not (base_url and api_key):
         pytest.skip(f"no endpoint/key configured for {role}")
 
-    model_id = getattr(load_config().models, role)
+    model_id = getattr(cfg.models, role)
     available = _list_model_ids(base_url, api_key)
     assert model_id in available, f"{role} model '{model_id}' not served by {base_url}"

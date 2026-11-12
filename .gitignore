@@ -226,6 +226,7 @@ data/raw/*
 !data/raw/ren1000_law_content.html
 data/processed/
 data/cache/
+data/models/
 
 # Question-authoring scratch (briefs and batches); the result lives in eval/dataset.jsonl
 eval/drafts/

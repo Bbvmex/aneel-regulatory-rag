@@ -42,9 +42,14 @@ def test_provider_is_switched_by_config(provider, generator, base_url):
     assert chat.temperature == 0
 
 
-def test_default_config_uses_the_pinned_gemini_generator():
-    chat = get_chat_model("generator", load_config(), SECRETS)
-    assert (chat.model_name, chat.openai_api_base) == ("gemini-3.8-flash", SECRETS.llm_base_url)
+def test_default_config_uses_the_pinned_local_generator():
+    cfg = load_config()
+    chat = get_chat_model("generator", cfg, SECRETS)
+    assert cfg.llm.provider == "local"
+    assert (chat.model_name, chat.openai_api_base) == (
+        "qwen3.6-35b-a3b-ud-q4_k_m",
+        SECRETS.local_llm_base_url,
+    )
 
 
 def test_judge_keeps_its_endpoint_when_the_generator_goes_local():
