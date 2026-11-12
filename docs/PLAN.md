@@ -14,7 +14,7 @@ _Atualizado em 2026-11-12._
 | 1 — Ingestão + parser | **concluída** (merge em 2026-10-22) | PR #3, commit `46ea071` |
 | 2 — Chunking + indexação + retrieval | **concluída** (merge em 2026-10-23), incluindo a rodada 5 de revisão | PR #4, commit `6caf7f8`; rodada 5 no PR #6, commit `b4e01de` |
 | 3 — Grafo + validação + abstenção | **concluída** (merge em 2026-11-12) | PR #7, commit `377cbfd` |
-| 4 — Dataset | **merge em 2026-11-12; PARADA de validação em andamento** (q-001 a q-038 validadas sobre o snapshot de 02/06/2026). Corpus atualizado para a versão de 27/10/2026 (decisões 46 e 47) antes de continuar | PR #8, commit `000e239`; branch `chore/corpus-2026-10-27` |
+| 4 — Dataset | **concluída** (merge em 2026-11-12; validação humana concluída em 2026-11-12: 90 de 90 `validated`). Corpus atualizado para a versão de 27/10/2026 (decisões 46 e 47) antes de terminar a validação | PR #8, commit `000e239`; corpus no PR #9, commit `df9cd2c`; validação em `chore/dataset-validated` |
 | 5 | pendente; modelo gerador definido no início da fase | — |
 | 6 (opcional), 7, 8 (bônus) | pendentes | — |
 
@@ -274,9 +274,9 @@ Desenho:
 - **Meta:** pelo menos 50 `validated`. A Fase 5 só avalia com as validadas e avisa se houver menos de 50.
 
 **Aceite:**
-- [ ] O script gera um lote de 30 com a distribuição correta, todas como draft. Um teste garante que ele não consegue escrever `validated`.
-- [ ] `validate_dataset.py` passa: schema ok, `expected_unit_ids` existentes, IDs únicos, nenhum `validated` sem `validated_by`.
-- [ ] **PARADA**: você valida as perguntas antes da Fase 5.
+- [x] O script gera um lote de 30 com a distribuição correta, todas como draft. Um teste garante que ele não consegue escrever `validated`.
+- [x] `validate_dataset.py` passa: schema ok, `expected_unit_ids` existentes, IDs únicos, nenhum `validated` sem `validated_by`.
+- [x] **PARADA**: você valida as perguntas antes da Fase 5.
 
 ## Fase 5 — Avaliação completa + ablações + eval-gate
 
