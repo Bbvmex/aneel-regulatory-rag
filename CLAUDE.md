@@ -25,6 +25,11 @@ The full approved plan and its current status live in [docs/PLAN.md](docs/PLAN.m
   unless the user asks for that specific change.
 - LLM-generated questions enter as `status: draft` and **do not count** in metrics. Only the user
   marks an item `status: validated`.
+- Candidate questions are written by Claude Code from the seeded briefs of
+  `eval/draft_questions.py`, following `prompts/draft_questions.md` (ADR-007). They are added only
+  through `make draft-add`, which writes drafts; never write `validated` or `validated_by`.
+- RAGAS metrics (faithfulness, answer relevancy) and judge-human agreement stay **TBD** until there
+  is Gemini quota for the judge (ADR-005).
 - **No metric, percentage or performance number** may appear in the README, docs or commits
   unless a report in `eval/reports/` (with date, git SHA and config hash) produced it. Without a
   report, write "TBD".
@@ -36,6 +41,14 @@ The full approved plan and its current status live in [docs/PLAN.md](docs/PLAN.m
   secrets, and never read or commit `.env`.
 - Model IDs are pinned: generator `gemini-3.8-flash`, judge `gemini-3.1-pro-preview`.
   **`-latest` aliases are forbidden**, and `settings.py` rejects them.
+- The phase 5 generator is chosen with the user at the start of phase 5 (likely local, llama.cpp
+  through `llm.provider: local`). A local model is pinned like the others: GGUF SHA-256,
+  quantization and llama.cpp version in config.
+
+## Local hardware
+- Laptop: Intel Core i7-10870H, 64 GB RAM, NVIDIA RTX 2070 Super (8 GB VRAM). It overheats:
+  **never keep the GPU at full load for long periods.** Use partial GPU offload or CPU, bounded
+  batches with pauses, and caches so that long runs can resume. torch stays CPU-only (ADR-001).
 
 ## Corpus
 - The source is the compiled text of REN ANEEL nº 1.000/2021 on leis.org, ANEEL's official
