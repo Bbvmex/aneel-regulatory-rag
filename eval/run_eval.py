@@ -511,6 +511,11 @@ def pct(value: float | None) -> str:
     return "TBD" if value is None else f"{100 * value:.1f}%"
 
 
+def na(value: float | None) -> str:
+    """Pool recall exists only for variants with a reranker."""
+    return "—" if value is None else pct(value)
+
+
 def num(value: float | None) -> str:
     return "TBD" if value is None else f"{value:.3f}"
 
@@ -597,7 +602,7 @@ def _render_ablations(report: dict) -> list[str]:
             + " | ".join(pct(art[f"recall@{k}"]) for k in ks)
             + f" | {num(art['mrr'])} | "
             + " | ".join(pct(unit[f"recall@{k}"]) for k in ks)
-            + f" | {num(unit['mrr'])} | {pct(art.get(pool_key))} | {pct(unit.get(pool_key))} | "
+            + f" | {num(unit['mrr'])} | {na(art.get(pool_key))} | {na(unit.get(pool_key))} | "
             f"{a['seconds_median']} |"
         )
     lines += [
@@ -617,9 +622,19 @@ def _render_ablations(report: dict) -> list[str]:
         lines.append(f"| {a['name']} | " + " | ".join(cells) + " |")
     lines += [
         "",
-        "`definitions_art2` holds the items whose expected units are Art. 2 definitions "
-        "(decisions 27 and 30). The dataset has no paraphrase tag, so decision 29's "
-        "paraphrase slice is read from the per-category rows.",
+        "The `definitions_art2` slice (decisions 27 and 30) holds the items whose expected "
+        "units are Art. 2 definitions"
+        + (
+            "."
+            if "definitions_art2" in slices
+            else ": no validated item expects one, so it "
+            "is empty and decisions 27 and 30 stay open."
+        )
+        + " The dataset has no paraphrase tag, so decision 29 is read from the category rows.",
+        "",
+        "Fixed windows (1000 characters with overlap) can span two articles and list every "
+        "article and unit they touch, even partly; a window counts as a hit for all of them, "
+        "which favours the fixed variant at article level. Unit level is the fairer comparison.",
         "",
     ]
     return lines
