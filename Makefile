@@ -3,7 +3,7 @@
 .DEFAULT_GOAL := help
 UV ?= uv
 
-.PHONY: help setup setup-ml lint format test smoke qdrant-up qdrant-down extract fixtures ingest models index query serve eval eval-gate
+.PHONY: help setup setup-ml lint format test smoke qdrant-up qdrant-down extract fixtures ingest models index query ask serve eval eval-gate
 
 help: ## List available targets
 	@$(UV) run --no-sync python scripts/make_help.py $(MAKEFILE_LIST)
@@ -46,7 +46,7 @@ ingest: ## Parse the corpus into data/processed (units, manifest, report)
 
 # Model loads read only the local cache at the pinned revisions; this also stops
 # transformers/huggingface_hub from re-checking metadata on the Hub on every call.
-index query eval: export HF_HUB_OFFLINE := 1
+index query ask smoke eval: export HF_HUB_OFFLINE := 1
 
 models: ## Download the pinned embedding and reranker models once (needs network)
 	$(UV) run python -m aneel_rag.retrieval.hub
@@ -56,6 +56,9 @@ index: ## Chunk, embed and index into Qdrant (offline; run `make models` first)
 
 query: ## Inspect retrieval: make query Q="pergunta" [MODE=hybrid+rerank] (offline)
 	$(UV) run python -m aneel_rag.retrieval.query "$(Q)" $(if $(MODE),--mode $(MODE))
+
+ask: ## Answer with validated citations: make ask Q="pergunta" (offline models, needs .env LLM key)
+	$(UV) run python -m aneel_rag.graph "$(Q)"
 
 serve: ## Run the API (phase 6)
 	$(UV) run uvicorn aneel_rag.api.app:app --reload
