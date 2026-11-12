@@ -2,7 +2,8 @@
 
 Rules (ADR-002):
 - struck text closed by "(Revogado pela ...)" is revoked, together with the contiguous struck
-  block right before it (a whole article or a § with its incisos);
+  block right before it (a whole article or a § with its incisos); the block stops where a label
+  repeats the one below it, because the upper copy is an older wording of the same device;
 - any other struck text is superseded wording and is dropped, whatever label follows it;
 - the status of current text comes from its own annotation; an unannotated bold line inherits
   the next annotation in the same contiguous bold block.
@@ -54,9 +55,13 @@ def _revoked_lines(lines: list[Line]) -> set[int]:
             continue
         if line.any_struck:
             revoked.add(i)
-        j = i - 1
+        j, below = i - 1, parse_label(line.text())
         while j >= 0 and lines[j].all_struck and lines[j].kind != "heading":
+            label = parse_label(lines[j].text())
+            if label and below and (label.kind, label.key) == (below.kind, below.key):
+                break  # superseded wording of the revoked device (e.g. Art. 169 in 2026)
             revoked.add(j)
+            below = label or below
             j -= 1
     return revoked
 
@@ -103,7 +108,8 @@ def orphan_struck_blocks(items: list[Classified]) -> list[tuple[int, int]]:
         j = i
         while j + 1 < len(items) and items[j + 1].state == "superseded":
             j += 1
-        nxt = next((c for c in items[j + 1 :] if c.state == "keep"), None)
+        # A revoked device can follow its own superseded wording.
+        nxt = next((c for c in items[j + 1 :] if c.state in ("keep", "revoked")), None)
         first = parse_label(items[i].text)
         same_label = (
             nxt is not None

@@ -106,9 +106,9 @@ def test_c_formula_variable_is_not_an_inciso():
 
 def test_c_struck_labels_feed_the_sequence():
     # Old "§ 1º" (struck) then new "§ 1º": the repeat is legal only after the struck version.
-    ids = list(units("g4_annotation_outside_b"))
+    ids = list(units("c_struck_labels"))
     assert ids.count("art-160-p1") == 1
-    assert "art-160-p5-inc-II" in ids and not parse("g4_annotation_outside_b").rejected
+    assert "art-160-p4" in ids and not parse("c_struck_labels").rejected
 
 
 # ---- D: inciso label variants ------------------------------------------------------------
@@ -175,9 +175,9 @@ def test_g3_mixed_bold_block():
 
 
 def test_g4_annotation_outside_bold():
-    unit = units("g4_annotation_outside_b")["art-160-p5-inc-II"]
+    unit = units("g4_annotation_outside_b")["art-655-d-p5"]
     assert unit.status == "amended"
-    assert unit.amended_by[0].norma == "Resolução Normativa nº 1081/2023"
+    assert unit.amended_by[0].norma == "Resolução Normativa nº 1098/2024"
 
 
 # ---- H: superseded and revoked wording -------------------------------------------------
@@ -213,6 +213,15 @@ def test_h4_revocation_covers_the_struck_block():
 def test_h5_whole_article_revoked():
     (unit,) = parse("h5_whole_article_revoked").units
     assert (unit.id, unit.status) == ("art-667", "revoked")
+
+
+def test_h6_revoked_article_after_its_superseded_wording():
+    # REN 1174/2026 revoked Art. 169, struck twice: the original and the 2023 wording.
+    result = parse("h6_revoked_after_superseded")
+    (unit,) = result.units
+    assert (unit.id, unit.status) == ("art-169", "revoked")
+    assert "representação por agente varejista" in unit.text  # the 2023 wording is the one kept
+    assert result.duplicate_ids == []
 
 
 # ---- I: validity notes ------------------------------------------------------------------
@@ -262,8 +271,10 @@ def test_k_inline_tags_do_not_split_words():
 
 def test_k_figures_become_markers():
     p1 = units("c_formula_and_inline_tags")["art-73-a-p1"]
-    assert p1.has_figure and p1.figures == ["Resnorm-1000-2021-fig1_XiOB.png"]
-    assert "[FIGURA: Resnorm-1000-2021-fig1_XiOB.png]" in p1.text
+    # The file suffix changes with each browser save; the stem does not.
+    (name,) = p1.figures
+    assert p1.has_figure and name.startswith("Resnorm-1000-2021-fig1_")
+    assert f"[FIGURA: {name}]" in p1.text
 
 
 def test_k_text_is_nfc_without_invisible_chars():
@@ -310,7 +321,10 @@ def test_annex_i_split_by_clause():
 
 def test_annex_iv_rows_repeat_the_header():
     got = parse("annex_iv_table").units
-    assert len(got) == 75  # 77 rows = header + 1 struck (art. 477, §2º) + 75 current
+    # 78 rows = header + 1 superseded (art. 477, § 2º) + 2 revoked by REN 1174/2026
+    # (art. 96-A and art. 166, § 3º, I; kept, not indexed) + 74 current.
+    assert len(got) == 76
+    assert sum(u.status == "revoked" for u in got) == 2
     assert got[3].text == (
         "Tipo: 1 | Dispositivo: art. 76, § 5º | Prazo: 10 dias úteis | Descrição: "
         + got[3].text.split("Descrição: ")[1]

@@ -2,7 +2,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict
 
-PARSER_VERSION = "1.0.0"
+PARSER_VERSION = "1.1.0"
 
 Status = Literal["active", "amended", "added", "revoked"]
 
