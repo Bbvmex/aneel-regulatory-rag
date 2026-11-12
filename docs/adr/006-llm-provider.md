@@ -32,8 +32,8 @@ judge for phase 5 must stay fixed while the generator changes, or the comparison
   backoff, `llm.max_retries` (3) times. The CLI reports a remaining failure as an error and does
   not turn it into an abstention: an abstention means the norm does not answer the question, not
   that the API was down.
-- **Models.** The generator is `gemini-3.8-flash` (GA, fixed ID), also used by `grade_context` in
-  the MVP. The judge is `gemini-3.1-pro-preview`. There is no current stable Pro model, so a
+- **Models.** The generator was `gemini-3.8-flash` (GA, fixed ID), also used by `grade_context`
+  in the MVP; since phase 5 it is a local llama.cpp model (ADR-008). The judge is `gemini-3.1-pro-preview`. There is no current stable Pro model, so a
   preview is the only option at that tier. Risk: a preview ID can change behavior or be withdrawn.
   Mitigations: the judge cache is keyed by `judge_model_id`, the judge is calibrated against human
   labels, the ID is written in every report, and `make smoke` fails when the endpoint no longer

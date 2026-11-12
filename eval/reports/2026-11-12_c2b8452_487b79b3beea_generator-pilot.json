@@ -1,0 +1,1199 @@
+{
+ "kind": "generator-pilot",
+ "date": "2026-11-12",
+ "git_sha": "c2b8452",
+ "config_hash": "487b79b3beea",
+ "corpus_sha256": "4c0dbc7f6f25fd5db3e1ca1edeaed55228d0a4b27e3a92c0de3620e3af851ba8",
+ "llama_cpp_build": "b12110",
+ "server": {
+  "llama_cpp_build": "b12110",
+  "ctx_size": 16384,
+  "threads": 8,
+  "flash_attn": "on",
+  "fit_target_mib": 1024,
+  "reasoning": "off"
+ },
+ "retrieval_mode": "hybrid+rerank",
+ "validated_items": 90,
+ "draft_items_ignored": 0,
+ "pilot": {
+  "seed": 20261112,
+  "per_category": 3,
+  "pause_s": 8.0,
+  "gpu_hot_c": 80,
+  "gpu_cool_c": 70,
+  "gpu_start_below_c": 60
+ },
+ "question_ids": [
+  "q-007",
+  "q-066",
+  "q-037",
+  "q-041",
+  "q-047",
+  "q-042",
+  "q-084",
+  "q-020",
+  "q-048",
+  "q-060",
+  "q-058",
+  "q-029"
+ ],
+ "libraries": {
+  "langchain-openai": "1.7.2",
+  "langgraph": "1.2.16",
+  "FlagEmbedding": "1.4.2",
+  "torch": "2.14.1+cpu"
+ },
+ "results": [
+  {
+   "candidate": {
+    "name": "qwen3.6-35b-a3b",
+    "gguf_repo": "unsloth/Qwen3.6-35B-A3B-GGUF",
+    "gguf_file": "Qwen3.6-35B-A3B-UD-Q4_K_M.gguf",
+    "gguf_sha256": "ac0e2c1189e055faa36eff361580e79c5bd6f8e76bffb4ce547f167d53e31a61",
+    "quantization": "UD-Q4_K_M"
+   },
+   "config_hash": "487b79b3beea",
+   "summary": {
+    "questions": 12,
+    "answerable": 9,
+    "answered_citing_expected": 9,
+    "answered_all_citations_valid": 9,
+    "false_abstentions": 0,
+    "unanswerable": 3,
+    "unanswerable_abstained": 3,
+    "unanswerable_abstained_by_generator": 0,
+    "citations": {
+     "valid": 13,
+     "imprecise": 0,
+     "invalid": 0
+    },
+    "questions_with_bracketed_ids": 0,
+    "questions_retried": 1,
+    "errors": 0,
+    "seconds_median": 44.8,
+    "prompt_tokens_per_s_median": 233.0,
+    "generation_tokens_per_s_median": 29.3,
+    "gpu_temp_max_c": 84
+   },
+   "records": [
+    {
+     "id": "q-007",
+     "category": "factual_single",
+     "expected": [
+      "art-207-inc-IV-al-b"
+     ],
+     "seconds": 56.8,
+     "error": null,
+     "bracketed_ids": false,
+     "last_validation_errors": [],
+     "abstained": false,
+     "abstention_reason": null,
+     "attempts": 1,
+     "verdicts": [
+      "valid"
+     ],
+     "cited": [
+      "art-207-inc-IV-al-b"
+     ],
+     "answer": "Não, a visita técnica não é obrigatória para o Grupo B. Ela é facultativa, sendo realizada apenas se houver dúvidas sobre a documentação ou necessidade de comprovação da atividade e da finalidade do uso da energia.",
+     "gpu_temp_after": 78
+    },
+    {
+     "id": "q-066",
+     "category": "factual_single",
+     "expected": [
+      "art-560"
+     ],
+     "seconds": 50.9,
+     "error": null,
+     "bracketed_ids": false,
+     "last_validation_errors": [],
+     "abstained": false,
+     "abstention_reason": null,
+     "attempts": 1,
+     "verdicts": [
+      "valid"
+     ],
+     "cited": [
+      "art-560"
+     ],
+     "answer": "Não. Os ativos que compõem a infraestrutura das estações de recarga não integram a base de ativos da distribuidora para fins de remuneração durante o processo de revisão ou reajuste tarifário.",
+     "gpu_temp_after": 81
+    },
+    {
+     "id": "q-037",
+     "category": "factual_single",
+     "expected": [
+      "art-328-p2"
+     ],
+     "seconds": 44.2,
+     "error": null,
+     "bracketed_ids": false,
+     "last_validation_errors": [],
+     "abstained": false,
+     "abstention_reason": null,
+     "attempts": 1,
+     "verdicts": [
+      "valid"
+     ],
+     "cited": [
+      "art-328-p2"
+     ],
+     "answer": "Sim, você pode voltar a receber a fatura completa a qualquer tempo, conforme previsto no § 2º do Art. 328.",
+     "gpu_temp_after": 80
+    },
+    {
+     "id": "q-041",
+     "category": "multi_article",
+     "expected": [
+      "art-422-inc-II",
+      "art-325-p5"
+     ],
+     "seconds": 71.0,
+     "error": null,
+     "bracketed_ids": false,
+     "last_validation_errors": [],
+     "abstained": false,
+     "abstention_reason": null,
+     "attempts": 2,
+     "verdicts": [
+      "valid",
+      "valid",
+      "valid"
+     ],
+     "cited": [
+      "art-325-p6",
+      "art-422-inc-II",
+      "art-325-p5"
+     ],
+     "answer": "Não, a distribuidora não pode cortar sua energia. O registro de reclamação na Ouvidoria suspende a cobrança e a suspensão do fornecimento até a resposta final. O prazo para registrar a reclamação na Ouvidoria é de até 30 dias contados a partir do recebimento da resposta da reclamação feita diretamente à distribuidora.",
+     "gpu_temp_after": 82
+    },
+    {
+     "id": "q-047",
+     "category": "multi_article",
+     "expected": [
+      "art-173-p1",
+      "art-663-inc-I"
+     ],
+     "seconds": 59.9,
+     "error": null,
+     "bracketed_ids": false,
+     "last_validation_errors": [],
+     "abstained": false,
+     "abstention_reason": null,
+     "attempts": 1,
+     "verdicts": [
+      "valid",
+      "valid"
+     ],
+     "cited": [
+      "art-663-inc-I",
+      "art-663"
+     ],
+     "answer": "Não. A distribuidora não tem direito à recuperação do equilíbrio econômico-financeiro do contrato caso o desequilíbrio tenha sido causado pela cobrança de tarifas menores que as homologadas.",
+     "gpu_temp_after": 82
+    },
+    {
+     "id": "q-042",
+     "category": "multi_article",
+     "expected": [
+      "art-250",
+      "art-252-inc-II"
+     ],
+     "seconds": 60.6,
+     "error": null,
+     "bracketed_ids": false,
+     "last_validation_errors": [],
+     "abstained": false,
+     "abstention_reason": null,
+     "attempts": 1,
+     "verdicts": [
+      "valid",
+      "valid"
+     ],
+     "cited": [
+      "art-250",
+      "art-252-inc-II"
+     ],
+     "answer": "O prazo para a distribuidora realizar a inspeção é de até 30 dias, contados a partir da solicitação. Caso o medidor apresente defeito, a substituição deve ocorrer em até 30 dias após a data da constatação do defeito.",
+     "gpu_temp_after": 81
+    },
+    {
+     "id": "q-084",
+     "category": "deadline_or_value",
+     "expected": [
+      "art-276"
+     ],
+     "seconds": 29.3,
+     "error": null,
+     "bracketed_ids": false,
+     "last_validation_errors": [],
+     "abstained": false,
+     "abstention_reason": null,
+     "attempts": 1,
+     "verdicts": [
+      "valid"
+     ],
+     "cited": [
+      "art-276"
+     ],
+     "answer": "A distribuidora deve realizar a leitura no ciclo subsequente sempre que o consumidor não enviar a autoleitura por 2 ciclos consecutivos.",
+     "gpu_temp_after": 82
+    },
+    {
+     "id": "q-020",
+     "category": "deadline_or_value",
+     "expected": [
+      "art-651"
+     ],
+     "seconds": 39.0,
+     "error": null,
+     "bracketed_ids": false,
+     "last_validation_errors": [],
+     "abstained": false,
+     "abstention_reason": null,
+     "attempts": 1,
+     "verdicts": [
+      "valid"
+     ],
+     "cited": [
+      "art-651"
+     ],
+     "answer": "O pagamento do ressarcimento ao proprietário deve ocorrer em até 180 dias após a efetiva incorporação dos bens expressos no contrato de incorporação.",
+     "gpu_temp_after": 82
+    },
+    {
+     "id": "q-048",
+     "category": "deadline_or_value",
+     "expected": [
+      "art-365-p2"
+     ],
+     "seconds": 42.2,
+     "error": null,
+     "bracketed_ids": false,
+     "last_validation_errors": [],
+     "abstained": false,
+     "abstention_reason": null,
+     "attempts": 1,
+     "verdicts": [
+      "valid"
+     ],
+     "cited": [
+      "art-365-p2"
+     ],
+     "answer": "A distribuidora pode cobrar até 30% do valor da religação solicitada.",
+     "gpu_temp_after": 82
+    },
+    {
+     "id": "q-060",
+     "category": "unanswerable",
+     "expected": [],
+     "seconds": 45.3,
+     "error": null,
+     "abstained": true,
+     "abstention_reason": "insufficient_context",
+     "attempts": 0,
+     "verdicts": [],
+     "cited": [],
+     "answer": "Não encontrei na REN ANEEL nº 1.000/2021 base suficiente para responder com segurança. Seguem os trechos mais próximos do que foi perguntado.",
+     "gpu_temp_after": 84
+    },
+    {
+     "id": "q-058",
+     "category": "unanswerable",
+     "expected": [],
+     "seconds": 32.2,
+     "error": null,
+     "abstained": true,
+     "abstention_reason": "insufficient_context",
+     "attempts": 0,
+     "verdicts": [],
+     "cited": [],
+     "answer": "Não encontrei na REN ANEEL nº 1.000/2021 base suficiente para responder com segurança. Seguem os trechos mais próximos do que foi perguntado.",
+     "gpu_temp_after": 82
+    },
+    {
+     "id": "q-029",
+     "category": "unanswerable",
+     "expected": [],
+     "seconds": 40.8,
+     "error": null,
+     "abstained": true,
+     "abstention_reason": "insufficient_context",
+     "attempts": 0,
+     "verdicts": [],
+     "cited": [],
+     "answer": "Não encontrei na REN ANEEL nº 1.000/2021 base suficiente para responder com segurança. Seguem os trechos mais próximos do que foi perguntado.",
+     "gpu_temp_after": 84
+    }
+   ]
+  },
+  {
+   "candidate": {
+    "name": "qwen3.5-9b",
+    "gguf_repo": "unsloth/Qwen3.5-9B-GGUF",
+    "gguf_file": "Qwen3.5-9B-Q5_K_M.gguf",
+    "gguf_sha256": "dc2a39aef291f91a9116ad214058da0d86eb648743a124bd8c333787c4b9c91c",
+    "quantization": "Q5_K_M"
+   },
+   "config_hash": "26524fb39c0f",
+   "summary": {
+    "questions": 12,
+    "answerable": 9,
+    "answered_citing_expected": 8,
+    "answered_all_citations_valid": 9,
+    "false_abstentions": 0,
+    "unanswerable": 3,
+    "unanswerable_abstained": 3,
+    "unanswerable_abstained_by_generator": 0,
+    "citations": {
+     "valid": 15,
+     "imprecise": 0,
+     "invalid": 0
+    },
+    "questions_with_bracketed_ids": 0,
+    "questions_retried": 0,
+    "errors": 0,
+    "seconds_median": 21.4,
+    "prompt_tokens_per_s_median": 548.8,
+    "generation_tokens_per_s_median": 24.0,
+    "gpu_temp_max_c": 84
+   },
+   "records": [
+    {
+     "id": "q-007",
+     "category": "factual_single",
+     "expected": [
+      "art-207-inc-IV-al-b"
+     ],
+     "seconds": 23.9,
+     "error": null,
+     "bracketed_ids": false,
+     "last_validation_errors": [],
+     "abstained": false,
+     "abstention_reason": null,
+     "attempts": 1,
+     "verdicts": [
+      "valid"
+     ],
+     "cited": [
+      "art-207-inc-IV-al-b"
+     ],
+     "answer": "Não, a visita técnica não é obrigatória para o Grupo B na revisão cadastral. Ela é facultativa e deve ser realizada apenas se houver dúvidas sobre a documentação ou necessidade de comprovação da atividade e finalidade do uso da energia.",
+     "gpu_temp_after": 75
+    },
+    {
+     "id": "q-066",
+     "category": "factual_single",
+     "expected": [
+      "art-560"
+     ],
+     "seconds": 19.1,
+     "error": null,
+     "bracketed_ids": false,
+     "last_validation_errors": [],
+     "abstained": false,
+     "abstention_reason": null,
+     "attempts": 1,
+     "verdicts": [
+      "valid"
+     ],
+     "cited": [
+      "art-560"
+     ],
+     "answer": "Não, os investimentos em estações de recarga de veículos elétricos não integram a base de ativos remunerada pela tarifa. O artigo 560 estabelece explicitamente que tais ativos não compõem a base de ativos para fins de remuneração durante a revisão ou reajuste tarifário.",
+     "gpu_temp_after": 80
+    },
+    {
+     "id": "q-037",
+     "category": "factual_single",
+     "expected": [
+      "art-328-p2"
+     ],
+     "seconds": 24.8,
+     "error": null,
+     "bracketed_ids": false,
+     "last_validation_errors": [],
+     "abstained": false,
+     "abstention_reason": null,
+     "attempts": 1,
+     "verdicts": [
+      "valid",
+      "valid"
+     ],
+     "cited": [
+      "art-328-p2",
+      "art-328-p1"
+     ],
+     "answer": "Sim, você pode voltar a receber a fatura completa. O consumidor pode optar, a qualquer tempo, por voltar a receber regularmente a fatura de energia elétrica completa, e a distribuidora deve disponibilizá-la sem custo adicional.",
+     "gpu_temp_after": 80
+    },
+    {
+     "id": "q-041",
+     "category": "multi_article",
+     "expected": [
+      "art-422-inc-II",
+      "art-325-p5"
+     ],
+     "seconds": 29.5,
+     "error": null,
+     "bracketed_ids": false,
+     "last_validation_errors": [],
+     "abstained": false,
+     "abstention_reason": null,
+     "attempts": 1,
+     "verdicts": [
+      "valid",
+      "valid",
+      "valid"
+     ],
+     "cited": [
+      "art-325-p6",
+      "art-422-inc-II",
+      "art-325-p5"
+     ],
+     "answer": "Não, a distribuidora não pode cortar sua energia enquanto a Ouvidoria não responde. O § 6º do art. 325 e o inciso II do art. 422 estabelecem que a reclamação na Ouvidoria suspende a cobrança e a suspensão do fornecimento. O prazo para levar a reclamação à Ouvidoria é de até 30 dias após receber a resposta da própria distribuidora, conforme o § 5º do art. 325.",
+     "gpu_temp_after": 83
+    },
+    {
+     "id": "q-047",
+     "category": "multi_article",
+     "expected": [
+      "art-173-p1",
+      "art-663-inc-I"
+     ],
+     "seconds": 24.6,
+     "error": null,
+     "bracketed_ids": false,
+     "last_validation_errors": [],
+     "abstained": false,
+     "abstention_reason": null,
+     "attempts": 1,
+     "verdicts": [
+      "valid",
+      "valid"
+     ],
+     "cited": [
+      "art-663",
+      "art-663-inc-I"
+     ],
+     "answer": "Não. A distribuidora não tem direito à recuperação do equilíbrio econômico-financeiro caso o desequilíbrio tenha sido causado pela cobrança de tarifas menores que as homologadas.",
+     "gpu_temp_after": 84
+    },
+    {
+     "id": "q-042",
+     "category": "multi_article",
+     "expected": [
+      "art-250",
+      "art-252-inc-II"
+     ],
+     "seconds": 26.4,
+     "error": null,
+     "bracketed_ids": false,
+     "last_validation_errors": [],
+     "abstained": false,
+     "abstention_reason": null,
+     "attempts": 1,
+     "verdicts": [
+      "valid",
+      "valid"
+     ],
+     "cited": [
+      "art-250",
+      "art-252-inc-II"
+     ],
+     "answer": "A distribuidora deve realizar a inspeção em até 30 dias a partir da solicitação. Se o medidor apresentar defeito, a substituição deve ser feita em até 30 dias após a constatação do defeito.",
+     "gpu_temp_after": 83
+    },
+    {
+     "id": "q-084",
+     "category": "deadline_or_value",
+     "expected": [
+      "art-276"
+     ],
+     "seconds": 16.2,
+     "error": null,
+     "bracketed_ids": false,
+     "last_validation_errors": [],
+     "abstained": false,
+     "abstention_reason": null,
+     "attempts": 1,
+     "verdicts": [
+      "valid"
+     ],
+     "cited": [
+      "art-276"
+     ],
+     "answer": "A distribuidora deve realizar a leitura no ciclo subsequente sempre que o consumidor não enviar a autoleitura por 2 ciclos consecutivos.",
+     "gpu_temp_after": 82
+    },
+    {
+     "id": "q-020",
+     "category": "deadline_or_value",
+     "expected": [
+      "art-651"
+     ],
+     "seconds": 22.5,
+     "error": null,
+     "bracketed_ids": false,
+     "last_validation_errors": [],
+     "abstained": false,
+     "abstention_reason": null,
+     "attempts": 1,
+     "verdicts": [
+      "valid",
+      "valid"
+     ],
+     "cited": [
+      "art-651",
+      "art-102-inc-II"
+     ],
+     "answer": "A distribuidora deve pagar o ressarcimento em até 180 dias após a efetiva incorporação dos bens expressos no contrato de incorporação.",
+     "gpu_temp_after": 82
+    },
+    {
+     "id": "q-048",
+     "category": "deadline_or_value",
+     "expected": [
+      "art-365-p2"
+     ],
+     "seconds": 20.4,
+     "error": null,
+     "bracketed_ids": false,
+     "last_validation_errors": [],
+     "abstained": false,
+     "abstention_reason": null,
+     "attempts": 1,
+     "verdicts": [
+      "valid"
+     ],
+     "cited": [
+      "art-369"
+     ],
+     "answer": "A distribuidora pode cobrar até 50% do custo administrativo de inspeção homologado pela ANEEL.",
+     "gpu_temp_after": 82
+    },
+    {
+     "id": "q-060",
+     "category": "unanswerable",
+     "expected": [],
+     "seconds": 11.9,
+     "error": null,
+     "abstained": true,
+     "abstention_reason": "insufficient_context",
+     "attempts": 0,
+     "verdicts": [],
+     "cited": [],
+     "answer": "Não encontrei na REN ANEEL nº 1.000/2021 base suficiente para responder com segurança. Seguem os trechos mais próximos do que foi perguntado.",
+     "gpu_temp_after": 81
+    },
+    {
+     "id": "q-058",
+     "category": "unanswerable",
+     "expected": [],
+     "seconds": 9.8,
+     "error": null,
+     "abstained": true,
+     "abstention_reason": "insufficient_context",
+     "attempts": 0,
+     "verdicts": [],
+     "cited": [],
+     "answer": "Não encontrei na REN ANEEL nº 1.000/2021 base suficiente para responder com segurança. Seguem os trechos mais próximos do que foi perguntado.",
+     "gpu_temp_after": 80
+    },
+    {
+     "id": "q-029",
+     "category": "unanswerable",
+     "expected": [],
+     "seconds": 14.0,
+     "error": null,
+     "abstained": true,
+     "abstention_reason": "insufficient_context",
+     "attempts": 0,
+     "verdicts": [],
+     "cited": [],
+     "answer": "Não encontrei na REN ANEEL nº 1.000/2021 base suficiente para responder com segurança. Seguem os trechos mais próximos do que foi perguntado.",
+     "gpu_temp_after": 79
+    }
+   ]
+  },
+  {
+   "candidate": {
+    "name": "gemma4-26b-a4b",
+    "gguf_repo": "google/gemma-4-26B-A4B-it-qat-q4_0-gguf",
+    "gguf_file": "gemma-4-26B_q4_0-it.gguf",
+    "gguf_sha256": "3eca3b8f6d7baf218a7dd6bba5fb59a56ee25fe2d567b6f5f589b4f697eca51d",
+    "quantization": "Q4_0 (QAT)"
+   },
+   "config_hash": "6cbb320eba6f",
+   "summary": {
+    "questions": 12,
+    "answerable": 9,
+    "answered_citing_expected": 9,
+    "answered_all_citations_valid": 9,
+    "false_abstentions": 0,
+    "unanswerable": 3,
+    "unanswerable_abstained": 3,
+    "unanswerable_abstained_by_generator": 0,
+    "citations": {
+     "valid": 13,
+     "imprecise": 0,
+     "invalid": 0
+    },
+    "questions_with_bracketed_ids": 0,
+    "questions_retried": 0,
+    "errors": 0,
+    "seconds_median": 29.1,
+    "prompt_tokens_per_s_median": 275.7,
+    "generation_tokens_per_s_median": 22.8,
+    "gpu_temp_max_c": 82
+   },
+   "records": [
+    {
+     "id": "q-007",
+     "category": "factual_single",
+     "expected": [
+      "art-207-inc-IV-al-b"
+     ],
+     "seconds": 34.4,
+     "error": null,
+     "bracketed_ids": false,
+     "last_validation_errors": [],
+     "abstained": false,
+     "abstention_reason": null,
+     "attempts": 1,
+     "verdicts": [
+      "valid"
+     ],
+     "cited": [
+      "art-207-inc-IV-al-b"
+     ],
+     "answer": "Não, a realização da visita técnica durante o processo de revisão cadastral é facultativa para o Grupo B, devendo ser realizada apenas se houver dúvidas sobre a documentação apresentada ou necessidade de comprovação da atividade exercida e da finalidade da utilização da energia elétrica.",
+     "gpu_temp_after": 73
+    },
+    {
+     "id": "q-066",
+     "category": "factual_single",
+     "expected": [
+      "art-560"
+     ],
+     "seconds": 34.4,
+     "error": null,
+     "bracketed_ids": false,
+     "last_validation_errors": [],
+     "abstained": false,
+     "abstention_reason": null,
+     "attempts": 1,
+     "verdicts": [
+      "valid"
+     ],
+     "cited": [
+      "art-560"
+     ],
+     "answer": "Não. Os ativos que compõem a infraestrutura das estações de recarga não integram a base de ativos da distribuidora para fins de remuneração durante o processo de revisão ou reajuste tarifário.",
+     "gpu_temp_after": 76
+    },
+    {
+     "id": "q-037",
+     "category": "factual_single",
+     "expected": [
+      "art-328-p2"
+     ],
+     "seconds": 26.0,
+     "error": null,
+     "bracketed_ids": false,
+     "last_validation_errors": [],
+     "abstained": false,
+     "abstention_reason": null,
+     "attempts": 1,
+     "verdicts": [
+      "valid"
+     ],
+     "cited": [
+      "art-328-p2"
+     ],
+     "answer": "Sim, o consumidor pode optar, a qualquer tempo, por voltar a receber regularmente a fatura de energia elétrica completa.",
+     "gpu_temp_after": 77
+    },
+    {
+     "id": "q-041",
+     "category": "multi_article",
+     "expected": [
+      "art-422-inc-II",
+      "art-325-p5"
+     ],
+     "seconds": 48.5,
+     "error": null,
+     "bracketed_ids": false,
+     "last_validation_errors": [],
+     "abstained": false,
+     "abstention_reason": null,
+     "attempts": 1,
+     "verdicts": [
+      "valid",
+      "valid",
+      "valid"
+     ],
+     "cited": [
+      "art-422-inc-II",
+      "art-325-p6",
+      "art-325-p5"
+     ],
+     "answer": "Não é permitida a suspensão do fornecimento de energia elétrica por inadimplemento, nem a adoção de outras medidas prejudiciais ao consumidor, exclusivamente quanto ao débito questionado, até a efetiva resposta da Ouvidoria. O consumidor tem até 30 dias, contados a partir do recebimento da resposta da reclamação, para registrar reclamação à Ouvidoria da distribuidora.",
+     "gpu_temp_after": 74
+    },
+    {
+     "id": "q-047",
+     "category": "multi_article",
+     "expected": [
+      "art-173-p1",
+      "art-663-inc-I"
+     ],
+     "seconds": 38.7,
+     "error": null,
+     "bracketed_ids": false,
+     "last_validation_errors": [],
+     "abstained": false,
+     "abstention_reason": null,
+     "attempts": 1,
+     "verdicts": [
+      "valid",
+      "valid"
+     ],
+     "cited": [
+      "art-663-inc-I",
+      "art-663"
+     ],
+     "answer": "Não. A distribuidora não tem direito à recuperação do equilíbrio econômico-financeiro do contrato caso o desequilíbrio tenha sido causado pela cobrança de tarifas menores que as homologadas.",
+     "gpu_temp_after": 77
+    },
+    {
+     "id": "q-042",
+     "category": "multi_article",
+     "expected": [
+      "art-250",
+      "art-252-inc-II"
+     ],
+     "seconds": 36.3,
+     "error": null,
+     "bracketed_ids": false,
+     "last_validation_errors": [],
+     "abstained": false,
+     "abstention_reason": null,
+     "attempts": 1,
+     "verdicts": [
+      "valid",
+      "valid"
+     ],
+     "cited": [
+      "art-250",
+      "art-252-inc-II"
+     ],
+     "answer": "O prazo para a distribuidora inspecionar o sistema de medição é de até 30 dias, contados a partir da solicitação. Caso seja constatado defeito, a distribuidora deve substituir os equipamentos de sua responsabilidade que apresentem desempenho inadequado em até 30 dias após a data da constatação do defeito.",
+     "gpu_temp_after": 77
+    },
+    {
+     "id": "q-084",
+     "category": "deadline_or_value",
+     "expected": [
+      "art-276"
+     ],
+     "seconds": 19.8,
+     "error": null,
+     "bracketed_ids": false,
+     "last_validation_errors": [],
+     "abstained": false,
+     "abstention_reason": null,
+     "attempts": 1,
+     "verdicts": [
+      "valid"
+     ],
+     "cited": [
+      "art-276"
+     ],
+     "answer": "A distribuidora deve realizar a leitura no ciclo subsequente sempre que o consumidor não enviar a autoleitura por 2 ciclos consecutivos.",
+     "gpu_temp_after": 78
+    },
+    {
+     "id": "q-020",
+     "category": "deadline_or_value",
+     "expected": [
+      "art-651"
+     ],
+     "seconds": 28.3,
+     "error": null,
+     "bracketed_ids": false,
+     "last_validation_errors": [],
+     "abstained": false,
+     "abstention_reason": null,
+     "attempts": 1,
+     "verdicts": [
+      "valid"
+     ],
+     "cited": [
+      "art-651"
+     ],
+     "answer": "O pagamento do ressarcimento ao proprietário deve ocorrer em até 180 dias após a efetiva incorporação dos bens expressos no contrato de incorporação.",
+     "gpu_temp_after": 74
+    },
+    {
+     "id": "q-048",
+     "category": "deadline_or_value",
+     "expected": [
+      "art-365-p2"
+     ],
+     "seconds": 29.8,
+     "error": null,
+     "bracketed_ids": false,
+     "last_validation_errors": [],
+     "abstained": false,
+     "abstention_reason": null,
+     "attempts": 1,
+     "verdicts": [
+      "valid"
+     ],
+     "cited": [
+      "art-365-p2"
+     ],
+     "answer": "A distribuidora pode cobrar até 30% do valor da religação solicitada se tiver apenas desligado o disjuntor das instalações na suspensão do fornecimento.",
+     "gpu_temp_after": 76
+    },
+    {
+     "id": "q-060",
+     "category": "unanswerable",
+     "expected": [],
+     "seconds": 17.0,
+     "error": null,
+     "abstained": true,
+     "abstention_reason": "insufficient_context",
+     "attempts": 0,
+     "verdicts": [],
+     "cited": [],
+     "answer": "Não encontrei na REN ANEEL nº 1.000/2021 base suficiente para responder com segurança. Seguem os trechos mais próximos do que foi perguntado.",
+     "gpu_temp_after": 82
+    },
+    {
+     "id": "q-058",
+     "category": "unanswerable",
+     "expected": [],
+     "seconds": 15.7,
+     "error": null,
+     "abstained": true,
+     "abstention_reason": "insufficient_context",
+     "attempts": 0,
+     "verdicts": [],
+     "cited": [],
+     "answer": "Não encontrei na REN ANEEL nº 1.000/2021 base suficiente para responder com segurança. Seguem os trechos mais próximos do que foi perguntado.",
+     "gpu_temp_after": 79
+    },
+    {
+     "id": "q-029",
+     "category": "unanswerable",
+     "expected": [],
+     "seconds": 22.6,
+     "error": null,
+     "abstained": true,
+     "abstention_reason": "insufficient_context",
+     "attempts": 0,
+     "verdicts": [],
+     "cited": [],
+     "answer": "Não encontrei na REN ANEEL nº 1.000/2021 base suficiente para responder com segurança. Seguem os trechos mais próximos do que foi perguntado.",
+     "gpu_temp_after": 78
+    }
+   ]
+  },
+  {
+   "candidate": {
+    "name": "gemma4-12b",
+    "gguf_repo": "google/gemma-4-12B-it-qat-q4_0-gguf",
+    "gguf_file": "gemma-4-12b-it-qat-q4_0.gguf",
+    "gguf_sha256": "93567e57a8fe10b23569b9d9ec38cd005deedf71e29477c421a4b83f418a538b",
+    "quantization": "Q4_0 (QAT)"
+   },
+   "config_hash": "246332c4d8cb",
+   "summary": {
+    "questions": 12,
+    "answerable": 9,
+    "answered_citing_expected": 9,
+    "answered_all_citations_valid": 9,
+    "false_abstentions": 0,
+    "unanswerable": 3,
+    "unanswerable_abstained": 2,
+    "unanswerable_abstained_by_generator": 0,
+    "citations": {
+     "valid": 14,
+     "imprecise": 0,
+     "invalid": 0
+    },
+    "questions_with_bracketed_ids": 0,
+    "questions_retried": 0,
+    "errors": 0,
+    "seconds_median": 47.9,
+    "prompt_tokens_per_s_median": 315.6,
+    "generation_tokens_per_s_median": 7.7,
+    "gpu_temp_max_c": 75
+   },
+   "records": [
+    {
+     "id": "q-007",
+     "category": "factual_single",
+     "expected": [
+      "art-207-inc-IV-al-b"
+     ],
+     "seconds": 51.2,
+     "error": null,
+     "bracketed_ids": false,
+     "last_validation_errors": [],
+     "abstained": false,
+     "abstention_reason": null,
+     "attempts": 1,
+     "verdicts": [
+      "valid"
+     ],
+     "cited": [
+      "art-207-inc-IV-al-b"
+     ],
+     "answer": "Não, a realização da visita técnica durante o processo de revisão cadastral é facultativa para o Grupo B, devendo ocorrer apenas se houver dúvidas sobre a documentação apresentada ou necessidade de comprovação da atividade exercida e da finalidade da utilização da energia elétrica.",
+     "gpu_temp_after": 71
+    },
+    {
+     "id": "q-066",
+     "category": "factual_single",
+     "expected": [
+      "art-560"
+     ],
+     "seconds": 53.3,
+     "error": null,
+     "bracketed_ids": false,
+     "last_validation_errors": [],
+     "abstained": false,
+     "abstention_reason": null,
+     "attempts": 1,
+     "verdicts": [
+      "valid"
+     ],
+     "cited": [
+      "art-560"
+     ],
+     "answer": "Não, os ativos que compõem a infraestrutura das estações de recarga não integram a base de ativos da distribuidora para fins de remuneração durante o processo de revisão ou reajuste tarifário.",
+     "gpu_temp_after": 73
+    },
+    {
+     "id": "q-037",
+     "category": "factual_single",
+     "expected": [
+      "art-328-p2"
+     ],
+     "seconds": 39.4,
+     "error": null,
+     "bracketed_ids": false,
+     "last_validation_errors": [],
+     "abstained": false,
+     "abstention_reason": null,
+     "attempts": 1,
+     "verdicts": [
+      "valid"
+     ],
+     "cited": [
+      "art-328-p2"
+     ],
+     "answer": "Sim, o consumidor e demais usuários podem optar, a qualquer tempo, por voltar a receber regularmente a fatura de energia elétrica completa.",
+     "gpu_temp_after": 73
+    },
+    {
+     "id": "q-041",
+     "category": "multi_article",
+     "expected": [
+      "art-422-inc-II",
+      "art-325-p5"
+     ],
+     "seconds": 77.1,
+     "error": null,
+     "bracketed_ids": false,
+     "last_validation_errors": [],
+     "abstained": false,
+     "abstention_reason": null,
+     "attempts": 1,
+     "verdicts": [
+      "valid",
+      "valid",
+      "valid"
+     ],
+     "cited": [
+      "art-422-inc-II",
+      "art-325-p5",
+      "art-325-p6"
+     ],
+     "answer": "A distribuidora não pode realizar a suspensão do fornecimento de energia elétrica por inadimplemento exclusivamente quanto ao débito questionado, até que haja uma resposta efetiva da Ouvidoria. O consumidor tem o prazo de até 30 dias, contados a partir do recebimento da resposta da reclamação da distribuidora, para registrar a reclamação na Ouvidoria.",
+     "gpu_temp_after": 74
+    },
+    {
+     "id": "q-047",
+     "category": "multi_article",
+     "expected": [
+      "art-173-p1",
+      "art-663-inc-I"
+     ],
+     "seconds": 53.1,
+     "error": null,
+     "bracketed_ids": false,
+     "last_validation_errors": [],
+     "abstained": false,
+     "abstention_reason": null,
+     "attempts": 1,
+     "verdicts": [
+      "valid"
+     ],
+     "cited": [
+      "art-663-inc-I"
+     ],
+     "answer": "Não, a distribuidora não tem direito à recuperação do equilíbrio econômico-financeiro do contrato caso o desequilíbrio tenha sido causado pela cobrança de tarifas menores que as homologadas.",
+     "gpu_temp_after": 74
+    },
+    {
+     "id": "q-042",
+     "category": "multi_article",
+     "expected": [
+      "art-250",
+      "art-252-inc-II"
+     ],
+     "seconds": 64.9,
+     "error": null,
+     "bracketed_ids": false,
+     "last_validation_errors": [],
+     "abstained": false,
+     "abstention_reason": null,
+     "attempts": 1,
+     "verdicts": [
+      "valid",
+      "valid"
+     ],
+     "cited": [
+      "art-250",
+      "art-252-inc-II"
+     ],
+     "answer": "O prazo para a distribuidora inspecionar o sistema de medição é de até 30 dias, contados a partir da solicitação. Caso seja constatado defeito no equipamento de responsabilidade da distribuidora, ela deve substituí-lo em até 30 dias após a data da constatação do defeito.",
+     "gpu_temp_after": 75
+    },
+    {
+     "id": "q-084",
+     "category": "deadline_or_value",
+     "expected": [
+      "art-276"
+     ],
+     "seconds": 33.8,
+     "error": null,
+     "bracketed_ids": false,
+     "last_validation_errors": [],
+     "abstained": false,
+     "abstention_reason": null,
+     "attempts": 1,
+     "verdicts": [
+      "valid"
+     ],
+     "cited": [
+      "art-276"
+     ],
+     "answer": "A distribuidora deve realizar a leitura no ciclo subsequente sempre que o consumidor não enviar a autoleitura por 2 ciclos consecutivos.",
+     "gpu_temp_after": 74
+    },
+    {
+     "id": "q-020",
+     "category": "deadline_or_value",
+     "expected": [
+      "art-651"
+     ],
+     "seconds": 40.0,
+     "error": null,
+     "bracketed_ids": false,
+     "last_validation_errors": [],
+     "abstained": false,
+     "abstention_reason": null,
+     "attempts": 1,
+     "verdicts": [
+      "valid"
+     ],
+     "cited": [
+      "art-651"
+     ],
+     "answer": "O pagamento do ressarcimento ao proprietário deve ocorrer em até 180 dias após a efetiva incorporação dos bens expressos no contrato de incorporação.",
+     "gpu_temp_after": 73
+    },
+    {
+     "id": "q-048",
+     "category": "deadline_or_value",
+     "expected": [
+      "art-365-p2"
+     ],
+     "seconds": 44.5,
+     "error": null,
+     "bracketed_ids": false,
+     "last_validation_errors": [],
+     "abstained": false,
+     "abstention_reason": null,
+     "attempts": 1,
+     "verdicts": [
+      "valid"
+     ],
+     "cited": [
+      "art-365-p2"
+     ],
+     "answer": "No caso de religação normal, a distribuidora pode cobrar até 30% do valor da religação solicitada se tiver apenas desligado o disjuntor das instalações na suspensão do fornecimento.",
+     "gpu_temp_after": 73
+    },
+    {
+     "id": "q-060",
+     "category": "unanswerable",
+     "expected": [],
+     "seconds": 22.9,
+     "error": null,
+     "abstained": true,
+     "abstention_reason": "insufficient_context",
+     "attempts": 0,
+     "verdicts": [],
+     "cited": [],
+     "answer": "Não encontrei na REN ANEEL nº 1.000/2021 base suficiente para responder com segurança. Seguem os trechos mais próximos do que foi perguntado.",
+     "gpu_temp_after": 72
+    },
+    {
+     "id": "q-058",
+     "category": "unanswerable",
+     "expected": [],
+     "seconds": 64.9,
+     "error": null,
+     "bracketed_ids": false,
+     "last_validation_errors": [],
+     "abstained": false,
+     "abstention_reason": null,
+     "attempts": 1,
+     "verdicts": [
+      "valid",
+      "valid"
+     ],
+     "cited": [
+      "art-250-p2",
+      "art-250-inc-I"
+     ],
+     "answer": "Os trechos fornecidos não mencionam explicitamente o direito do consumidor de filmar a inspeção, mas estabelecem que o consumidor pode acompanhar a inspeção presencialmente ou por meio de metodologias interativas de comunicação audiovisual.",
+     "gpu_temp_after": 74
+    },
+    {
+     "id": "q-029",
+     "category": "unanswerable",
+     "expected": [],
+     "seconds": 21.9,
+     "error": null,
+     "abstained": true,
+     "abstention_reason": "insufficient_context",
+     "attempts": 0,
+     "verdicts": [],
+     "cited": [],
+     "answer": "Não encontrei na REN ANEEL nº 1.000/2021 base suficiente para responder com segurança. Seguem os trechos mais próximos do que foi perguntado.",
+     "gpu_temp_after": 74
+    }
+   ]
+  }
+ ]
+}

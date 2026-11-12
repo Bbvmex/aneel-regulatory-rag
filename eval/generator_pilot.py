@@ -286,8 +286,8 @@ def run(pilot: PilotConfig, only: set[str] | None, out_dir: Path) -> Path:
         "results": results,
     }
     json_path = out_dir / f"{stamp}.json"
-    json_path.write_text(json.dumps(report, ensure_ascii=False, indent=1), "utf-8")
-    (out_dir / f"{stamp}.md").write_text(render(report), "utf-8")
+    json_path.write_text(json.dumps(report, ensure_ascii=False, indent=1) + "\n", "utf-8")
+    (out_dir / f"{stamp}.md").write_text(render(report) + "\n", "utf-8")
     return json_path
 
 
@@ -324,7 +324,9 @@ def render(report: dict) -> str:
         )
     lines += [
         "",
-        "Seconds per question include retrieval and the CPU reranker (decision 26).",
+        "Seconds per question include retrieval and reranking. The reranker cache fills during "
+        "the first candidate, so later candidates skip the cross-encoder: compare speed by the "
+        "token rates, not by seconds per question.",
         "",
         "## Per question",
         "",
