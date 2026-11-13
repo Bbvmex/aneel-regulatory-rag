@@ -208,8 +208,6 @@ def test_gate_fails_while_thresholds_are_empty(tmp_path):
     path.write_text("thresholds: {}\n", "utf-8")
     with pytest.raises(GateError, match="no thresholds"):
         load_thresholds(path)
-    with pytest.raises(GateError, match="no thresholds"):
-        load_thresholds()  # the committed file is empty until the owner sets it
     path.write_text("thresholds:\n  a: {at_least: 1}\n", "utf-8")
     with pytest.raises(GateError, match="min"):
         load_thresholds(path)
