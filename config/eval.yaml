@@ -1,0 +1,25 @@
+# Evaluation runner (phase 5). The system under test is config/default.yaml; this file holds
+# only what the evaluation itself decides. Its contents enter the eval report's hash.
+recall_ks: [1, 3, 5]                   # recall@k reported for every ablation (k <= retrieval.k_final)
+ablations:                             # retrieval only, no LLM; each overlays config/default.yaml
+  - config/ablations/dense.yaml
+  - config/ablations/hybrid.yaml
+  - config/ablations/hybrid_rerank.yaml
+  - config/ablations/fixed_chunking.yaml
+  - config/ablations/rerank_512.yaml
+  - config/ablations/k_candidates_10.yaml
+
+pipeline:                              # full graph, main config only
+  pause_s: 8                           # between questions; the laptop overheats
+  gpu_hot_c: 80                        # above this after a question, wait ...
+  gpu_cool_c: 70                       # ... until the GPU is back to this
+  gpu_start_below_c: 60                # before starting the server
+
+judge:                                 # RAGAS, main config only; TBD without quota (ADR-005)
+  answer_relevancy_strictness: 3       # questions generated per answer (RAGAS default)
+  faithful_threshold: 1.0              # judge says "faithful" only if every claim is supported,
+                                       # the same definition the human label uses
+
+calibration:
+  n: 20                                # answered questions sampled for human faithfulness labels
+  seed: 20261112

@@ -1,0 +1,3 @@
+# Retrieval ablation (phase 5): the main configuration (hybrid fused pool, cross-encoder reorder).
+retrieval:
+  mode: hybrid+rerank

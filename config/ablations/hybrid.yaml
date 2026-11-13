@@ -1,0 +1,3 @@
+# Retrieval ablation (phase 5): dense + sparse fused by RRF, no reranker.
+retrieval:
+  mode: hybrid

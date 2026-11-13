@@ -1,0 +1,3 @@
+# Retrieval ablation (phase 5): dense vector search only.
+retrieval:
+  mode: dense

@@ -3,7 +3,7 @@
 .DEFAULT_GOAL := help
 UV ?= uv
 
-.PHONY: help setup setup-ml lint format test smoke qdrant-up qdrant-down extract fixtures ingest models index query llm-server ask draft-brief draft-add validate-dataset generator-pilot serve eval eval-gate
+.PHONY: help setup setup-ml lint format test smoke qdrant-up qdrant-down extract fixtures ingest models index query llm-server ask draft-brief draft-add validate-dataset generator-pilot serve eval calibration eval-gate
 
 help: ## List available targets
 	@$(UV) run --no-sync python scripts/make_help.py $(MAKEFILE_LIST)
@@ -51,8 +51,8 @@ index query ask smoke eval: export HF_HUB_OFFLINE := 1
 models: ## Download the pinned embedding and reranker models once (needs network)
 	$(UV) run python -m aneel_rag.retrieval.hub
 
-index: ## Chunk, embed and index into Qdrant (offline; run `make models` first)
-	$(UV) run python -m aneel_rag.retrieval.index
+index: ## Chunk, embed and index into Qdrant [OVERLAY=config/ablations/fixed_chunking.yaml] (offline)
+	$(UV) run python -m aneel_rag.retrieval.index $(if $(OVERLAY),--overlay $(OVERLAY))
 
 query: ## Inspect retrieval: make query Q="pergunta" [MODE=hybrid+rerank] (offline)
 	$(UV) run python -m aneel_rag.retrieval.query "$(Q)" $(if $(MODE),--mode $(MODE))
@@ -78,8 +78,11 @@ validate-dataset: ## Check eval/dataset.jsonl against the schema and the parsed 
 serve: ## Run the API (phase 6)
 	$(UV) run uvicorn aneel_rag.api.app:app --reload
 
-eval: ## Full local evaluation, writes eval/reports (phase 5)
-	$(UV) run python eval/run_eval.py
+eval: ## Ablations + full graph on validated items, writes eval/reports [ARGS="--judge --skip-ablations"]
+	$(UV) run python -m eval.run_eval $(ARGS)
 
-eval-gate: ## Fail if metrics drop below eval/thresholds.yaml (phase 5)
-	$(UV) run python eval/gate.py
+calibration: ## Draft eval/judge_calibration.jsonl from the latest eval report (human labels)
+	$(UV) run python -m eval.make_calibration
+
+eval-gate: ## Fail if the current config's report misses eval/thresholds.yaml (fails while empty)
+	$(UV) run python -m eval.gate

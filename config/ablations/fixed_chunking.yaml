@@ -1,0 +1,4 @@
+# Retrieval ablation (phase 5): fixed-size windows instead of structural chunks, main mode.
+# Needs its own collection: make index OVERLAY=config/ablations/fixed_chunking.yaml
+chunking:
+  strategy: fixed

@@ -13,7 +13,6 @@ import statistics
 import subprocess
 import sys
 import time
-import urllib.request
 import uuid
 from importlib import metadata
 from pathlib import Path
@@ -31,6 +30,7 @@ from aneel_rag.config.settings import (
     load_config,
 )
 from aneel_rag.llm.server import prepare
+from eval.runtime import git_state, gpu_temp, wait_below, wait_healthy
 from eval.schema import Item, load_items
 
 PILOT_CONFIG = PROJECT_ROOT / "config" / "pilots" / "generator.yaml"
@@ -121,41 +121,6 @@ def summarize(records: list[dict]) -> dict:
     }
 
 
-def gpu_temp() -> int | None:
-    try:
-        out = subprocess.run(
-            ["nvidia-smi", "--query-gpu=temperature.gpu", "--format=csv,noheader"],
-            capture_output=True,
-            text=True,
-            check=True,
-        ).stdout
-        return int(out.strip().splitlines()[0])
-    except (OSError, subprocess.CalledProcessError, ValueError, IndexError):
-        return None
-
-
-def wait_below(limit: int) -> None:
-    # The laptop overheats: never queue work on a hot GPU.
-    while (t := gpu_temp()) is not None and t > limit:
-        time.sleep(10)
-
-
-def wait_healthy(base_url: str, proc: subprocess.Popen, timeout_s: float = 900) -> None:
-    health = base_url.rstrip("/").removesuffix("/v1") + "/health"
-    deadline = time.monotonic() + timeout_s
-    while time.monotonic() < deadline:
-        if proc.poll() is not None:
-            raise RuntimeError(f"llama-server exited with code {proc.returncode}")
-        try:
-            with urllib.request.urlopen(health, timeout=5) as resp:
-                if resp.status == 200:
-                    return
-        except OSError:
-            pass
-        time.sleep(5)
-    raise TimeoutError("llama-server did not become healthy")
-
-
 def run_question(graph, item: Item) -> dict:
     t0 = time.perf_counter()
     error, state = None, {}
@@ -185,18 +150,6 @@ def run_question(graph, item: Item) -> dict:
         }
     rec["gpu_temp_after"] = gpu_temp()
     return rec
-
-
-def git_state() -> tuple[str, bool]:
-    sha = subprocess.run(
-        ["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True, check=True
-    ).stdout.strip()
-    dirty = bool(
-        subprocess.run(
-            ["git", "status", "--porcelain"], capture_output=True, text=True, check=True
-        ).stdout.strip()
-    )
-    return sha, dirty
 
 
 def with_candidate(cfg: AppConfig, cand: Candidate) -> tuple[AppConfig, LocalLLMConfig]:

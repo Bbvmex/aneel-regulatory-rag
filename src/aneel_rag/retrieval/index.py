@@ -1,5 +1,6 @@
 """python -m aneel_rag.retrieval.index: chunk the parsed units, embed them and load Qdrant."""
 
+import argparse
 import json
 import sys
 import uuid
@@ -110,8 +111,13 @@ def write_chunks(chunks: list[Chunk], path: Path) -> None:
             fh.write(json.dumps(chunk.model_dump(mode="json"), ensure_ascii=False) + "\n")
 
 
-def main() -> int:
-    cfg = load_config()
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--overlay", help="config overlay, e.g. config/ablations/fixed_chunking.yaml"
+    )
+    args = parser.parse_args(argv)
+    cfg = load_config(overlays=(args.overlay,) if args.overlay else ())
     try:
         check_processed(cfg)
     except StaleProcessedError as exc:
